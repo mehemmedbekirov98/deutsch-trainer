@@ -24,22 +24,22 @@ export default {
     { de: "die Sprechstunde", ru: "часы приёма", plural: "die Sprechstunden", example: "Die Sprechstunde ist von acht bis zwölf Uhr.", exampleRu: "Приём с восьми до двенадцати часов." },
     { de: "das Wartezimmer", ru: "приёмная, комната ожидания", plural: "die Wartezimmer", example: "Im Wartezimmer sitzen heute viele Leute.", exampleRu: "В приёмной сегодня сидит много людей." },
     { de: "die Untersuchung", ru: "обследование, осмотр", plural: "die Untersuchungen", example: "Die Untersuchung dauert nur zehn Minuten.", exampleRu: "Осмотр длится всего десять минут." },
-    { de: "untersuchen", ru: "осматривать, обследовать", example: "Die Ärztin untersucht Ali sehr genau.", exampleRu: "Врач очень внимательно осматривает Али." },
+    { de: "untersuchen", ru: "осматривать, обследовать", example: "Die Ärztin untersucht Emil sehr genau.", exampleRu: "Врач очень внимательно осматривает Эмиль." },
     { de: "die Beschwerden", ru: "жалобы (на здоровье)", example: "Was für Beschwerden haben Sie?", exampleRu: "На что вы жалуетесь?" },
     { de: "der Blutdruck", ru: "давление (кровяное)", example: "Mein Blutdruck ist zum Glück normal.", exampleRu: "Моё давление, к счастью, нормальное." },
-    { de: "die Spritze", ru: "укол, шприц", plural: "die Spritzen", example: "Ali hat Angst vor Spritzen.", exampleRu: "Али боится уколов." },
+    { de: "die Spritze", ru: "укол, шприц", plural: "die Spritzen", example: "Emil hat Angst vor Spritzen.", exampleRu: "Эмиль боится уколов." },
     { de: "die Impfung", ru: "прививка", plural: "die Impfungen", example: "Die Impfung war überhaupt nicht schlimm.", exampleRu: "Прививка была совсем не страшной." },
     { de: "die Grippe", ru: "грипп", example: "Bei einer Grippe musst du zu Hause bleiben.", exampleRu: "При гриппе нужно оставаться дома." },
     { de: "die Allergie", ru: "аллергия", plural: "die Allergien", example: "Ich habe eine Allergie gegen Katzen.", exampleRu: "У меня аллергия на кошек." },
     { de: "die Salbe", ru: "мазь", plural: "die Salben", example: "Benutzen Sie die Salbe zweimal am Tag.", exampleRu: "Пользуйтесь мазью два раза в день." },
     { de: "die Nebenwirkung", ru: "побочное действие", plural: "die Nebenwirkungen", example: "Das Medikament hat fast keine Nebenwirkungen.", exampleRu: "У лекарства почти нет побочных эффектов." },
-    { de: "einnehmen", ru: "принимать (лекарство)", example: "Ali nimmt die Tabletten nach dem Essen ein.", exampleRu: "Али принимает таблетки после еды." },
+    { de: "einnehmen", ru: "принимать (лекарство)", example: "Emil nimmt die Tabletten nach dem Essen ein.", exampleRu: "Эмиль принимает таблетки после еды." },
     { de: "die Krankmeldung", ru: "больничный лист", plural: "die Krankmeldungen", example: "Ich bringe die Krankmeldung morgen zur Arbeit.", exampleRu: "Я принесу больничный на работу завтра." },
     { de: "das Krankenhaus", ru: "больница", plural: "die Krankenhäuser", example: "Das Krankenhaus ist nur zehn Minuten von hier.", exampleRu: "Больница всего в десяти минутах отсюда." },
     { de: "die Notaufnahme", ru: "приёмный покой, неотложка", plural: "die Notaufnahmen", example: "In der Notaufnahme warten wir schon zwei Stunden.", exampleRu: "В приёмном покое мы ждём уже два часа." },
     { de: "der Krankenwagen", ru: "скорая помощь (машина)", plural: "die Krankenwagen", example: "Wir haben einen Krankenwagen gerufen.", exampleRu: "Мы вызвали скорую." },
     { de: "der Notfall", ru: "экстренный случай", plural: "die Notfälle", example: "Rufen Sie im Notfall die 112.", exampleRu: "В экстренном случае звоните по номеру 112." },
-    { de: "sich verletzen", ru: "пораниться, получить травму", example: "Ali hat sich am Finger verletzt.", exampleRu: "Али поранил палец." },
+    { de: "sich verletzen", ru: "пораниться, получить травму", example: "Emil hat sich am Finger verletzt.", exampleRu: "Эмиль поранил палец." },
     { de: "sich erkälten", ru: "простудиться", example: "Im Winter erkälte ich mich oft.", exampleRu: "Зимой я часто простужаюсь." },
     { de: "sich fühlen", ru: "чувствовать себя", example: "Heute fühle ich mich schon viel besser.", exampleRu: "Сегодня я чувствую себя уже намного лучше." },
     { de: "schwindlig", ru: "кружится голова (Mir ist schwindlig)", example: "Mir ist seit gestern schwindlig.", exampleRu: "У меня со вчерашнего дня кружится голова." },
@@ -63,7 +63,7 @@ export default {
         ],
       },
       examples: [
-        { de: "Ali konnte gestern nicht arbeiten.", ru: "Али вчера не мог работать." },
+        { de: "Emil konnte gestern nicht arbeiten.", ru: "Эмиль вчера не мог работать." },
         { de: "Ich musste drei Tage im Bett bleiben.", ru: "Мне пришлось три дня лежать в постели." },
         { de: "Nach der Grippe durfte ich keinen Sport machen.", ru: "После гриппа мне нельзя было заниматься спортом." },
         { de: "Wollten Sie einen Termin am Montag?", ru: "Вы хотели приём в понедельник?" },
@@ -86,7 +86,7 @@ export default {
       },
       examples: [
         { de: "Nehmen Sie bitte im Wartezimmer Platz.", ru: "Садитесь, пожалуйста, в приёмной." },
-        { de: "Ruh dich aus, Ali, und trink viel Tee.", ru: "Отдохни, Али, и пей много чая." },
+        { de: "Ruh dich aus, Emil, und trink viel Tee.", ru: "Отдохни, Эмиль, и пей много чая." },
         { de: "Kommen Sie bitte am Freitag wieder.", ru: "Приходите, пожалуйста, ещё раз в пятницу." },
         { de: "Geh doch mal zum Hausarzt!", ru: "Сходи всё-таки к семейному врачу!" },
       ],
@@ -106,7 +106,7 @@ export default {
         ],
       },
       examples: [
-        { de: "Ali muss morgen zum Hausarzt.", ru: "Али завтра нужно к семейному врачу." },
+        { de: "Emil muss morgen zum Hausarzt.", ru: "Эмиль завтра нужно к семейному врачу." },
         { de: "Gestern war ich beim Facharzt.", ru: "Вчера я был у врача-специалиста." },
         { de: "Mein Bruder liegt seit Montag im Krankenhaus.", ru: "Мой брат с понедельника лежит в больнице." },
         { de: "Ich gehe noch schnell in die Apotheke.", ru: "Я ещё быстро зайду в аптеку." },
@@ -135,7 +135,7 @@ export default {
     },
     {
       type: "choice",
-      q: "Ali braucht einen Facharzt. Was bekommt er beim Hausarzt?",
+      q: "Emil braucht einen Facharzt. Was bekommt er beim Hausarzt?",
       options: ["eine Überweisung", "eine Impfung", "eine Salbe"],
       answer: 0,
       explain: "Überweisung — направление, с ним идут к врачу-специалисту.",
@@ -169,10 +169,10 @@ export default {
     { type: "speak", text: "Mir ist schwindlig.", ru: "У меня кружится голова." },
     {
       type: "fill",
-      sentence: "Ali hat sich beim Fußball ___.",
+      sentence: "Emil hat sich beim Fußball ___.",
       answers: ["verletzt"],
       options: ["verletzt", "erkältet", "untersucht"],
-      ru: "Али получил травму на футболе.",
+      ru: "Эмиль получил травму на футболе.",
       explain: "sich verletzen — пораниться, получить травму.",
     },
     {
@@ -225,10 +225,10 @@ export default {
     },
     {
       type: "fill",
-      sentence: "Ali ___ am Montag zum Arzt gehen, aber er hatte keine Zeit.",
+      sentence: "Emil ___ am Montag zum Arzt gehen, aber er hatte keine Zeit.",
       answers: ["sollte"],
       options: ["sollte", "soll", "sollten"],
-      ru: "Али должен был в понедельник пойти к врачу, но у него не было времени.",
+      ru: "Эмиль должен был в понедельник пойти к врачу, но у него не было времени.",
       explain: "sollen → sollte; er sollte — без окончания.",
     },
     {
@@ -254,8 +254,8 @@ export default {
     {
       type: "translate",
       dir: "de-ru",
-      text: "Ali konnte nicht arbeiten.",
-      answers: ["Али не мог работать.", "Али не смог работать.", "Али не мог пойти на работу."],
+      text: "Emil konnte nicht arbeiten.",
+      answers: ["Эмиль не мог работать.", "Эмиль не смог работать.", "Эмиль не мог пойти на работу."],
       hint: "konnte = мог",
     },
     {
@@ -267,10 +267,10 @@ export default {
     },
     {
       type: "fill",
-      sentence: "___ dich aus, Ali, du bist noch krank!",
+      sentence: "___ dich aus, Emil, du bist noch krank!",
       answers: ["Ruh"],
       options: ["Ruh", "Ruhen", "Ruhst"],
-      ru: "Отдохни, Али, ты ещё болен!",
+      ru: "Отдохни, Эмиль, ты ещё болен!",
       explain: "Imperativ на du от sich ausruhen: Ruh dich aus!",
     },
     {
@@ -320,10 +320,10 @@ export default {
     },
     {
       type: "fill",
-      sentence: "Gestern war Ali ___ Hausarzt.",
+      sentence: "Gestern war Emil ___ Hausarzt.",
       answers: ["beim"],
       options: ["beim", "zum", "im"],
-      ru: "Вчера Али был у семейного врача.",
+      ru: "Вчера Эмиль был у семейного врача.",
       explain: "Wo? у человека → bei + Dativ: beim Hausarzt.",
     },
     {
@@ -370,17 +370,17 @@ export default {
     titleRu: "У семейного врача",
     lines: [
       { speaker: "Frau Dr. Neumann", de: "Guten Tag! Nehmen Sie bitte Platz. Was für Beschwerden haben Sie?", ru: "Добрый день! Садитесь, пожалуйста. На что жалуетесь?" },
-      { speaker: "Ali", de: "Guten Tag, Frau Doktor. Ich habe mich am Wochenende erkältet. Seit Montag habe ich Fieber und Husten.", ru: "Добрый день, доктор. Я простудился на выходных. С понедельника у меня температура и кашель." },
+      { speaker: "Emil", de: "Guten Tag, Frau Doktor. Ich habe mich am Wochenende erkältet. Seit Montag habe ich Fieber und Husten.", ru: "Добрый день, доктор. Я простудился на выходных. С понедельника у меня температура и кашель." },
       { speaker: "Frau Dr. Neumann", de: "Konnten Sie diese Woche arbeiten?", ru: "Вы могли работать на этой неделе?" },
-      { speaker: "Ali", de: "Nein. Am Dienstag musste ich nach Hause gehen, mir war die ganze Zeit schwindlig.", ru: "Нет. Во вторник мне пришлось уйти домой, у меня всё время кружилась голова." },
+      { speaker: "Emil", de: "Nein. Am Dienstag musste ich nach Hause gehen, mir war die ganze Zeit schwindlig.", ru: "Нет. Во вторник мне пришлось уйти домой, у меня всё время кружилась голова." },
       { speaker: "Frau Dr. Neumann", de: "Ich untersuche Sie kurz. Machen Sie bitte den Arm frei, ich messe den Blutdruck.", ru: "Я вас быстро осмотрю. Освободите, пожалуйста, руку, я измерю давление." },
-      { speaker: "Ali", de: "Ist das schlimm, Frau Doktor?", ru: "Это серьёзно, доктор?" },
+      { speaker: "Emil", de: "Ist das schlimm, Frau Doktor?", ru: "Это серьёзно, доктор?" },
       { speaker: "Frau Dr. Neumann", de: "Nein, der Blutdruck ist in Ordnung. Sie haben eine Grippe. Ruhen Sie sich aus und trinken Sie viel Wasser.", ru: "Нет, давление в порядке. У вас грипп. Отдыхайте и пейте много воды." },
-      { speaker: "Ali", de: "Ich brauche eine Krankmeldung für die Arbeit. Das ist dringend.", ru: "Мне нужен больничный для работы. Это срочно." },
+      { speaker: "Emil", de: "Ich brauche eine Krankmeldung für die Arbeit. Das ist dringend.", ru: "Мне нужен больничный для работы. Это срочно." },
       { speaker: "Frau Dr. Neumann", de: "Kein Problem, ich schreibe Sie bis Freitag krank.", ru: "Без проблем, я выпишу вам больничный до пятницы." },
-      { speaker: "Ali", de: "Und die Tabletten? Wie oft soll ich sie einnehmen?", ru: "А таблетки? Как часто мне их принимать?" },
+      { speaker: "Emil", de: "Und die Tabletten? Wie oft soll ich sie einnehmen?", ru: "А таблетки? Как часто мне их принимать?" },
       { speaker: "Frau Dr. Neumann", de: "Nehmen Sie sie dreimal täglich ein. Gute Besserung!", ru: "Принимайте их три раза в день. Выздоравливайте!" },
-      { speaker: "Ali", de: "Vielen Dank, Frau Doktor. Auf Wiedersehen!", ru: "Большое спасибо, доктор. До свидания!" },
+      { speaker: "Emil", de: "Vielen Dank, Frau Doktor. Auf Wiedersehen!", ru: "Большое спасибо, доктор. До свидания!" },
     ],
   },
 
@@ -389,7 +389,7 @@ export default {
     scenario:
       "Ты болеешь с понедельника и пришёл в кабинет своего семейного врача. Мия работает в регистратуре. Поздоровайся, скажи, что у тебя приём в десять, отдай карту страховки, расскажи о жалобах и с какого дня ты болен, скажи, что не мог работать, и попроси больничный для работы. В конце спроси, сколько нужно ждать.",
     tutorBrief:
-      "Mia works at the reception (Anmeldung) of a German Hausarzt practice. Ali arrives for his appointment. Greet him with Sie, ask whether he has an appointment, ask for his Versichertenkarte, ask what his Beschwerden are and since when, ask whether he could work this week, ask whether he needs a Krankmeldung for his job, then send him to the Wartezimmer and say how long the wait is. Target structures: ich habe um ... Uhr einen Termin; hier ist meine Versichertenkarte; ich habe mich erkältet; seit Montag habe ich Fieber; ich konnte nicht arbeiten; ich brauche eine Krankmeldung; wie lange muss ich warten? Use polite imperatives (Geben Sie mir bitte …, Nehmen Sie bitte Platz). Keep to A2 health vocabulary, short sentences.",
+      "Mia works at the reception (Anmeldung) of a German Hausarzt practice. Emil arrives for his appointment. Greet him with Sie, ask whether he has an appointment, ask for his Versichertenkarte, ask what his Beschwerden are and since when, ask whether he could work this week, ask whether he needs a Krankmeldung for his job, then send him to the Wartezimmer and say how long the wait is. Target structures: ich habe um ... Uhr einen Termin; hier ist meine Versichertenkarte; ich habe mich erkältet; seit Montag habe ich Fieber; ich konnte nicht arbeiten; ich brauche eine Krankmeldung; wie lange muss ich warten? Use polite imperatives (Geben Sie mir bitte …, Nehmen Sie bitte Platz). Keep to A2 health vocabulary, short sentences.",
     phrases: [
       { de: "Ich habe um zehn Uhr einen Termin.", ru: "У меня приём в десять часов." },
       { de: "Hier ist meine Versichertenkarte.", ru: "Вот моя карта медстраховки." },
@@ -437,8 +437,8 @@ export default {
         expect: ["ja", "krankmeldung", "brauche", "arbeit"],
       },
       {
-        say: "In Ordnung. Nehmen Sie bitte im Wartezimmer Platz, etwa zwanzig Minuten. Gute Besserung, Ali, bis gleich!",
-        sayRu: "Хорошо. Садитесь, пожалуйста, в приёмной, примерно двадцать минут. Выздоравливайте, Али, до скорого!",
+        say: "In Ordnung. Nehmen Sie bitte im Wartezimmer Platz, etwa zwanzig Minuten. Gute Besserung, Emil, bis gleich!",
+        sayRu: "Хорошо. Садитесь, пожалуйста, в приёмной, примерно двадцать минут. Выздоравливайте, Эмиль, до скорого!",
         hint: "Danke, bis gleich!",
         expect: ["danke", "bis", "tschüss", "tschuss", "wiedersehen"],
       },
@@ -448,7 +448,7 @@ export default {
   exam: [
     {
       type: "choice",
-      q: "Letzte Woche ___ Ali nicht arbeiten.",
+      q: "Letzte Woche ___ Emil nicht arbeiten.",
       options: ["konnte", "kann", "könnt"],
       answer: 0,
       explain: "können → Präteritum konnte; у er окончания нет.",
@@ -469,9 +469,9 @@ export default {
     },
     {
       type: "order",
-      words: ["durfte", "Ali", "Woche", "eine", "arbeiten", "nicht"],
-      answer: "Ali durfte eine Woche nicht arbeiten.",
-      ru: "Али нельзя было работать неделю.",
+      words: ["durfte", "Emil", "Woche", "eine", "arbeiten", "nicht"],
+      answer: "Emil durfte eine Woche nicht arbeiten.",
+      ru: "Эмиль нельзя было работать неделю.",
     },
     {
       type: "translate",

@@ -6,12 +6,12 @@ import { store } from "./store.js";
 import { understand, respond, opening } from "./brain.js";
 import { check as moderate } from "./moderation.js";
 
-const PRAISE = ["Super, Ali!", "Sehr gut!", "Genau so!", "Prima!", "Das klingt gut!", "Richtig!", "Klasse gemacht!"];
-const PRAISE_RU = ["Супер, Али!", "Очень хорошо!", "Вот именно так!", "Отлично!", "Звучит здорово!", "Правильно!", "Класс!"];
+const PRAISE = ["Super, Emil!", "Sehr gut!", "Genau so!", "Prima!", "Das klingt gut!", "Richtig!", "Klasse gemacht!"];
+const PRAISE_RU = ["Супер, Эмиль!", "Очень хорошо!", "Вот именно так!", "Отлично!", "Звучит здорово!", "Правильно!", "Класс!"];
 
 // Generic offline questions for free chat (A1)
 const FREE_SCRIPT = [
-  { say: "Hallo Ali! Wie geht es dir heute?", sayRu: "Привет, Али! Как у тебя сегодня дела?", hint: "Mir geht es gut, danke. Und dir?", expect: ["gut", "super", "prima", "schlecht", "müde", "so la la", "geht"] },
+  { say: "Hallo Emil! Wie geht es dir heute?", sayRu: "Привет, Эмиль! Как у тебя сегодня дела?", hint: "Mir geht es gut, danke. Und dir?", expect: ["gut", "super", "prima", "schlecht", "müde", "so la la", "geht"] },
   { say: "Was machst du heute?", sayRu: "Что ты сегодня делаешь?", hint: "Ich arbeite. / Ich lerne Deutsch.", expect: ["ich", "arbeite", "lerne", "gehe", "mache", "spiele", "treffe", "schlafe", "nichts"] },
   { say: "Woher kommst du und wo wohnst du jetzt?", sayRu: "Откуда ты и где ты сейчас живёшь?", hint: "Ich komme aus … und wohne in …", expect: ["komme", "aus", "wohne", "in"] },
   { say: "Was ist dein Lieblingsessen?", sayRu: "Какая твоя любимая еда?", hint: "Mein Lieblingsessen ist Pizza.", expect: ["lieblingsessen", "esse", "gern", "ist", "pizza", "fleisch", "suppe", "reis", "salat", "brot"] },
@@ -20,7 +20,7 @@ const FREE_SCRIPT = [
   { say: "Wie ist das Wetter heute?", sayRu: "Какая сегодня погода?", hint: "Es ist sonnig und warm. / Es regnet.", expect: ["sonnig", "warm", "kalt", "regnet", "regen", "schnee", "wolkig", "schön", "gut", "heiß", "heiss"] },
   { say: "Hast du Geschwister?", sayRu: "У тебя есть братья или сёстры?", hint: "Ja, ich habe einen Bruder. / Nein, ich habe keine Geschwister.", expect: ["ja", "nein", "bruder", "schwester", "habe", "keine"] },
   { say: "Was trinkst du gern morgens: Kaffee oder Tee?", sayRu: "Что ты любишь пить по утрам: кофе или чай?", hint: "Ich trinke gern Kaffee.", expect: ["kaffee", "tee", "trinke", "wasser", "saft", "milch"] },
-  { say: "Das war ein schönes Gespräch, Ali! Bis zum nächsten Mal. Tschüss!", sayRu: "Это был приятный разговор, Али! До следующего раза. Пока!", hint: "Tschüss, Mia! Bis bald!", expect: ["tschüss", "tschuss", "bis", "ciao", "auf wiedersehen", "danke"] },
+  { say: "Das war ein schönes Gespräch, Emil! Bis zum nächsten Mal. Tschüss!", sayRu: "Это был приятный разговор, Эмиль! До следующего раза. Пока!", hint: "Tschüss, Mia! Bis bald!", expect: ["tschüss", "tschuss", "bis", "ciao", "auf wiedersehen", "danke"] },
 ];
 
 /**
@@ -30,11 +30,11 @@ const FREE_SCRIPT = [
 function buildLevelScript(level, talkMode) {
   const turns = [];
   const greetDe = talkMode === "exam"
-    ? `Hallo Ali! Schön, dass du da bist. Wir üben jetzt zusammen: ${level.title}. Keine Sorge, das ist nur Übung.`
-    : `Hallo Ali! Lass uns ein bisschen über ${level.title} plaudern.`;
+    ? `Hallo Emil! Schön, dass du da bist. Wir üben jetzt zusammen: ${level.title}. Keine Sorge, das ist nur Übung.`
+    : `Hallo Emil! Lass uns ein bisschen über ${level.title} plaudern.`;
   const greetRu = talkMode === "exam"
-    ? `Привет, Али! Рада тебя видеть. Сейчас потренируемся вместе по теме «${level.titleRu}». Не волнуйся, это просто практика.`
-    : `Привет, Али! Давай немного поболтаем на тему «${level.titleRu}».`;
+    ? `Привет, Эмиль! Рада тебя видеть. Сейчас потренируемся вместе по теме «${level.titleRu}». Не волнуйся, это просто практика.`
+    : `Привет, Эмиль! Давай немного поболтаем на тему «${level.titleRu}».`;
   turns.push({
     say: `${greetDe} Sag einfach "ja", wenn du magst.`,
     sayRu: `${greetRu} Просто скажи «ja», когда будешь готов.`,
@@ -56,16 +56,16 @@ function buildLevelScript(level, talkMode) {
   };
 
   // One turn per line the other speaker really asks. The line has to *end* in a question mark:
-  // "Zum Bahnhof? Das ist nicht weit. Gehen Sie geradeaus." is directions, not something Ali can
-  // answer. The hint is the reply Ali actually gives next in the dialogue, so what Mia offers
+  // "Zum Bahnhof? Das ist nicht weit. Gehen Sie geradeaus." is directions, not something Emil can
+  // answer. The hint is the reply Emil actually gives next in the dialogue, so what Mia offers
   // after a wrong answer belongs to the question she just asked.
   const questions = level.dialogue.lines
     .map((l, i) => ({ l, next: level.dialogue.lines[i + 1] }))
-    .filter(({ l }) => l.speaker !== "Ali" && /\?\s*$/.test(l.de))
+    .filter(({ l }) => l.speaker !== "Emil" && /\?\s*$/.test(l.de))
     .map(({ l, next }) => ({
       de: l.de,
       ru: l.ru,
-      hint: next && next.speaker === "Ali" ? next.de : closestPhrase(l.de),
+      hint: next && next.speaker === "Emil" ? next.de : closestPhrase(l.de),
     }));
   const wanted = Math.min(6, Math.max(questions.length, 5));
   for (let i = 0; i < wanted; i++) {
@@ -89,8 +89,8 @@ function buildLevelScript(level, talkMode) {
     }
   }
   turns.push({
-    say: talkMode === "exam" ? "Das war alles, Ali. Du hast das richtig gut gemacht! Bis bald!" : "Das war ein schönes Gespräch, Ali. Bis bald!",
-    sayRu: talkMode === "exam" ? "Это всё, Али. Ты справился по-настоящему хорошо! До скорого!" : "Это был хороший разговор, Али. До скорого!",
+    say: talkMode === "exam" ? "Das war alles, Emil. Du hast das richtig gut gemacht! Bis bald!" : "Das war ein schönes Gespräch, Emil. Bis bald!",
+    sayRu: talkMode === "exam" ? "Это всё, Эмиль. Ты справился по-настоящему хорошо! До скорого!" : "Это был хороший разговор, Эмиль. До скорого!",
     hint: "Tschüss, Mia!",
     expect: ["tschuss", "tschüss", "danke", "bis", "ciao", "auf wiedersehen"],
   });
@@ -103,7 +103,7 @@ const stripArticleLower = (de) => String(de).replace(/^(der|die|das)\s+/i, "").t
  * One shape for everything Mia says: what she says, in which language, and an optional quiet
  * translation underneath.
  *
- * The AI answers in whatever language Ali just used — that is the whole point of the free chat —
+ * The AI answers in whatever language Emil just used — that is the whole point of the free chat —
  * and arrives as {say, lang, translation}. The level scripts and the offline brain still think in
  * "German line + Russian translation + Russian explanation", which is exactly right for a
  * role-play, so they are adapted here rather than rewritten.
@@ -131,7 +131,7 @@ export class Tutor {
     // topic (free chat around the finished level), free (anything at all)
     this.talkMode = this.talkMode || (this.level ? "scenario" : "free");
     this.mode = this.level ? "scenario" : "free";
-    // "chat"   — just talking. She answers in the language Ali used and does not teach unless asked.
+    // "chat"   — just talking. She answers in the language Emil used and does not teach unless asked.
     // "german" — they are practising: she speaks German at his level and corrects real mistakes.
     // A level scenario or an oral exam is German by definition; free chat starts as a conversation.
     this.chatMode = this.talkMode === "free"
@@ -146,7 +146,7 @@ export class Tutor {
     this.stopped = false;
     this.done = false;
     this.gen = 0; // conversation generation: bumps on restart so stale async work is ignored
-    // The turn currently entitled to speak. Ali may grab the microphone while Mia is talking (that
+    // The turn currently entitled to speak. Emil may grab the microphone while Mia is talking (that
     // is deliberate) — bumping this retires her turn so it does not resume over his answer.
     this.seq = 0;
     this.aiDropped = false; // the AI answered earlier turns and then failed — pick the script up mid-way
@@ -272,7 +272,7 @@ export class Tutor {
 
   async begin({ speakFirst = this.talkMode !== "free" } = {}) {
     const gen = ++this.gen;
-    // The AI greeting can take several seconds. Ali often presses 🎤 in that time, and without a
+    // The AI greeting can take several seconds. Emil often presses 🎤 in that time, and without a
     // turn token of its own the greeting would arrive afterwards and talk over him.
     const seq = ++this.seq;
     this.stopped = false;
@@ -292,7 +292,7 @@ export class Tutor {
     // …and forget that the hand-over was already announced, or a second conversation that loses
     // the AI would silently restart the script from the greeting instead of picking it up
     this.aiResumed = false;
-    // Free conversation is a voice companion, not a lesson: Ali opens it when HE wants to say
+    // Free conversation is a voice companion, not a lesson: Emil opens it when HE wants to say
     // something, so Mia waits quietly instead of launching into a monologue. The role-plays and
     // the oral exam still open the conversation themselves — there she is playing a part.
     if (!speakFirst) {
@@ -322,7 +322,7 @@ export class Tutor {
   async callAi(userText) {
     if (userText !== null) this.history.push({ role: "user", content: userText });
     const body = {
-      messages: this.history.length ? this.history : [{ role: "user", content: "(Али зашёл. Поздоровайся и начни разговор.)" }],
+      messages: this.history.length ? this.history : [{ role: "user", content: "(Эмиль зашёл. Поздоровайся и начни разговор.)" }],
       scenario: this.level ? {
         mode: this.talkMode === "exam" ? "oral-exam" : this.talkMode === "topic" ? "topic-chat" : "scenario",
         title: this.level.speaking.title,
@@ -336,7 +336,7 @@ export class Tutor {
       notes: store.state.miaNotes || [],
       // Who she is talking to today: his name, the CEFR level her German should match, and whether
       // this conversation is currently running in German or is just a conversation.
-      profile: { name: store.state.name || "Ali", cefr: store.cefr(), mode: this.chatMode },
+      profile: { name: store.state.name || "Emil", cefr: store.cefr(), mode: this.chatMode },
     };
     if (!this.history.length) this.history.push(body.messages[0]);
     this.setState("thinking", "Мия думает…");
@@ -346,7 +346,14 @@ export class Tutor {
       const timer = setTimeout(() => ctrl.abort("timeout"), 35000);
       let r, data;
       try {
-        r = await fetch("/api/tutor", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body), signal: ctrl.signal });
+        // Живая Мия стоит денег за каждую реплику, поэтому функция спрашивает, кто пришёл.
+        const token = await backend.token().catch(() => null);
+        r = await fetch("/api/tutor", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", ...(token ? { authorization: `Bearer ${token}` } : {}) },
+          body: JSON.stringify(body),
+          signal: ctrl.signal,
+        });
         data = await r.json();
       } finally { clearTimeout(timer); }
       if (!r.ok) { const err = new Error(data.error || "API error"); err.status = r.status; throw err; }
@@ -364,14 +371,16 @@ export class Tutor {
       return data;
     } catch (e) {
       console.error(e);
-      // A slow turn is not a broken key. Switching smart Mia off permanently costs Ali the rest of
+      // A slow turn is not a broken key. Switching smart Mia off permanently costs Emil the rest of
       // the conversation, and useAi is only re-armed when the page is re-mounted — so a timeout
       // falls back for THIS turn only and the next one tries her again.
       const transient = e?.name === "AbortError" || e?.status === 504 || e?.status === 429 || e?.status === 502;
       if (!this.stopped) {
         toast(transient
           ? "Мия задумалась дольше обычного — отвечу сама, а на следующей реплике попробую снова."
-          : "Умный режим сейчас недоступен — Мия продолжит сама, без него.",
+          : e?.status === 401
+            ? "Живая Мия отвечает тем, кто вошёл в аккаунт. Пока поговорим в обычном режиме."
+            : "Умный режим сейчас недоступен — Мия продолжит сама, без него.",
         { icon: "⚠️", kind: "warn", ms: 6000, title: !transient && e.message && /[а-я]/i.test(e.message) ? e.message : null });
       }
       if (!transient) {
@@ -419,7 +428,7 @@ export class Tutor {
       const main = speech.speak(reply.say, { ...voice, gender: "f", rate: store.state.settings.rate });
       if (reply.explain) speech.prefetch(reply.explain, { lang: "ru-RU" });
       await main;
-      // If Ali reached for the microphone while she was still talking, the turn is his. Speaking
+      // If Emil reached for the microphone while she was still talking, the turn is his. Speaking
       // the explanation now would abort the recogniser he just started (speak() always stops
       // listening first) and she would be talking over his answer.
       if (seq !== this.seq) return; // he took the turn while she was speaking
@@ -441,7 +450,7 @@ export class Tutor {
 
   /**
    * Which language the microphone listens for. The browser runs one recognition session at a time
-   * and cannot detect the language itself, so this is Ali's explicit choice, remembered between
+   * and cannot detect the language itself, so this is Emil's explicit choice, remembered between
    * sessions. Pronunciation drills elsewhere always listen in German; here he decides.
    */
   micLang() {
@@ -498,7 +507,7 @@ export class Tutor {
     this.listening = true;
     sfx.mic();
     this.setState("listening", this.micLang().startsWith("ru") ? "Слушаю… говори по-русски" : "Слушаю… говори по-немецки");
-    const live = el("div", { class: "bubble ali live" }, el("div", { class: "bubble-name" }, "Али"), el("div", { class: "bubble-de" }, "…"));
+    const live = el("div", { class: "bubble ali live" }, el("div", { class: "bubble-name" }, "Эмиль"), el("div", { class: "bubble-de" }, "…"));
     this.chat.append(live);
     this.scrollChat();
     let text = "";
@@ -512,7 +521,7 @@ export class Tutor {
         this.setState("listening", "Слушаю… не спеши, скажи когда будешь готов");
       }
       try {
-        // German AND Russian at once: Ali is a Russian speaker, and a German-only recogniser
+        // German AND Russian at once: Emil is a Russian speaker, and a German-only recogniser
         // simply does not hear him when he asks something in his own language.
         text = await speech.listen({ lang: this.micLang(), onInterim: (t) => { live.querySelector(".bubble-de").textContent = t || "…"; } });
       } catch (e) {
@@ -569,7 +578,7 @@ export class Tutor {
     // he may well have said this in Russian — marking it lang="de" would have the browser and the
     // replay button pronounce Russian words with a German mouth
     const said = /[а-яё]/i.test(text) ? "ru" : "de";
-    const bubble = el("div", { class: "bubble ali" }, el("div", { class: "bubble-name" }, "Али"), el("div", { class: "bubble-de", lang: said }, text));
+    const bubble = el("div", { class: "bubble ali" }, el("div", { class: "bubble-name" }, "Эмиль"), el("div", { class: "bubble-de", lang: said }, text));
     this.chat.append(bubble);
     nextTick(() => bubble.classList.add("show"));
     this.scrollChat();
@@ -590,7 +599,7 @@ export class Tutor {
       store.grantXp(gained);
     }
     store.update((s) => { s.stats.tutorTurns += 1; });
-    const seq = ++this.seq; // this turn holds the floor until Ali takes it back
+    const seq = ++this.seq; // this turn holds the floor until Emil takes it back
     (async () => {
       try {
         let reply = null;
@@ -607,7 +616,7 @@ export class Tutor {
   }
 
 
-  /** A real (if local) conversation: Mia understands what Ali said and answers from her own knowledge. */
+  /** A real (if local) conversation: Mia understands what Emil said and answers from her own knowledge. */
   async brainTurn(userText, gen = this.gen, seq = this.seq) {
     const b = this.brain;
     if (userText === null) {
@@ -630,7 +639,7 @@ export class Tutor {
     if (reply.topic) b.lastHint = reply.tip || "";
     else if (reply.tip && !reply.tip.startsWith("Это из уровня")) b.lastHint = reply.tip;
     // Offline she still thinks in German, but answering a Russian sentence with a German one is
-    // the thing Ali asked me to stop doing. When he wrote in Russian and she has something real to
+    // the thing Emil asked me to stop doing. When he wrote in Russian and she has something real to
     // say in Russian, that is the answer; her German line becomes the 💡 suggestion beside it.
     const leadRu = this.chatMode !== "german" && u.lang === "ru" && reply.explainRu;
     if (leadRu) {
@@ -649,7 +658,7 @@ export class Tutor {
 
     // The AI carried the first turns and then dropped out. scriptIndex never moved, so the script
     // would replay Mia's opening greeting and restart the role-play from scratch. Pick it up where
-    // the conversation actually is, and bridge with a neutral line — Ali's last answer was aimed at
+    // the conversation actually is, and bridge with a neutral line — Emil's last answer was aimed at
     // the AI's question, so it must not be graded against a script turn he never heard.
     if (this.aiDropped) {
       this.aiDropped = false;
@@ -670,13 +679,13 @@ export class Tutor {
       if (!turn) return this.finishScenario();
       return this.miaSays({ de: turn.say, ru: turn.sayRu }, gen, seq);
     }
-    // The script can run out while the conversation is still open: if Ali speaks over Mia's last
+    // The script can run out while the conversation is still open: if Emil speaks over Mia's last
     // line, her turn is retired before `done` reaches finishScenario(), and the next thing he says
     // arrives here with nothing left to match. Without this the reply below reads turn.say off
     // undefined, the conversation dies silently and the ✓ and the bonus are never granted.
-    if (!turn) return this.miaSays({ de: "Bis bald, Ali!", ru: "До скорого, Али!", done: true }, gen, seq);
+    if (!turn) return this.miaSays({ de: "Bis bald, Emil!", ru: "До скорого, Эмиль!", done: true }, gen, seq);
 
-    // Ali speaks Russian, and mid-role-play he asks real things: "что значит Termin?", "я не
+    // Emil speaks Russian, and mid-role-play he asks real things: "что значит Termin?", "я не
     // понял", "повтори". Those are not attempts at the answer, and matching them against German
     // keywords only makes Mia repeat the question — so let her brain handle them, then ask again.
     const aside = understand(userText, this.brain);
@@ -708,7 +717,7 @@ export class Tutor {
       this.scriptIndex++;
       this.scriptFails = 0;
       const next = this.script[this.scriptIndex];
-      if (!next || wasLast) return this.miaSays({ de: "Bis bald, Ali!", ru: "До скорого, Али!", done: true }, gen, seq);
+      if (!next || wasLast) return this.miaSays({ de: "Bis bald, Emil!", ru: "До скорого, Эмиль!", done: true }, gen, seq);
       const i = Math.floor(Math.random() * PRAISE.length);
       return this.miaSays({ de: `${passed ? PRAISE[i] : "Okay, weiter!"} ${next.say}`, ru: `${passed ? PRAISE_RU[i] : "Хорошо, идём дальше!"} ${next.sayRu}`, tip: !passed ? `Можно было сказать так: ${turn.hint}` : "" }, gen, seq);
     }
@@ -716,14 +725,14 @@ export class Tutor {
     return this.miaSays({
       de: `Kein Problem. Noch einmal: ${turn.say}`,
       ru: `Ничего страшного. Ещё разок: ${turn.sayRu}`,
-      explainRu: `Не переживай, Али — с первого раза редко получается. Можешь ответить так: «${turn.hint}»`,
+      explainRu: `Не переживай, Эмиль — с первого раза редко получается. Можешь ответить так: «${turn.hint}»`,
     }, gen, seq);
   }
 
   /**
    * Switch between "we are just talking" and "we are practising German now".
    *
-   * Ali can press the button, but the natural way to ask is to say it — «давай на немецком» — so
+   * Emil can press the button, but the natural way to ask is to say it — «давай на немецком» — so
    * Mia flips it herself too, and this is where both arrive. Only free chat remembers the choice:
    * a role-play is always German.
    */
@@ -784,7 +793,7 @@ export class Tutor {
     const longEnough = this.turns >= (this.level ? 4 : 6);
     const first = longEnough && (this.level ? !lvl[flag] : store.state.freeChatDay !== dayKey);
     // The level screen pays for the oral exam and the topic chat itself (30 XP + 25 🪙, exactly
-    // what its card promises). A bonus here as well handed Ali 70 XP for a stage advertised as 30.
+    // what its card promises). A bonus here as well handed Emil 70 XP for a stage advertised as 30.
     const bonus = first ? (!this.level ? 20 : this.talkMode === "scenario" ? 40 : 0) : 0;
     const paidOutside = first && !bonus; // exam / topic chat: the reward comes from the level screen
     // Say WHY there is no bonus. "уже получен раньше" was shown even the very first time, when the

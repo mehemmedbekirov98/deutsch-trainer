@@ -3,6 +3,7 @@ import { el, $, append, nextTick, normalize, matchAnswer, similarity, spokenSimi
 import { speech, STT_ERRORS, RATES } from "./speech.js";
 import { sfx, confetti, xpFloat, countUp, toast } from "./fx.js";
 import { store } from "./store.js";
+import { backend } from "./backend.js";
 import { COINS } from "./game.js";
 
 const PRAISE = ["Richtig!", "Super!", "Genau!", "Sehr gut!", "Prima!", "Perfekt!", "Klasse!", "Toll!"];
@@ -10,7 +11,7 @@ const OOPS = ["Nicht ganz.", "Fast!", "Schau mal:", "Hmm, nein."];
 const XP = { choice: 10, fill: 12, translate: 14, order: 12, match: 12, listen: 14, speak: 16 };
 
 // RATES.example, not the settings speed: the speed is part of the TTS cache key, so a 🔊 that
-// invented its own rate threw away every file the screen had warmed and made Ali wait again.
+// invented its own rate threw away every file the screen had warmed and made Emil wait again.
 const speakBtn = (text, gender = "f", cls = "icon-btn speak-btn") =>
   el("button", { class: cls, title: "Прослушать", type: "button", onClick: (e) => { e.stopPropagation(); sfx.click(); speech.speak(text, { gender, rate: RATES.example }); } }, "🔊");
 
@@ -146,7 +147,7 @@ export class ExerciseSession {
   /**
    * Write the score down.
    *
-   * Deliberately separate from onDone, which navigates. Ali leaves the results screen in ways that
+   * Deliberately separate from onDone, which navigates. Emil leaves the results screen in ways that
    * never touch a button — Back, Alt+←, the mouse's side button, F5, closing the window — and all
    * of those only tear the view down through the router. Recording here means a passed exam counts
    * however he walks away from it; navigation stays with whoever actually asked to navigate.
@@ -259,7 +260,7 @@ export class ExerciseSession {
       if (ex.type === "speak") store.update((s) => { s.stats.speakCorrect += 1; });
     } else {
       this.prevCombo = this.combo;
-      // Reserve the shield rather than spend it: if Ali undoes this attempt with «Вторая попытка»
+      // Reserve the shield rather than spend it: if Emil undoes this attempt with «Вторая попытка»
       // the whole mistake is rewound, and a 40-coin item must not be burned for nothing.
       if (this.combo >= 2 && store.hasItem("shield")) {
         this.shieldPending = true;
@@ -305,16 +306,43 @@ export class ExerciseSession {
     this.mainBtn.focus();
   }
 
+  /**
+   * «Почему?» — по конкретной ошибке, к той же Мии, что и в разговоре.
+   *
+   * Раньше кнопка стучалась в /api/explain, которого не существует со времён переезда с Express:
+   * нажатие всегда заканчивалось надписью «Не удалось спросить Мию». Теперь это обычная реплика
+   * в /api/tutor — один вопрос, один ответ, без истории.
+   */
   async askLena(ex, res, btn) {
     btn.disabled = true;
     btn.textContent = "Мия думает…";
+    const question = [
+      "Объясни коротко мою ошибку в упражнении.",
+      `Задание: ${ex.q || ex.text || ex.de || ""}`,
+      res.given ? `Я написал: ${res.given}` : null,
+      res.expected ? `Правильно: ${res.expected}` : null,
+      "Ответь одним-двумя предложениями: в чём правило и как запомнить.",
+    ].filter(Boolean).join("\n");
     try {
-      const r = await fetch("/api/explain", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ exercise: ex, given: res.given ?? null, expected: res.expected ?? null }) });
+      const token = await backend.token().catch(() => null);
+      const r = await fetch("/api/tutor", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", ...(token ? { authorization: `Bearer ${token}` } : {}) },
+        body: JSON.stringify({
+          messages: [{ role: "user", content: question }],
+          scenario: null,
+          notes: [],
+          profile: { name: store.state.name || "", cefr: store.cefr(), mode: "chat" },
+        }),
+      });
       const data = await r.json();
       if (!r.ok) throw new Error(data.error || "error");
-      btn.replaceWith(el("div", { class: "fb-lena" }, el("div", { class: "fb-lena-name" }, "Мия"), el("div", {}, data.text)));
+      const text = data.say || data.translation || "";
+      if (!text) throw new Error("пусто");
+      btn.replaceWith(el("div", { class: "fb-lena" }, el("div", { class: "fb-lena-name" }, "Мия"), el("div", {}, text)));
     } catch (e) {
-      btn.textContent = "Не удалось спросить Мию";
+      btn.disabled = false;
+      btn.textContent = "Не получилось — нажми ещё раз";
     }
   }
 
@@ -325,7 +353,7 @@ export class ExerciseSession {
     this.renderCurrent();
   }
 
-  /** Charge a shield that was reserved for a mistake Ali did not undo with «Вторая попытка». */
+  /** Charge a shield that was reserved for a mistake Emil did not undo with «Вторая попытка». */
   /** Hand the finished attempts to the word memory. See the note in check(). */
   settleWords() {
     if (!this.pendingWords || !this.pendingWords.length) return;
@@ -405,7 +433,7 @@ export function ringSvg(pct, size = 120, stroke = 10, color = null) {
   const r = (size - stroke) / 2;
   const c = 2 * Math.PI * r;
   // A unique id per ring: twelve rings on the levels page all declared "ringGrad", and the theme
-  // Ali bought never reached them because the stops were hard-coded violet-to-cyan.
+  // Emil bought never reached them because the stops were hard-coded violet-to-cyan.
   const gid = `ringGrad${++ringId}`;
   color = color || `url(#${gid})`;
   const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");

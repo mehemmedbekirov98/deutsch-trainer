@@ -33,7 +33,7 @@ export default {
     { de: "der Freund", ru: "друг", plural: "die Freunde", example: "Mein Freund heißt Max.", exampleRu: "Моего друга зовут Макс." },
     { de: "die Freundin", ru: "подруга", plural: "die Freundinnen", example: "Ihre Freundin heißt Anna.", exampleRu: "Её подругу зовут Анна." },
     { de: "der Beruf", ru: "профессия", plural: "die Berufe", example: "Was ist dein Beruf?", exampleRu: "Какая у тебя профессия?" },
-    { de: "arbeiten als", ru: "работать кем-либо", example: "Ali arbeitet als Programmierer.", exampleRu: "Али работает программистом." },
+    { de: "arbeiten als", ru: "работать кем-либо", example: "Emil arbeitet als Programmierer.", exampleRu: "Эмиль работает программистом." },
     { de: "der Ingenieur", ru: "инженер", plural: "die Ingenieure", example: "Mein Bruder ist Ingenieur.", exampleRu: "Мой брат инженер." },
     { de: "der Lehrer", ru: "учитель", plural: "die Lehrer", example: "Sein Vater ist Lehrer.", exampleRu: "Его отец учитель." },
     { de: "der Arzt", ru: "врач", plural: "die Ärzte", example: "Mein Opa ist Arzt.", exampleRu: "Мой дедушка врач." },
@@ -257,7 +257,7 @@ export default {
     },
     {
       type: "choice",
-      q: "Mia fragt Ali: «Was ist dein Beruf?» — Ali: «Ich bin ___.»",
+      q: "Mia fragt Emil: «Was ist dein Beruf?» — Emil: «Ich bin ___.»",
       options: ["Programmierer", "programmieren", "Programm"],
       answer: 0,
       explain: "Профессия — существительное, после «Ich bin» без артикля.",
@@ -312,7 +312,7 @@ export default {
     },
     {
       type: "choice",
-      q: "Ali sagt: «Das ist Mia. Sie ist nett. ___ Bruder ist Arzt.»",
+      q: "Emil sagt: «Das ist Mia. Sie ist nett. ___ Bruder ist Arzt.»",
       options: ["Sein", "Ihr", "Unser"],
       answer: 1,
       explain: "Mia — она → ihr Bruder (её брат).",
@@ -362,18 +362,18 @@ export default {
     title: "Familienfotos",
     titleRu: "Семейные фото",
     lines: [
-      { speaker: "Mia", de: "Ali, ist das deine Familie?", ru: "Али, это твоя семья?" },
-      { speaker: "Ali", de: "Ja, das sind meine Eltern. Mein Vater heißt Rustam, meine Mutter heißt Alina.", ru: "Да, это мои родители. Моего папу зовут Рустам, мою маму зовут Алина." },
+      { speaker: "Mia", de: "Emil, ist das deine Familie?", ru: "Эмиль, это твоя семья?" },
+      { speaker: "Emil", de: "Ja, das sind meine Eltern. Mein Vater heißt Rustam, meine Mutter heißt Alina.", ru: "Да, это мои родители. Моего папу зовут Рустам, мою маму зовут Алина." },
       { speaker: "Mia", de: "Und wer ist das? Ist das deine Frau?", ru: "А кто это? Это твоя жена?" },
-      { speaker: "Ali", de: "Nein, ich bin ledig. Das ist meine Schwester Dina.", ru: "Нет, я холост. Это моя сестра Дина." },
+      { speaker: "Emil", de: "Nein, ich bin ledig. Das ist meine Schwester Dina.", ru: "Нет, я холост. Это моя сестра Дина." },
       { speaker: "Mia", de: "Sie ist sehr nett. Hast du auch Brüder?", ru: "Она очень милая. А братья у тебя есть?" },
-      { speaker: "Ali", de: "Ja, mein Bruder heißt Timur. Er ist 28 Jahre alt.", ru: "Да, моего брата зовут Тимур. Ему 28 лет." },
+      { speaker: "Emil", de: "Ja, mein Bruder heißt Timur. Er ist 28 Jahre alt.", ru: "Да, моего брата зовут Тимур. Ему 28 лет." },
       { speaker: "Mia", de: "Was ist er von Beruf?", ru: "Кто он по профессии?" },
-      { speaker: "Ali", de: "Er ist Ingenieur. Und meine Schwester ist Studentin.", ru: "Он инженер. А моя сестра студентка." },
+      { speaker: "Emil", de: "Er ist Ingenieur. Und meine Schwester ist Studentin.", ru: "Он инженер. А моя сестра студентка." },
       { speaker: "Mia", de: "Und deine Eltern? Wo wohnen sie?", ru: "А твои родители? Где они живут?" },
-      { speaker: "Ali", de: "Sie wohnen in Baku. Mein Vater ist Arzt und meine Mutter ist Lehrerin.", ru: "Они живут в Баку. Мой папа врач, а мама учительница." },
+      { speaker: "Emil", de: "Sie wohnen in Baku. Mein Vater ist Arzt und meine Mutter ist Lehrerin.", ru: "Они живут в Баку. Мой папа врач, а мама учительница." },
       { speaker: "Mia", de: "Deine Familie ist groß! Ich habe keine Geschwister, aber ich habe eine Oma. Sie ist 80 und sehr nett.", ru: "Твоя семья большая! У меня нет братьев и сестёр, но у меня есть бабушка. Ей 80, и она очень добрая." },
-      { speaker: "Ali", de: "Schön! Meine Oma heißt Fatima und wohnt auch in Baku.", ru: "Здорово! Мою бабушку зовут Фатима, и она тоже живёт в Баку." },
+      { speaker: "Emil", de: "Schön! Meine Oma heißt Fatima und wohnt auch in Baku.", ru: "Здорово! Мою бабушку зовут Фатима, и она тоже живёт в Баку." },
     ],
   },
 
@@ -382,7 +382,7 @@ export default {
     scenario:
       "Ты пьёшь кофе с Мией, и она спрашивает о твоей семье. Расскажи, есть ли у тебя братья и сёстры, как зовут родителей, сколько им лет, кем они работают и где живут. Скажи, женат ты или холост.",
     tutorBrief:
-      "Mia has coffee with Ali and asks about his family. Ask whether he has siblings, the names of his parents, how old his father is, what his father does for a living, where his parents live, and whether Ali is married or single. Target structures: ich habe (keine) Geschwister, mein/meine + family noun, mein Vater ist ... Jahre alt, er ist / arbeitet als + profession, meine Eltern wohnen in, ich bin ledig/verheiratet. Keep to A1 vocabulary from the family topic, plus greetings, numbers and age from earlier levels. Do not use Akkusativ articles (einen/keinen) or modal verbs.",
+      "Mia has coffee with Emil and asks about his family. Ask whether he has siblings, the names of his parents, how old his father is, what his father does for a living, where his parents live, and whether Emil is married or single. Target structures: ich habe (keine) Geschwister, mein/meine + family noun, mein Vater ist ... Jahre alt, er ist / arbeitet als + profession, meine Eltern wohnen in, ich bin ledig/verheiratet. Keep to A1 vocabulary from the family topic, plus greetings, numbers and age from earlier levels. Do not use Akkusativ articles (einen/keinen) or modal verbs.",
     phrases: [
       { de: "Ich habe zwei Brüder und eine Schwester.", ru: "У меня два брата и одна сестра." },
       { de: "Ich habe keine Geschwister.", ru: "У меня нет братьев и сестёр." },
@@ -394,8 +394,8 @@ export default {
     ],
     script: [
       {
-        say: "Hallo Ali! Hast du Geschwister?",
-        sayRu: "Привет, Али! У тебя есть братья или сёстры?",
+        say: "Hallo Emil! Hast du Geschwister?",
+        sayRu: "Привет, Эмиль! У тебя есть братья или сёстры?",
         hint: "Ja, ich habe … / Nein, ich habe keine Geschwister.",
         expect: ["habe", "bruder", "brüder", "schwester", "geschwister", "keine", "ja", "nein"],
       },
@@ -430,8 +430,8 @@ export default {
         expect: ["ledig", "verheiratet", "bin"],
       },
       {
-        say: "Danke, Ali! Deine Familie ist sehr nett. Bis bald!",
-        sayRu: "Спасибо, Али! Твоя семья очень милая. До скорого!",
+        say: "Danke, Emil! Deine Familie ist sehr nett. Bis bald!",
+        sayRu: "Спасибо, Эмиль! Твоя семья очень милая. До скорого!",
         hint: "Danke, tschüss, Mia!",
         expect: ["tschüss", "tschuss", "bis", "danke", "ciao"],
       },

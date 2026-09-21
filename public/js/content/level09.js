@@ -18,15 +18,15 @@ export default {
   vocab: [
     { de: "das Hobby", ru: "хобби", plural: "die Hobbys", example: "Mein Hobby ist Fußball.", exampleRu: "Моё хобби — футбол." },
     { de: "die Freizeit", ru: "свободное время", example: "Ich habe am Wochenende viel Freizeit.", exampleRu: "На выходных у меня много свободного времени." },
-    { de: "der Sport", ru: "спорт", example: "Ali macht gern Sport.", exampleRu: "Али любит заниматься спортом." },
+    { de: "der Sport", ru: "спорт", example: "Emil macht gern Sport.", exampleRu: "Эмиль любит заниматься спортом." },
     { de: "der Fußball", ru: "футбол", example: "Ich spiele jeden Samstag Fußball.", exampleRu: "Я играю в футбол каждую субботу." },
     { de: "spielen", ru: "играть", example: "Spielst du Fußball?", exampleRu: "Ты играешь в футбол?" },
     { de: "schwimmen", ru: "плавать", example: "Ich schwimme jeden Tag.", exampleRu: "Я плаваю каждый день." },
     { de: "laufen", ru: "бегать", example: "Mia läuft oft im Park.", exampleRu: "Мия часто бегает в парке." },
     { de: "Rad fahren", ru: "кататься на велосипеде", example: "Am Sonntag fahren wir Rad.", exampleRu: "В воскресенье мы катаемся на велосипеде." },
-    { de: "Musik hören", ru: "слушать музыку", example: "Ali hört oft Musik.", exampleRu: "Али часто слушает музыку." },
+    { de: "Musik hören", ru: "слушать музыку", example: "Emil hört oft Musik.", exampleRu: "Эмиль часто слушает музыку." },
     { de: "lesen", ru: "читать", example: "Mia liest gern.", exampleRu: "Мия любит читать." },
-    { de: "kochen", ru: "готовить", example: "Ali kocht gern.", exampleRu: "Али любит готовить." },
+    { de: "kochen", ru: "готовить", example: "Emil kocht gern.", exampleRu: "Эмиль любит готовить." },
     { de: "tanzen", ru: "танцевать", example: "Ich kann nicht gut tanzen.", exampleRu: "Я не очень хорошо умею танцевать." },
     { de: "reisen", ru: "путешествовать", example: "Wir reisen gern.", exampleRu: "Мы любим путешествовать." },
     { de: "ins Kino gehen", ru: "ходить в кино", example: "Wollen wir ins Kino gehen?", exampleRu: "Пойдём в кино?" },
@@ -37,7 +37,7 @@ export default {
     { de: "das Fitnessstudio", ru: "фитнес-клуб", plural: "die Fitnessstudios", example: "Ich gehe oft ins Fitnessstudio.", exampleRu: "Я часто хожу в фитнес-клуб." },
     { de: "die Mannschaft", ru: "команда", plural: "die Mannschaften", example: "Unsere Mannschaft ist sehr gut.", exampleRu: "Наша команда очень хорошая." },
     { de: "gewinnen", ru: "выигрывать", example: "Unsere Mannschaft gewinnt oft.", exampleRu: "Наша команда часто выигрывает." },
-    { de: "einladen", ru: "приглашать", example: "Mia lädt Ali ein.", exampleRu: "Мия приглашает Али." },
+    { de: "einladen", ru: "приглашать", example: "Mia lädt Emil ein.", exampleRu: "Мия приглашает Эмиль." },
     { de: "die Einladung", ru: "приглашение", plural: "die Einladungen", example: "Danke für die Einladung!", exampleRu: "Спасибо за приглашение!" },
     { de: "leider", ru: "к сожалению", example: "Ich habe leider keine Zeit.", exampleRu: "К сожалению, у меня нет времени." },
     { de: "vielleicht", ru: "может быть", example: "Vielleicht am Sonntag?", exampleRu: "Может быть, в воскресенье?" },
@@ -68,7 +68,7 @@ export default {
       },
       examples: [
         { de: "Ich kann heute nicht kommen.", ru: "Я не могу сегодня прийти." },
-        { de: "Ali muss am Montag arbeiten.", ru: "Али должен работать в понедельник." },
+        { de: "Emil muss am Montag arbeiten.", ru: "Эмиль должен работать в понедельник." },
         { de: "Wir wollen ins Kino gehen.", ru: "Мы хотим пойти в кино." },
         { de: "Kannst du gut schwimmen?", ru: "Ты хорошо умеешь плавать?" }
       ]
@@ -90,7 +90,7 @@ export default {
       examples: [
         { de: "Hast du am Freitag Zeit?", ru: "У тебя есть время в пятницу?" },
         { de: "Ich habe Lust auf eine Party.", ru: "Мне хочется на вечеринку." },
-        { de: "Ali schwimmt gern.", ru: "Али любит плавать." }
+        { de: "Emil schwimmt gern.", ru: "Эмиль любит плавать." }
       ]
     },
     {
@@ -109,7 +109,7 @@ export default {
       },
       examples: [
         { de: "Ich spiele oft Fußball.", ru: "Я часто играю в футбол." },
-        { de: "Ali geht jeden Tag ins Fitnessstudio.", ru: "Али каждый день ходит в фитнес-клуб." },
+        { de: "Emil geht jeden Tag ins Fitnessstudio.", ru: "Эмиль каждый день ходит в фитнес-клуб." },
         { de: "Mia tanzt nie.", ru: "Мия никогда не танцует." }
       ]
     }
@@ -184,10 +184,10 @@ export default {
     },
     {
       type: "choice",
-      q: "Ali ___ heute arbeiten.",
+      q: "Emil ___ heute arbeiten.",
       options: ["muss", "musst", "müssen"],
       answer: 0,
-      explain: "er (Ali) → muss."
+      explain: "er (Emil) → muss."
     },
     {
       type: "fill",
@@ -234,10 +234,10 @@ export default {
     },
     {
       type: "order",
-      words: ["kann", "Ali", "nicht", "heute", "kommen"],
-      answer: "Ali kann heute nicht kommen.",
-      alt: ["Heute kann Ali nicht kommen."],
-      ru: "Али не может сегодня прийти."
+      words: ["kann", "Emil", "nicht", "heute", "kommen"],
+      answer: "Emil kann heute nicht kommen.",
+      alt: ["Heute kann Emil nicht kommen."],
+      ru: "Эмиль не может сегодня прийти."
     },
     {
       type: "fill",
@@ -314,10 +314,10 @@ export default {
     },
     {
       type: "fill",
-      sentence: "Ali tanzt ___. Er kann nicht tanzen.",
+      sentence: "Emil tanzt ___. Er kann nicht tanzen.",
       answers: ["nie"],
       options: ["nie", "immer", "oft"],
-      ru: "Али никогда не танцует. Он не умеет танцевать.",
+      ru: "Эмиль никогда не танцует. Он не умеет танцевать.",
       explain: "nie — никогда; nicht после nie не нужно."
     },
     {
@@ -331,10 +331,10 @@ export default {
     },
     {
       type: "order",
-      words: ["jeden", "Ali", "Rad", "fährt", "Tag"],
-      answer: "Ali fährt jeden Tag Rad.",
-      alt: ["Jeden Tag fährt Ali Rad."],
-      ru: "Али каждый день катается на велосипеде."
+      words: ["jeden", "Emil", "Rad", "fährt", "Tag"],
+      answer: "Emil fährt jeden Tag Rad.",
+      alt: ["Jeden Tag fährt Emil Rad."],
+      ru: "Эмиль каждый день катается на велосипеде."
     },
     {
       type: "translate",
@@ -363,18 +363,18 @@ export default {
     title: "Eine Einladung",
     titleRu: "Приглашение",
     lines: [
-      { speaker: "Mia", de: "Hallo Ali! Was machst du in der Freizeit?", ru: "Привет, Али! Что ты делаешь в свободное время?" },
-      { speaker: "Ali", de: "Ich spiele oft Fußball und ich gehe ins Fitnessstudio.", ru: "Я часто играю в футбол и хожу в фитнес-клуб." },
+      { speaker: "Mia", de: "Hallo Emil! Was machst du in der Freizeit?", ru: "Привет, Эмиль! Что ты делаешь в свободное время?" },
+      { speaker: "Emil", de: "Ich spiele oft Fußball und ich gehe ins Fitnessstudio.", ru: "Я часто играю в футбол и хожу в фитнес-клуб." },
       { speaker: "Mia", de: "Super! Ich laufe jeden Tag im Park.", ru: "Здорово! Я каждый день бегаю в парке." },
-      { speaker: "Ali", de: "Kannst du auch schwimmen?", ru: "Ты тоже умеешь плавать?" },
+      { speaker: "Emil", de: "Kannst du auch schwimmen?", ru: "Ты тоже умеешь плавать?" },
       { speaker: "Mia", de: "Ja, aber nicht sehr gut. Sag mal, hast du am Samstag Zeit?", ru: "Да, но не очень хорошо. Скажи, у тебя есть время в субботу?" },
-      { speaker: "Ali", de: "Am Samstag? Ja, vielleicht. Was ist am Samstag?", ru: "В субботу? Да, возможно. А что в субботу?" },
+      { speaker: "Emil", de: "Am Samstag? Ja, vielleicht. Was ist am Samstag?", ru: "В субботу? Да, возможно. А что в субботу?" },
       { speaker: "Mia", de: "Ich mache eine Party. Ich lade dich ein!", ru: "Я устраиваю вечеринку. Я приглашаю тебя!" },
-      { speaker: "Ali", de: "Danke für die Einladung! Wann beginnt die Party?", ru: "Спасибо за приглашение! Когда начинается вечеринка?" },
+      { speaker: "Emil", de: "Danke für die Einladung! Wann beginnt die Party?", ru: "Спасибо за приглашение! Когда начинается вечеринка?" },
       { speaker: "Mia", de: "Um acht Uhr. Hast du Lust?", ru: "В восемь часов. Хочешь?" },
-      { speaker: "Ali", de: "Ja, gern! Aber ich muss um elf Uhr nach Hause gehen.", ru: "Да, с удовольствием! Но в одиннадцать мне нужно идти домой." },
+      { speaker: "Emil", de: "Ja, gern! Aber ich muss um elf Uhr nach Hause gehen.", ru: "Да, с удовольствием! Но в одиннадцать мне нужно идти домой." },
       { speaker: "Mia", de: "Kein Problem. Bis Samstag!", ru: "Не проблема. До субботы!" },
-      { speaker: "Ali", de: "Bis Samstag, Mia!", ru: "До субботы, Мия!" }
+      { speaker: "Emil", de: "Bis Samstag, Mia!", ru: "До субботы, Мия!" }
     ]
   },
 
@@ -383,7 +383,7 @@ export default {
     scenario:
       "Ты встречаешь Мию после курсов. Она спрашивает о твоих хобби и приглашает тебя в кино. Расскажи, что ты любишь делать в свободное время, ответь, есть ли у тебя время, прими приглашение или предложи другой день, скажи, как часто ты занимаешься спортом.",
     tutorBrief:
-      "Mia meets Ali after the language course. Ask what he likes doing in his free time, whether he has time on Friday, invite him to the cinema (Hast du Lust?), ask if 7 o'clock works, ask about his weekend plans and how often he does sport. Target structures: gern + verb, Hast du Zeit/Lust?, ich kann/muss/will + infinitive at the end, Lust auf, frequency adverbs oft/manchmal/nie/immer/jeden Tag, leider, vielleicht. Keep to A1 vocab from the hobbies and free-time topic; no past tense.",
+      "Mia meets Emil after the language course. Ask what he likes doing in his free time, whether he has time on Friday, invite him to the cinema (Hast du Lust?), ask if 7 o'clock works, ask about his weekend plans and how often he does sport. Target structures: gern + verb, Hast du Zeit/Lust?, ich kann/muss/will + infinitive at the end, Lust auf, frequency adverbs oft/manchmal/nie/immer/jeden Tag, leider, vielleicht. Keep to A1 vocab from the hobbies and free-time topic; no past tense.",
     phrases: [
       { de: "Ich spiele gern Fußball.", ru: "Я люблю играть в футбол." },
       { de: "Hast du am Freitag Zeit?", ru: "У тебя есть время в пятницу?" },
@@ -395,8 +395,8 @@ export default {
     ],
     script: [
       {
-        say: "Hallo Ali! Was machst du gern in der Freizeit?",
-        sayRu: "Привет, Али! Что ты любишь делать в свободное время?",
+        say: "Hallo Emil! Was machst du gern in der Freizeit?",
+        sayRu: "Привет, Эмиль! Что ты любишь делать в свободное время?",
         hint: "Ich spiele gern … / Ich höre gern Musik.",
         expect: ["gern", "spiele", "höre", "hobby", "sport", "fußball", "fussball", "schwimme", "lese"]
       },
@@ -431,8 +431,8 @@ export default {
         expect: ["oft", "manchmal", "jeden", "immer", "nie", "tag"]
       },
       {
-        say: "Toll, Ali! Dann bis Freitag um sieben. Tschüss!",
-        sayRu: "Здорово, Али! Тогда до пятницы, в семь. Пока!",
+        say: "Toll, Emil! Dann bis Freitag um sieben. Tschüss!",
+        sayRu: "Здорово, Эмиль! Тогда до пятницы, в семь. Пока!",
         hint: "Bis Freitag, Mia! Tschüss!",
         expect: ["tschüss", "tschuss", "bis", "freitag", "ciao"]
       }
@@ -442,10 +442,10 @@ export default {
   exam: [
     {
       type: "choice",
-      q: "Ali und Mia ___ am Samstag Fußball spielen.",
+      q: "Emil und Mia ___ am Samstag Fußball spielen.",
       options: ["will", "wollt", "wollen"],
       answer: 2,
-      explain: "Ali und Mia = sie (они) → wollen."
+      explain: "Emil und Mia = sie (они) → wollen."
     },
     {
       type: "fill",
@@ -496,12 +496,12 @@ export default {
     },
     {
       type: "listen",
-      text: "Hallo Ali, hast du am Sonntag Lust auf Fußball? Unsere Mannschaft spielt um drei Uhr.",
+      text: "Hallo Emil, hast du am Sonntag Lust auf Fußball? Unsere Mannschaft spielt um drei Uhr.",
       mode: "choice",
       q: "Когда играет команда?",
       options: ["в два часа", "в три часа", "в четыре часа"],
       answer: 1,
-      ru: "Привет, Али, хочешь в воскресенье поиграть в футбол? Наша команда играет в три часа."
+      ru: "Привет, Эмиль, хочешь в воскресенье поиграть в футбол? Наша команда играет в три часа."
     },
     {
       type: "translate",

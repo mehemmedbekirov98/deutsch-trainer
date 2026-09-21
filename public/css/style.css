@@ -1,5 +1,5 @@
 /* =========================================================
-   Deutsch für Ali — premium dark UI
+   Lingua Mia — premium dark UI
    ========================================================= */
 :root {
   --bg: #0b0f1a;
@@ -145,7 +145,7 @@ p { margin: 0; line-height: 1.55; }
 .view { max-width: 1080px; margin: 0 auto; opacity: 0; transform: translateY(14px); transition: opacity 0.45s ease, transform 0.45s cubic-bezier(0.2, 0.8, 0.2, 1); display: flex; flex-direction: column; gap: 22px; }
 .view.enter { opacity: 1; transform: none; }
 /* visibility, not just position: an off-screen sidebar still holds 8 focusable links, so Tab
-   during a lesson walked out of the exercise into a menu Ali cannot see. The delay keeps the
+   during a lesson walked out of the exercise into a menu Emil cannot see. The delay keeps the
    slide-out animation, then takes it out of the tab order entirely. */
 body.focus .sidebar { transform: translateX(-100%); opacity: 0; position: fixed; visibility: hidden; transition: transform 0.4s, opacity 0.3s, visibility 0s 0.4s; }
 body.focus .app { grid-template-columns: 1fr; }
@@ -876,7 +876,7 @@ input[type="range"] { accent-color: var(--accent); width: 200px; }
   .nav-icon { font-size: 1.35rem; }
 }
 
-/* microphone language switch — the browser runs one recogniser at a time, so Ali picks which */
+/* microphone language switch — the browser runs one recogniser at a time, so Emil picks which */
 .mic-col { display: flex; flex-direction: column; align-items: center; gap: 6px; }
 .mic-lang { padding: 3px 12px; border-radius: 999px; border: 1px solid var(--border-strong); background: var(--card-hover); font-size: 0.72rem; font-weight: 800; letter-spacing: 0.08em; color: var(--muted); transition: 0.18s; }
 .mic-lang:hover { background: var(--acc-18); color: var(--text); border-color: var(--accent); }
@@ -1128,3 +1128,22 @@ a.strip-item:hover { background: var(--card-hover); }
 .level-choice-btn.test { border-style: dashed; }
 
 @media (max-width: 600px) { .placement-card { padding: 22px 18px; } }
+
+/* ------------------------------------------------------------- выбор языка */
+/* Язык объяснения, не язык курса. Два состояния, видно сразу, нажимается пальцем. */
+.lang-switch { display: inline-flex; gap: 6px; padding: 4px; border-radius: 14px; background: var(--card-2, rgba(255,255,255,.04)); border: 1px solid var(--border); }
+.lang-btn { display: inline-flex; align-items: center; gap: 7px; padding: 8px 13px; border: 0; border-radius: 10px; background: transparent; color: var(--muted); font: inherit; font-weight: 700; font-size: 14px; cursor: pointer; transition: background .18s ease, color .18s ease, transform .18s ease; }
+.lang-btn:hover { color: var(--text); background: rgba(255,255,255,.05); }
+.lang-btn.on { background: var(--accent); color: #fff; box-shadow: 0 4px 14px rgba(124,92,255,.32); }
+.lang-btn.on:hover { background: var(--accent); }
+.lang-flag { font-size: 16px; line-height: 1; }
+.lang-switch.compact { margin: 0 auto 18px; }
+.lang-short { display: none; }
+.lang-switch.compact .lang-name { display: none; }
+.lang-switch.compact .lang-short { display: inline; }
+.lang-switch.compact .lang-btn { padding: 8px 14px; font-size: 15px; }
+
+@media (max-width: 520px) { .lang-name { display: none; } .lang-short { display: inline; } .lang-btn { padding: 8px 12px; } }
+
+/* выход из теста уровня — в focus-режиме другой навигации на экране нет */
+.placement-head-right { display: flex; align-items: center; gap: 14px; }

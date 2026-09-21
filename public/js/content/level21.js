@@ -17,13 +17,13 @@ export default {
 
   vocab: [
     { de: "die Familie", ru: "семья", plural: "die Familien", example: "Meine Familie ist für mich sehr wichtig.", exampleRu: "Моя семья для меня очень важна." },
-    { de: "die Eltern", ru: "родители (мн. ч.)", example: "Alis Eltern wohnen in Aserbaidschan.", exampleRu: "Родители Али живут в Азербайджане." },
+    { de: "die Eltern", ru: "родители (мн. ч.)", example: "Emils Eltern wohnen in Aserbaidschan.", exampleRu: "Родители Эмиль живут в Азербайджане." },
     { de: "die Geschwister", ru: "братья и сёстры (мн. ч.)", example: "Meine Geschwister wohnen nicht in Deutschland.", exampleRu: "Мои братья и сёстры живут не в Германии." },
     { de: "der Bruder", ru: "брат", plural: "die Brüder", example: "Mein Bruder arbeitet in Leipzig.", exampleRu: "Мой брат работает в Лейпциге." },
     { de: "die Schwester", ru: "сестра", plural: "die Schwestern", example: "Meine Schwester ruft mich jeden Sonntag an.", exampleRu: "Сестра звонит мне каждое воскресенье." },
     { de: "der Sohn", ru: "сын", plural: "die Söhne", example: "Unser Sohn geht schon in die Schule.", exampleRu: "Наш сын уже ходит в школу." },
-    { de: "die Tochter", ru: "дочь", plural: "die Töchter", example: "Ali bringt seine Tochter in den Kindergarten.", exampleRu: "Али отводит дочь в детский сад." },
-    { de: "die Ehefrau", ru: "жена, супруга", plural: "die Ehefrauen", example: "Seine Ehefrau heißt Aysel.", exampleRu: "Его жену зовут Айсель." },
+    { de: "die Tochter", ru: "дочь", plural: "die Töchter", example: "Emil bringt seine Tochter in den Kindergarten.", exampleRu: "Эмиль отводит дочь в детский сад." },
+    { de: "die Ehefrau", ru: "жена, супруга", plural: "die Ehefrauen", example: "Seine Ehefrau heißt Sevil.", exampleRu: "Его жену зовут Севиль." },
     { de: "der Ehemann", ru: "муж, супруг", plural: "die Ehemänner", example: "Der Ehemann meiner Schwester ist Lehrer.", exampleRu: "Муж моей сестры — учитель." },
     { de: "die Großeltern", ru: "бабушка и дедушка (мн. ч.)", example: "Meine Großeltern leben noch in Baku.", exampleRu: "Мои бабушка и дедушка ещё живут в Баку." },
     { de: "die Oma", ru: "бабушка", plural: "die Omas", example: "Meine Oma kocht am besten.", exampleRu: "Моя бабушка готовит лучше всех." },
@@ -34,7 +34,7 @@ export default {
     { de: "der Nachbar", ru: "сосед", plural: "die Nachbarn", example: "Unser Nachbar hilft uns oft.", exampleRu: "Наш сосед нам часто помогает." },
     { de: "der Freund", ru: "друг", plural: "die Freunde", example: "Mein bester Freund heißt Timur.", exampleRu: "Моего лучшего друга зовут Тимур." },
     { de: "die Freundin", ru: "подруга; девушка (в паре)", plural: "die Freundinnen", example: "Mein Bruder kommt mit seiner Freundin.", exampleRu: "Мой брат придёт со своей девушкой." },
-    { de: "verheiratet", ru: "женат, замужем", example: "Ali ist seit sechs Jahren verheiratet.", exampleRu: "Али женат уже шесть лет." },
+    { de: "verheiratet", ru: "женат, замужем", example: "Emil ist seit sechs Jahren verheiratet.", exampleRu: "Эмиль женат уже шесть лет." },
     { de: "ledig", ru: "холост, не замужем", example: "Meine Cousine ist noch ledig.", exampleRu: "Моя двоюродная сестра ещё не замужем." },
     { de: "geschieden", ru: "разведён, разведена", example: "Mein Onkel ist geschieden.", exampleRu: "Мой дядя разведён." },
     { de: "der Familienstand", ru: "семейное положение", example: "Im Formular steht auch der Familienstand.", exampleRu: "В анкете указано и семейное положение." },
@@ -68,7 +68,7 @@ export default {
       examples: [
         { de: "Ich helfe meinem Bruder.", ru: "Я помогаю своему брату." },
         { de: "Das Handy gehört meiner Schwester.", ru: "Телефон принадлежит моей сестре." },
-        { de: "Ali fährt mit seinen Eltern nach Hamburg.", ru: "Али едет со своими родителями в Гамбург." },
+        { de: "Emil fährt mit seinen Eltern nach Hamburg.", ru: "Эмиль едет со своими родителями в Гамбург." },
         { de: "Wir wohnen bei unserer Tante.", ru: "Мы живём у нашей тёти." },
       ],
     },
@@ -109,7 +109,7 @@ export default {
         ],
       },
       examples: [
-        { de: "Ali wohnt mit seiner Familie in Deutschland.", ru: "Али живёт со своей семьёй в Германии." },
+        { de: "Emil wohnt mit seiner Familie in Deutschland.", ru: "Эмиль живёт со своей семьёй в Германии." },
         { de: "Am Sonntag fahren wir zu meinen Großeltern.", ru: "В воскресенье мы едем к моим бабушке и дедушке." },
         { de: "Das Geschenk ist von meiner Schwester.", ru: "Подарок от моей сестры." },
         { de: "Ich wohne seit zwei Jahren bei meinem Onkel.", ru: "Я уже два года живу у своего дяди." },
@@ -149,7 +149,7 @@ export default {
     },
     {
       type: "choice",
-      q: "Ali ist verheiratet. Seine ___ heißt Aysel.",
+      q: "Emil ist verheiratet. Seine ___ heißt Sevil.",
       options: ["Ehefrau", "Tochter", "Cousine"],
       answer: 0,
       explain: "die Ehefrau — жена, супруга.",
@@ -167,14 +167,14 @@ export default {
     },
     {
       type: "choice",
-      q: "В анкете есть строка «Familienstand». Что напишет там Али, если у него есть жена?",
+      q: "В анкете есть строка «Familienstand». Что напишет там Эмиль, если у него есть жена?",
       options: ["ledig", "verheiratet", "geschieden"],
       answer: 1,
       explain: "der Familienstand — семейное положение; есть жена значит verheiratet.",
     },
     {
       type: "choice",
-      q: "Ali hilft ___ Bruder.",
+      q: "Emil hilft ___ Bruder.",
       options: ["sein", "seinem", "seinen"],
       answer: 1,
       explain: "helfen требует Dativ, der Bruder — мужской род: seinem Bruder.",
@@ -216,17 +216,17 @@ export default {
     },
     {
       type: "fill",
-      sentence: "Ali spielt am Samstag mit ___ Kindern.",
+      sentence: "Emil spielt am Samstag mit ___ Kindern.",
       answers: ["seinen"],
       options: ["seine", "seinen", "seiner"],
-      ru: "В субботу Али играет со своими детьми.",
+      ru: "В субботу Эмиль играет со своими детьми.",
       explain: "mit + Dativ, множественное число → seinen Kindern.",
     },
     {
       type: "order",
-      words: ["Kindern", "Ali", "seinen", "hilft", "Hausaufgaben", "bei", "den"],
-      answer: "Ali hilft seinen Kindern bei den Hausaufgaben.",
-      ru: "Али помогает своим детям с домашним заданием.",
+      words: ["Kindern", "Emil", "seinen", "hilft", "Hausaufgaben", "bei", "den"],
+      answer: "Emil hilft seinen Kindern bei den Hausaufgaben.",
+      ru: "Эмиль помогает своим детям с домашним заданием.",
     },
     {
       type: "choice",
@@ -384,18 +384,18 @@ export default {
     title: "In der Pause",
     titleRu: "На перерыве",
     lines: [
-      { speaker: "Stefan", de: "Hast du am Samstag Zeit, Ali? Wir spielen Fußball.", ru: "Али, у тебя есть время в субботу? Мы играем в футбол." },
-      { speaker: "Ali", de: "Leider nicht. Meine Tochter hat Geburtstag, und wir laden die ganze Familie ein.", ru: "К сожалению, нет. У моей дочери день рождения, и мы приглашаем всю семью." },
+      { speaker: "Stefan", de: "Hast du am Samstag Zeit, Emil? Wir spielen Fußball.", ru: "Эмиль, у тебя есть время в субботу? Мы играем в футбол." },
+      { speaker: "Emil", de: "Leider nicht. Meine Tochter hat Geburtstag, und wir laden die ganze Familie ein.", ru: "К сожалению, нет. У моей дочери день рождения, и мы приглашаем всю семью." },
       { speaker: "Stefan", de: "Schön! Wie alt wird sie denn?", ru: "Здорово! А сколько ей исполняется?" },
-      { speaker: "Ali", de: "Sechs. Meine Frau backt einen Kuchen, und ich helfe ihr am Morgen.", ru: "Шесть. Моя жена печёт торт, а я помогаю ей утром." },
+      { speaker: "Emil", de: "Sechs. Meine Frau backt einen Kuchen, und ich helfe ihr am Morgen.", ru: "Шесть. Моя жена печёт торт, а я помогаю ей утром." },
       { speaker: "Stefan", de: "Kommen auch deine Eltern?", ru: "Твои родители тоже приедут?" },
-      { speaker: "Ali", de: "Nein, meine Eltern wohnen noch in Aserbaidschan. Aber mein Bruder kommt mit seiner Freundin.", ru: "Нет, мои родители ещё живут в Азербайджане. Но мой брат приедет со своей девушкой." },
+      { speaker: "Emil", de: "Nein, meine Eltern wohnen noch in Aserbaidschan. Aber mein Bruder kommt mit seiner Freundin.", ru: "Нет, мои родители ещё живут в Азербайджане. Но мой брат приедет со своей девушкой." },
       { speaker: "Stefan", de: "Verstehst du dich gut mit deinem Bruder?", ru: "Ты хорошо ладишь со своим братом?" },
-      { speaker: "Ali", de: "Sehr gut. Er hilft mir immer, wenn ich ein Problem habe.", ru: "Очень хорошо. Он всегда мне помогает, когда у меня проблема." },
+      { speaker: "Emil", de: "Sehr gut. Er hilft mir immer, wenn ich ein Problem habe.", ru: "Очень хорошо. Он всегда мне помогает, когда у меня проблема." },
       { speaker: "Stefan", de: "Und was schenkst du deiner Tochter?", ru: "А что ты даришь дочери?" },
-      { speaker: "Ali", de: "Ein Fahrrad. Ich hoffe, das Geschenk gefällt ihr.", ru: "Велосипед. Надеюсь, подарок ей понравится." },
+      { speaker: "Emil", de: "Ein Fahrrad. Ich hoffe, das Geschenk gefällt ihr.", ru: "Велосипед. Надеюсь, подарок ей понравится." },
       { speaker: "Stefan", de: "Bestimmt! Grüß deine Familie und viel Spaß am Samstag!", ru: "Наверняка! Передавай привет семье и хорошо провести субботу!" },
-      { speaker: "Ali", de: "Danke, Stefan. Bis Montag!", ru: "Спасибо, Штефан. До понедельника!" },
+      { speaker: "Emil", de: "Danke, Stefan. Bis Montag!", ru: "Спасибо, Штефан. До понедельника!" },
     ],
   },
 
@@ -404,7 +404,7 @@ export default {
     scenario:
       "Твоя соседка Мия позвала тебя на семейный праздник: у её дочери день рождения. Поздравь, отдай подарок, скажи, с кем ты пришёл, и расскажи о своей семье — есть ли у тебя братья и сёстры, где живут твои родители и с кем ты хорошо ладишь. Предложи помощь и в конце поблагодари за приглашение.",
     tutorBrief:
-      "Mia is Ali's German neighbour. She has invited him to her daughter's birthday party at home. Greet him warmly, thank him for the present, introduce your daughter, ask whether he came alone or with his wife, ask if he has brothers or sisters, ask where his family lives, and ask whether he gets on well with his brother. Offer him a piece of cake. Use du with Ali. Target structures: Possessivartikel im Dativ (meinem/meiner/meinen), Dativverben helfen, danken, gehören, gefallen, gratulieren, and the prepositions mit, bei, von, zu + Dativ. Keep the German at A2 level, short friendly sentences, and correct Ali gently if he uses the wrong Dativ ending.",
+      "Mia is Emil's German neighbour. She has invited him to her daughter's birthday party at home. Greet him warmly, thank him for the present, introduce your daughter, ask whether he came alone or with his wife, ask if he has brothers or sisters, ask where his family lives, and ask whether he gets on well with his brother. Offer him a piece of cake. Use du with Emil. Target structures: Possessivartikel im Dativ (meinem/meiner/meinen), Dativverben helfen, danken, gehören, gefallen, gratulieren, and the prepositions mit, bei, von, zu + Dativ. Keep the German at A2 level, short friendly sentences, and correct Emil gently if he uses the wrong Dativ ending.",
     phrases: [
       { de: "Herzlichen Glückwunsch zum Geburtstag!", ru: "С днём рождения!" },
       { de: "Das ist ein kleines Geschenk für deine Tochter.", ru: "Это маленький подарок для твоей дочери." },
@@ -417,8 +417,8 @@ export default {
     ],
     script: [
       {
-        say: "Hallo Ali, schön, dass du da bist! Komm rein!",
-        sayRu: "Привет, Али, здорово, что ты пришёл! Заходи!",
+        say: "Hallo Emil, schön, dass du da bist! Komm rein!",
+        sayRu: "Привет, Эмиль, здорово, что ты пришёл! Заходи!",
         hint: "Herzlichen Glückwunsch zum Geburtstag!",
         expect: ["glückwunsch", "glueckwunsch", "geburtstag", "gratuliere", "hallo"],
       },
@@ -459,8 +459,8 @@ export default {
         expect: ["ja", "gern", "helfen", "danke", "bitte"],
       },
       {
-        say: "Danke für das Geschenk, Ali. Bis bald und schönen Abend!",
-        sayRu: "Спасибо за подарок, Али. До скорого и хорошего вечера!",
+        say: "Danke für das Geschenk, Emil. Bis bald und schönen Abend!",
+        sayRu: "Спасибо за подарок, Эмиль. До скорого и хорошего вечера!",
         hint: "Vielen Dank für die Einladung. Tschüss!",
         expect: ["danke", "einladung", "tschüss", "tschuss", "wiedersehen", "bis"],
       },
@@ -524,10 +524,10 @@ export default {
     },
     {
       type: "fill",
-      sentence: "Ali hilft ___ Nachbarn im Garten.",
+      sentence: "Emil hilft ___ Nachbarn im Garten.",
       answers: ["seinem"],
       options: ["sein", "seinem", "seiner"],
-      ru: "Али помогает своему соседу в саду.",
+      ru: "Эмиль помогает своему соседу в саду.",
       explain: "helfen + Dativ: seinem Nachbarn (der Nachbar в Dativ получает -n).",
     },
     {

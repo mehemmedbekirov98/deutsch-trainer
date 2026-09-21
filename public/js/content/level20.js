@@ -20,14 +20,14 @@ export default {
     { de: "das Hobby", ru: "хобби", plural: "die Hobbys", example: "Kochen ist mein neues Hobby.", exampleRu: "Готовка — моё новое хобби." },
     { de: "sich freuen", ru: "радоваться; ждать с нетерпением", example: "Mia freut sich auf das Konzert.", exampleRu: "Мия с нетерпением ждёт концерта." },
     { de: "sich treffen", ru: "встречаться", example: "Wir treffen uns jeden Freitag.", exampleRu: "Мы встречаемся каждую пятницу." },
-    { de: "sich interessieren für", ru: "интересоваться (чем-то)", example: "Ali interessiert sich für Sport.", exampleRu: "Али интересуется спортом." },
+    { de: "sich interessieren für", ru: "интересоваться (чем-то)", example: "Emil interessiert sich für Sport.", exampleRu: "Эмиль интересуется спортом." },
     { de: "sich entspannen", ru: "расслабляться, отдыхать", example: "Nach der Arbeit entspanne ich mich vor dem Fernseher.", exampleRu: "После работы я расслабляюсь перед телевизором." },
     { de: "sich langweilen", ru: "скучать", example: "Sonntags langweile ich mich oft.", exampleRu: "По воскресеньям мне часто скучно." },
     { de: "sich verabreden", ru: "договариваться о встрече", example: "Wir haben uns für Freitag verabredet.", exampleRu: "Мы договорились встретиться в пятницу." },
     { de: "sich anmelden", ru: "записываться, регистрироваться", example: "Ich habe mich für einen Deutschkurs angemeldet.", exampleRu: "Я записался на курс немецкого." },
     { de: "sich unterhalten", ru: "беседовать, разговаривать", example: "Wir unterhalten uns oft über Fußball.", exampleRu: "Мы часто беседуем о футболе." },
-    { de: "der Verein", ru: "клуб, общество", plural: "die Vereine", example: "Ali spielt in einem Fußballverein.", exampleRu: "Али играет в футбольном клубе." },
-    { de: "das Mitglied", ru: "член (клуба)", plural: "die Mitglieder", example: "Ali ist seit einem Jahr Mitglied im Verein.", exampleRu: "Али уже год является членом клуба." },
+    { de: "der Verein", ru: "клуб, общество", plural: "die Vereine", example: "Emil spielt in einem Fußballverein.", exampleRu: "Эмиль играет в футбольном клубе." },
+    { de: "das Mitglied", ru: "член (клуба)", plural: "die Mitglieder", example: "Emil ist seit einem Jahr Mitglied im Verein.", exampleRu: "Эмиль уже год является членом клуба." },
     { de: "die Mannschaft", ru: "команда", plural: "die Mannschaften", example: "Unsere Mannschaft trainiert am Dienstag.", exampleRu: "Наша команда тренируется во вторник." },
     { de: "das Spiel", ru: "игра, матч", plural: "die Spiele", example: "Das Spiel beginnt um 18 Uhr.", exampleRu: "Матч начинается в 18 часов." },
     { de: "gewinnen", ru: "выигрывать", example: "Wir haben das Spiel 3:1 gewonnen.", exampleRu: "Мы выиграли матч 3:1." },
@@ -58,7 +58,7 @@ export default {
         rows: [
           ["ich", "mich", "Ich freue mich."],
           ["du", "dich", "Du freust dich."],
-          ["er/sie/es", "sich", "Ali freut sich."],
+          ["er/sie/es", "sich", "Emil freut sich."],
           ["wir", "uns", "Wir freuen uns."],
           ["ihr", "euch", "Ihr freut euch."],
           ["sie/Sie", "sich", "Sie freuen sich."],
@@ -68,7 +68,7 @@ export default {
         { de: "Ich entspanne mich am Abend.", ru: "Я расслабляюсь вечером." },
         { de: "Wir treffen uns im Park.", ru: "Мы встречаемся в парке." },
         { de: "Langweilst du dich?", ru: "Тебе скучно?" },
-        { de: "Ali und Mia freuen sich.", ru: "Али и Мия радуются." },
+        { de: "Emil und Mia freuen sich.", ru: "Эмиль и Мия радуются." },
       ],
     },
     {
@@ -80,7 +80,7 @@ export default {
         rows: [
           ["sich interessieren", "für + Akkusativ", "Ich interessiere mich für Sport."],
           ["sich freuen", "auf + Akkusativ (о будущем)", "Ich freue mich auf den Urlaub."],
-          ["sich freuen", "über + Akkusativ (о прошедшем)", "Ali freut sich über das gute Spiel."],
+          ["sich freuen", "über + Akkusativ (о прошедшем)", "Emil freut sich über das gute Spiel."],
           ["sich treffen", "mit + Dativ", "Ich treffe mich mit Mia."],
           ["sich verabreden", "mit + Dativ", "Wir verabreden uns mit Freunden."],
           ["Lust haben", "auf + Akkusativ", "Hast du Lust auf ein Konzert?"],
@@ -89,7 +89,7 @@ export default {
       examples: [
         { de: "Meine Frau interessiert sich für Musik.", ru: "Моя жена интересуется музыкой." },
         { de: "Wir freuen uns auf den Ausflug.", ru: "Мы с нетерпением ждём поездки." },
-        { de: "Ali trifft sich mit seinen Kollegen.", ru: "Али встречается со своими коллегами." },
+        { de: "Emil trifft sich mit seinen Kollegen.", ru: "Эмиль встречается со своими коллегами." },
         { de: "Ich habe Lust auf ein Brettspiel.", ru: "Я не прочь сыграть в настольную игру." },
       ],
     },
@@ -163,11 +163,11 @@ export default {
     },
     {
       type: "fill",
-      sentence: "Ali ___ sich auf den Urlaub.",
+      sentence: "Emil ___ sich auf den Urlaub.",
       answers: ["freut"],
       options: ["freut", "freue", "freust"],
-      ru: "Али с нетерпением ждёт отпуска.",
-      explain: "er (Ali) → freut sich.",
+      ru: "Эмиль с нетерпением ждёт отпуска.",
+      explain: "er (Emil) → freut sich.",
     },
     {
       type: "fill",
@@ -180,10 +180,10 @@ export default {
     { type: "speak", text: "Ich interessiere mich für Fußball.", ru: "Я интересуюсь футболом." },
     {
       type: "choice",
-      q: "Ali ___ sich für Fußball.",
+      q: "Emil ___ sich für Fußball.",
       options: ["interessiert", "interessieren", "interessierst"],
       answer: 0,
-      explain: "er (Ali) → interessiert sich.",
+      explain: "er (Emil) → interessiert sich.",
     },
     {
       type: "choice",
@@ -194,9 +194,9 @@ export default {
     },
     {
       type: "order",
-      words: ["sich", "Ali", "Musik", "interessiert", "für"],
-      answer: "Ali interessiert sich für Musik.",
-      ru: "Али интересуется музыкой.",
+      words: ["sich", "Emil", "Musik", "interessiert", "für"],
+      answer: "Emil interessiert sich für Musik.",
+      ru: "Эмиль интересуется музыкой.",
     },
     {
       type: "fill",
@@ -259,12 +259,12 @@ export default {
     },
     {
       type: "listen",
-      text: "Ali interessiert sich für Fußball. Er trainiert zweimal in der Woche im Verein.",
+      text: "Emil interessiert sich für Fußball. Er trainiert zweimal in der Woche im Verein.",
       mode: "choice",
-      q: "Как часто Али тренируется?",
+      q: "Как часто Эмиль тренируется?",
       options: ["Один раз в неделю", "Два раза в неделю", "Каждый день"],
       answer: 1,
-      ru: "Али интересуется футболом. Он тренируется два раза в неделю в клубе.",
+      ru: "Эмиль интересуется футболом. Он тренируется два раза в неделю в клубе.",
     },
     {
       type: "match",
@@ -308,10 +308,10 @@ export default {
     },
     {
       type: "fill",
-      sentence: "Ali und Mia haben ___ im Café getroffen.",
+      sentence: "Emil und Mia haben ___ im Café getroffen.",
       answers: ["sich"],
       options: ["sich", "uns", "euch"],
-      ru: "Али и Мия встретились в кафе.",
+      ru: "Эмиль и Мия встретились в кафе.",
       explain: "sie (они) → sich; в Perfekt местоимение стоит сразу после haben.",
     },
     {
@@ -373,17 +373,17 @@ export default {
     titleRu: "В спортивном клубе",
     lines: [
       { speaker: "Frau Keller", de: "Guten Tag! Kann ich Ihnen helfen?", ru: "Добрый день! Могу я вам помочь?" },
-      { speaker: "Ali", de: "Guten Tag. Ich interessiere mich für Fußball und möchte mich anmelden.", ru: "Добрый день. Я интересуюсь футболом и хотел бы записаться." },
+      { speaker: "Emil", de: "Guten Tag. Ich interessiere mich für Fußball und möchte mich anmelden.", ru: "Добрый день. Я интересуюсь футболом и хотел бы записаться." },
       { speaker: "Frau Keller", de: "Sehr gern. Haben Sie früher schon gespielt?", ru: "С удовольствием. Вы раньше уже играли?" },
-      { speaker: "Ali", de: "Ja, in Aserbaidschan habe ich zehn Jahre lang gespielt.", ru: "Да, в Азербайджане я играл десять лет." },
+      { speaker: "Emil", de: "Ja, in Aserbaidschan habe ich zehn Jahre lang gespielt.", ru: "Да, в Азербайджане я играл десять лет." },
       { speaker: "Frau Keller", de: "Das ist super. Unsere Mannschaft trainiert dienstags und donnerstags um 19 Uhr.", ru: "Это отлично. Наша команда тренируется по вторникам и четвергам в 19 часов." },
-      { speaker: "Ali", de: "Das passt mir gut. Was kostet ein Jahr im Verein?", ru: "Мне это подходит. Сколько стоит год в клубе?" },
+      { speaker: "Emil", de: "Das passt mir gut. Was kostet ein Jahr im Verein?", ru: "Мне это подходит. Сколько стоит год в клубе?" },
       { speaker: "Frau Keller", de: "Zwölf Euro im Monat. Für Kinder ist es billiger.", ru: "Двенадцать евро в месяц. Для детей дешевле." },
-      { speaker: "Ali", de: "Gut. Und wann ist das nächste Spiel?", ru: "Хорошо. А когда следующий матч?" },
+      { speaker: "Emil", de: "Gut. Und wann ist das nächste Spiel?", ru: "Хорошо. А когда следующий матч?" },
       { speaker: "Frau Keller", de: "Am Samstag um 15 Uhr. Kommen Sie doch vorbei!", ru: "В субботу в 15 часов. Заходите!" },
-      { speaker: "Ali", de: "Sehr gern. Ich freue mich auf das Training.", ru: "С удовольствием. Я с нетерпением жду тренировки." },
+      { speaker: "Emil", de: "Sehr gern. Ich freue mich auf das Training.", ru: "С удовольствием. Я с нетерпением жду тренировки." },
       { speaker: "Frau Keller", de: "Dann sehen wir uns am Dienstag. Bis dann!", ru: "Тогда увидимся во вторник. До встречи!" },
-      { speaker: "Ali", de: "Vielen Dank. Bis Dienstag!", ru: "Большое спасибо. До вторника!" },
+      { speaker: "Emil", de: "Vielen Dank. Bis Dienstag!", ru: "Большое спасибо. До вторника!" },
     ],
   },
 
@@ -392,7 +392,7 @@ export default {
     scenario:
       "Мия спрашивает тебя, чем ты занимаешься в свободное время, и предлагает сходить вместе в бассейн в субботу. Расскажи о своём хобби, скажи, как часто ты тренируешься, согласись или вежливо откажись, а потом договорись, во сколько и где вы встретитесь.",
     tutorBrief:
-      "Mia and Ali are friends talking about free time. Mia asks what Ali likes doing in his free time, how often he trains, then invites him to the swimming pool on Saturday and agrees on a time and a meeting point. Target structures: ich interessiere mich für …, ich trainiere … mal in der Woche, wir treffen uns um … Uhr, ich freue mich auf …, hast du Lust auf …? Use du with Ali. Keep to A2 free-time vocabulary, short friendly sentences, and correct him gently if he mixes up mich / dich / uns.",
+      "Mia and Emil are friends talking about free time. Mia asks what Emil likes doing in his free time, how often he trains, then invites him to the swimming pool on Saturday and agrees on a time and a meeting point. Target structures: ich interessiere mich für …, ich trainiere … mal in der Woche, wir treffen uns um … Uhr, ich freue mich auf …, hast du Lust auf …? Use du with Emil. Keep to A2 free-time vocabulary, short friendly sentences, and correct him gently if he mixes up mich / dich / uns.",
     phrases: [
       { de: "Ich interessiere mich für Fußball.", ru: "Я интересуюсь футболом." },
       { de: "In meiner Freizeit spiele ich Fußball.", ru: "В свободное время я играю в футбол." },
@@ -405,8 +405,8 @@ export default {
     ],
     script: [
       {
-        say: "Hallo Ali! Sag mal, was machst du gern in deiner Freizeit?",
-        sayRu: "Привет, Али! Слушай, чем ты любишь заниматься в свободное время?",
+        say: "Hallo Emil! Sag mal, was machst du gern in deiner Freizeit?",
+        sayRu: "Привет, Эмиль! Слушай, чем ты любишь заниматься в свободное время?",
         hint: "Ich interessiere mich für Fußball.",
         expect: ["interessiere", "fußball", "fussball", "sport", "hobby", "spiele", "gern"],
       },
@@ -441,8 +441,8 @@ export default {
         expect: ["ja", "freue", "mich", "sehr", "natürlich", "naturlich"],
       },
       {
-        say: "Ich mich auch! Bis Samstag, Ali. Tschüss!",
-        sayRu: "Я тоже! До субботы, Али. Пока!",
+        say: "Ich mich auch! Bis Samstag, Emil. Tschüss!",
+        sayRu: "Я тоже! До субботы, Эмиль. Пока!",
         hint: "Tschüss, Mia! Bis Samstag!",
         expect: ["tschüss", "tschuss", "bis", "samstag", "ciao", "wiedersehen"],
       },
@@ -452,7 +452,7 @@ export default {
   exam: [
     {
       type: "choice",
-      q: "Ali ___ sich gestern mit Mia getroffen.",
+      q: "Emil ___ sich gestern mit Mia getroffen.",
       options: ["hat", "ist", "haben"],
       answer: 0,
       explain: "Возвратные глаголы в Perfekt всегда идут с haben.",

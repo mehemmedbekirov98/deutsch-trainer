@@ -20,12 +20,12 @@ export default {
     { de: "frühstücken", ru: "завтракать", example: "Wir frühstücken um halb neun.", exampleRu: "Мы завтракаем в половине девятого." },
     { de: "anfangen", ru: "начинать(ся)", example: "Der Kurs fängt um zehn Uhr an.", exampleRu: "Курс начинается в десять часов." },
     { de: "die Mittagspause", ru: "обеденный перерыв", plural: "die Mittagspausen", example: "Die Mittagspause ist um zwölf.", exampleRu: "Обеденный перерыв в двенадцать." },
-    { de: "einkaufen", ru: "делать покупки", example: "Ali kauft am Freitag ein.", exampleRu: "Али делает покупки в пятницу." },
+    { de: "einkaufen", ru: "делать покупки", example: "Emil kauft am Freitag ein.", exampleRu: "Эмиль делает покупки в пятницу." },
     { de: "nach Hause", ru: "домой", example: "Wann fährst du nach Hause?", exampleRu: "Когда ты едешь домой?" },
     { de: "der Feierabend", ru: "конец рабочего дня", example: "Um fünf Uhr habe ich Feierabend.", exampleRu: "В пять часов у меня конец рабочего дня." },
     { de: "fernsehen", ru: "смотреть телевизор", example: "Am Abend sehe ich fern.", exampleRu: "Вечером я смотрю телевизор." },
     { de: "anrufen", ru: "звонить (кому-то)", example: "Ich rufe am Montag meine Oma an.", exampleRu: "В понедельник я звоню бабушке." },
-    { de: "schlafen", ru: "спать", example: "Ali schläft acht Stunden.", exampleRu: "Али спит восемь часов." },
+    { de: "schlafen", ru: "спать", example: "Emil schläft acht Stunden.", exampleRu: "Эмиль спит восемь часов." },
     { de: "fahren", ru: "ехать", example: "Er fährt am Sonntag nach Berlin.", exampleRu: "В воскресенье он едет в Берлин." },
     { de: "früh", ru: "рано", example: "Ich stehe sehr früh auf.", exampleRu: "Я встаю очень рано." },
     { de: "spät", ru: "поздно", example: "Es ist schon spät.", exampleRu: "Уже поздно." },
@@ -89,7 +89,7 @@ export default {
         ]
       },
       examples: [
-        { de: "Ali steht um halb sieben auf.", ru: "Али встаёт в половине седьмого." },
+        { de: "Emil steht um halb sieben auf.", ru: "Эмиль встаёт в половине седьмого." },
         { de: "Die Arbeit fängt um neun Uhr an.", ru: "Работа начинается в девять часов." },
         { de: "Am Samstag kaufen wir ein.", ru: "В субботу мы делаем покупки." },
         { de: "Siehst du am Abend fern?", ru: "Ты смотришь телевизор вечером?" }
@@ -112,7 +112,7 @@ export default {
       },
       examples: [
         { de: "Um sechs Uhr fahre ich nach Hause.", ru: "В шесть часов я еду домой." },
-        { de: "Am Wochenende schläft Ali lange.", ru: "В выходные Али долго спит." },
+        { de: "Am Wochenende schläft Emil lange.", ru: "В выходные Эмиль долго спит." },
         { de: "Wann fährst du nach Berlin?", ru: "Когда ты едешь в Берлин?" }
       ]
     }
@@ -187,10 +187,10 @@ export default {
     { type: "speak", text: "Ich habe um zwölf Mittagspause.", ru: "У меня обеденный перерыв в двенадцать." },
     {
       type: "choice",
-      q: "Ali ___ am Samstag ein.",
+      q: "Emil ___ am Samstag ein.",
       options: ["kauft", "kaufen", "kaufe"],
       answer: 0,
-      explain: "einkaufen: er/Ali kauft … ein."
+      explain: "einkaufen: er/Emil kauft … ein."
     },
     {
       type: "listen",
@@ -203,17 +203,17 @@ export default {
     },
     {
       type: "fill",
-      sentence: "Am Abend ___ Ali fern.",
+      sentence: "Am Abend ___ Emil fern.",
       answers: ["sieht"],
       options: ["sieht", "siehst", "sehe"],
-      ru: "Вечером Али смотрит телевизор.",
+      ru: "Вечером Эмиль смотрит телевизор.",
       explain: "fernsehen спрягается как sehen: er sieht … fern."
     },
     {
       type: "order",
-      words: ["ruft", "Ali", "Mutter", "seine", "an"],
-      answer: "Ali ruft seine Mutter an.",
-      ru: "Али звонит своей маме."
+      words: ["ruft", "Emil", "Mutter", "seine", "an"],
+      answer: "Emil ruft seine Mutter an.",
+      ru: "Эмиль звонит своей маме."
     },
     {
       type: "translate",
@@ -231,11 +231,11 @@ export default {
     },
     {
       type: "fill",
-      sentence: "Ali ___ am Montag nach Berlin.",
+      sentence: "Emil ___ am Montag nach Berlin.",
       answers: ["fährt"],
       options: ["fährt", "fahrt", "fahre"],
-      ru: "В понедельник Али едет в Берлин.",
-      explain: "fahren: er/Ali fährt (a → ä)."
+      ru: "В понедельник Эмиль едет в Берлин.",
+      explain: "fahren: er/Emil fährt (a → ä)."
     },
     {
       type: "match",
@@ -287,7 +287,7 @@ export default {
     },
     {
       type: "choice",
-      q: "Ali arbeitet von 9 bis 17 Uhr. Um fünf Uhr hat er ___.",
+      q: "Emil arbeitet von 9 bis 17 Uhr. Um fünf Uhr hat er ___.",
       options: ["Feierabend", "Mittagspause", "Frühstück"],
       answer: 0,
       explain: "Feierabend — конец рабочего дня."
@@ -349,9 +349,9 @@ export default {
     },
     {
       type: "order",
-      words: ["schläft", "Ali", "bis", "elf", "von", "sieben"],
-      answer: "Ali schläft von elf bis sieben.",
-      ru: "Али спит с одиннадцати до семи."
+      words: ["schläft", "Emil", "bis", "elf", "von", "sieben"],
+      answer: "Emil schläft von elf bis sieben.",
+      ru: "Эмиль спит с одиннадцати до семи."
     },
     {
       type: "translate",
@@ -363,8 +363,8 @@ export default {
     {
       type: "translate",
       dir: "de-ru",
-      text: "Ali arbeitet von acht bis vier.",
-      answers: ["Али работает с восьми до четырёх.", "Али работает с восьми до четырёх часов.", "Али работает с 8 до 16.", "Али работает с 8 до 4."],
+      text: "Emil arbeitet von acht bis vier.",
+      answers: ["Эмиль работает с восьми до четырёх.", "Эмиль работает с восьми до четырёх часов.", "Эмиль работает с 8 до 16.", "Эмиль работает с 8 до 4."],
       hint: "von … bis = с … до"
     },
     { type: "speak", text: "Am Dienstag habe ich einen Termin.", ru: "Во вторник у меня встреча." }
@@ -374,18 +374,18 @@ export default {
     title: "Ein normaler Tag",
     titleRu: "Обычный день",
     lines: [
-      { speaker: "Mia", de: "Ali, wann stehst du auf?", ru: "Али, когда ты встаёшь?" },
-      { speaker: "Ali", de: "Ich stehe um halb sieben auf. Das ist sehr früh!", ru: "Я встаю в половине седьмого. Это очень рано!" },
+      { speaker: "Mia", de: "Emil, wann stehst du auf?", ru: "Эмиль, когда ты встаёшь?" },
+      { speaker: "Emil", de: "Ich stehe um halb sieben auf. Das ist sehr früh!", ru: "Я встаю в половине седьмого. Это очень рано!" },
       { speaker: "Mia", de: "Und wann fängt die Arbeit an?", ru: "А когда начинается работа?" },
-      { speaker: "Ali", de: "Um neun. Ich arbeite von neun bis fünf.", ru: "В девять. Я работаю с девяти до пяти." },
+      { speaker: "Emil", de: "Um neun. Ich arbeite von neun bis fünf.", ru: "В девять. Я работаю с девяти до пяти." },
       { speaker: "Mia", de: "Hast du eine Mittagspause?", ru: "У тебя есть обеденный перерыв?" },
-      { speaker: "Ali", de: "Ja, von zwölf bis eins. Um fünf habe ich Feierabend.", ru: "Да, с двенадцати до часа. В пять у меня конец рабочего дня." },
+      { speaker: "Emil", de: "Ja, von zwölf bis eins. Um fünf habe ich Feierabend.", ru: "Да, с двенадцати до часа. В пять у меня конец рабочего дня." },
       { speaker: "Mia", de: "Was machst du am Abend?", ru: "Что ты делаешь вечером?" },
-      { speaker: "Ali", de: "Ich kaufe ein, dann sehe ich fern oder rufe meine Familie an.", ru: "Я делаю покупки, потом смотрю телевизор или звоню семье." },
+      { speaker: "Emil", de: "Ich kaufe ein, dann sehe ich fern oder rufe meine Familie an.", ru: "Я делаю покупки, потом смотрю телевизор или звоню семье." },
       { speaker: "Mia", de: "Und am Wochenende?", ru: "А в выходные?" },
-      { speaker: "Ali", de: "Am Samstag schlafe ich lange. Am Sonntag fahre ich nach Potsdam.", ru: "В субботу я долго сплю. В воскресенье еду в Потсдам." },
+      { speaker: "Emil", de: "Am Samstag schlafe ich lange. Am Sonntag fahre ich nach Potsdam.", ru: "В субботу я долго сплю. В воскресенье еду в Потсдам." },
       { speaker: "Mia", de: "Schön! Ich habe am Sonntag auch frei.", ru: "Здорово! У меня в воскресенье тоже выходной." },
-      { speaker: "Ali", de: "Toll! Dann fahren wir zusammen.", ru: "Отлично! Тогда поедем вместе." }
+      { speaker: "Emil", de: "Toll! Dann fahren wir zusammen.", ru: "Отлично! Тогда поедем вместе." }
     ]
   },
 
@@ -394,7 +394,7 @@ export default {
     scenario:
       "Мия спрашивает тебя о твоём дне. Скажи, который сейчас час, когда ты встаёшь, когда начинается работа, когда у тебя обед, что ты делаешь вечером и есть ли у тебя планы на выходные. Используй um … Uhr, am Montag, von … bis и отделяемые глаголы.",
     tutorBrief:
-      "Mia asks Ali about his daily routine. Ask what time it is now, when he gets up, when his work starts, when he has his lunch break, what he does in the evening, and whether he has an appointment at the weekend. Target structures: Es ist … Uhr / halb / Viertel nach / Viertel vor; um … Uhr; am Montag / am Abend; von … bis; separable verbs (aufstehen, anfangen, einkaufen, fernsehen, anrufen); schlafen / fahren (du schläfst, er fährt); time expression at the start with verb second. Keep to A1 vocabulary from the daily-routine and time topic. Do not use modal verbs, Perfekt or Dativ prepositions.",
+      "Mia asks Emil about his daily routine. Ask what time it is now, when he gets up, when his work starts, when he has his lunch break, what he does in the evening, and whether he has an appointment at the weekend. Target structures: Es ist … Uhr / halb / Viertel nach / Viertel vor; um … Uhr; am Montag / am Abend; von … bis; separable verbs (aufstehen, anfangen, einkaufen, fernsehen, anrufen); schlafen / fahren (du schläfst, er fährt); time expression at the start with verb second. Keep to A1 vocabulary from the daily-routine and time topic. Do not use modal verbs, Perfekt or Dativ prepositions.",
     phrases: [
       { de: "Es ist halb acht.", ru: "Сейчас половина восьмого." },
       { de: "Ich stehe um sieben Uhr auf.", ru: "Я встаю в семь часов." },
@@ -407,8 +407,8 @@ export default {
     ],
     script: [
       {
-        say: "Hallo Ali! Wie spät ist es jetzt?",
-        sayRu: "Привет, Али! Который сейчас час?",
+        say: "Hallo Emil! Wie spät ist es jetzt?",
+        sayRu: "Привет, Эмиль! Который сейчас час?",
         hint: "Es ist … Uhr. / Es ist halb …",
         expect: ["uhr", "halb", "viertel", "nach", "vor"]
       },
@@ -443,8 +443,8 @@ export default {
         expect: ["ja", "nein", "termin", "samstag", "sonntag", "wochenende"]
       },
       {
-        say: "Super, Ali! Danke. Bis Montag, tschüss!",
-        sayRu: "Отлично, Али! Спасибо. До понедельника, пока!",
+        say: "Super, Emil! Danke. Bis Montag, tschüss!",
+        sayRu: "Отлично, Эмиль! Спасибо. До понедельника, пока!",
         hint: "Tschüss, Mia! Bis Montag!",
         expect: ["tschüss", "tschuss", "bis", "ciao", "wiedersehen"]
       }
@@ -461,10 +461,10 @@ export default {
     },
     {
       type: "fill",
-      sentence: "Ali ___ um Viertel vor sieben auf. (aufstehen)",
+      sentence: "Emil ___ um Viertel vor sieben auf. (aufstehen)",
       answers: ["steht"],
-      ru: "Али встаёт без четверти семь.",
-      explain: "aufstehen: er/Ali steht … auf."
+      ru: "Эмиль встаёт без четверти семь.",
+      explain: "aufstehen: er/Emil steht … auf."
     },
     {
       type: "choice",

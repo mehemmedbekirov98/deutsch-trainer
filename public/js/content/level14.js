@@ -16,11 +16,11 @@ export default {
   ],
 
   vocab: [
-    { de: "die Arbeit", ru: "работа", example: "Ali sucht seit einem Monat eine neue Arbeit.", exampleRu: "Али уже месяц ищет новую работу." },
+    { de: "die Arbeit", ru: "работа", example: "Emil sucht seit einem Monat eine neue Arbeit.", exampleRu: "Эмиль уже месяц ищет новую работу." },
     { de: "der Beruf", ru: "профессия", plural: "die Berufe", example: "Was sind Sie von Beruf?", exampleRu: "Кто вы по профессии?" },
     { de: "die Stelle", ru: "место работы, вакансия", plural: "die Stellen", example: "Die Firma hat eine Stelle als Fahrer frei.", exampleRu: "В фирме есть свободное место водителя." },
     { de: "die Stellenanzeige", ru: "объявление о вакансии", plural: "die Stellenanzeigen", example: "Ich habe die Stellenanzeige im Internet gefunden.", exampleRu: "Я нашёл это объявление о вакансии в интернете." },
-    { de: "die Firma", ru: "фирма, компания", plural: "die Firmen", example: "Ali arbeitet bei einer kleinen Firma in Berlin.", exampleRu: "Али работает в маленькой фирме в Берлине." },
+    { de: "die Firma", ru: "фирма, компания", plural: "die Firmen", example: "Emil arbeitet bei einer kleinen Firma in Berlin.", exampleRu: "Эмиль работает в маленькой фирме в Берлине." },
     { de: "der Arbeitgeber", ru: "работодатель", plural: "die Arbeitgeber", example: "Mein Arbeitgeber zahlt immer pünktlich.", exampleRu: "Мой работодатель всегда платит вовремя." },
     { de: "der Chef", ru: "начальник, шеф", plural: "die Chefs", example: "Mein Chef hat mir eine neue Aufgabe gegeben.", exampleRu: "Мой начальник дал мне новое задание." },
     { de: "der Kollege", ru: "коллега (мужчина)", plural: "die Kollegen", example: "Mein Kollege arbeitet diese Woche in der Nachtschicht.", exampleRu: "Мой коллега на этой неделе работает в ночную смену." },
@@ -31,9 +31,9 @@ export default {
     { de: "das Anschreiben", ru: "сопроводительное письмо", plural: "die Anschreiben", example: "Ohne Anschreiben ist eine Bewerbung nicht komplett.", exampleRu: "Без сопроводительного письма заявка неполная." },
     { de: "das Vorstellungsgespräch", ru: "собеседование", plural: "die Vorstellungsgespräche", example: "Morgen um zehn habe ich ein Vorstellungsgespräch.", exampleRu: "Завтра в десять у меня собеседование." },
     { de: "das Zeugnis", ru: "свидетельство, аттестат, характеристика", plural: "die Zeugnisse", example: "Bitte schicken Sie uns auch Ihre Zeugnisse.", exampleRu: "Пожалуйста, пришлите нам также ваши свидетельства." },
-    { de: "die Ausbildung", ru: "профессиональное обучение", plural: "die Ausbildungen", example: "Ali hat eine Ausbildung als Elektriker gemacht.", exampleRu: "Али отучился на электрика." },
+    { de: "die Ausbildung", ru: "профессиональное обучение", plural: "die Ausbildungen", example: "Emil hat eine Ausbildung als Elektriker gemacht.", exampleRu: "Эмиль отучился на электрика." },
     { de: "die Erfahrung", ru: "опыт", plural: "die Erfahrungen", example: "Ich habe viel Erfahrung als Fahrer.", exampleRu: "У меня большой опыт работы водителем." },
-    { de: "das Praktikum", ru: "стажировка, практика", plural: "die Praktika", example: "Nach dem Sprachkurs macht Ali ein Praktikum.", exampleRu: "После языкового курса Али идёт на стажировку." },
+    { de: "das Praktikum", ru: "стажировка, практика", plural: "die Praktika", example: "Nach dem Sprachkurs macht Emil ein Praktikum.", exampleRu: "После языкового курса Эмиль идёт на стажировку." },
     { de: "der Vertrag", ru: "договор", plural: "die Verträge", example: "Der Vertrag liegt auf dem Tisch.", exampleRu: "Договор лежит на столе." },
     { de: "unterschreiben", ru: "подписывать", example: "Bitte unterschreiben Sie hier unten.", exampleRu: "Подпишите, пожалуйста, здесь внизу." },
     { de: "die Probezeit", ru: "испытательный срок", plural: "die Probezeiten", example: "Nach der Probezeit verdiene ich mehr.", exampleRu: "После испытательного срока я буду зарабатывать больше." },
@@ -66,7 +66,7 @@ export default {
         ],
       },
       examples: [
-        { de: "Ali hat zwei Jahre als Elektriker gearbeitet.", ru: "Али два года работал электриком." },
+        { de: "Emil hat zwei Jahre als Elektriker gearbeitet.", ru: "Эмиль два года работал электриком." },
         { de: "Ich bin zu spät zur Arbeit gekommen.", ru: "Я опоздал на работу." },
         { de: "Wir haben die Bewerbung am Freitag geschickt.", ru: "Мы отправили заявку в пятницу." },
         { de: "Mein Kollege ist heute zu Hause geblieben.", ru: "Мой коллега сегодня остался дома." },
@@ -106,7 +106,7 @@ export default {
         rows: [
           ["Ich", "habe", "acht Stunden", "gearbeitet."],
           ["Gestern", "habe", "ich acht Stunden", "gearbeitet."],
-          ["Ali", "ist", "zum Gespräch", "gefahren."],
+          ["Emil", "ist", "zum Gespräch", "gefahren."],
           ["Wann", "hast", "du", "angefangen?"],
           ["—", "Hast", "du den Vertrag", "unterschrieben?"],
         ],
@@ -203,15 +203,15 @@ export default {
     },
     {
       type: "fill",
-      sentence: "Ali ___ die Bewerbung schon geschickt.",
+      sentence: "Emil ___ die Bewerbung schon geschickt.",
       answers: ["hat"],
       options: ["hat", "ist", "habe"],
-      ru: "Али уже отправил заявку.",
+      ru: "Эмиль уже отправил заявку.",
       explain: "schicken — обычный глагол, Perfekt с haben: er hat.",
     },
     {
       type: "choice",
-      q: "Ali ___ gestern eine Bewerbung geschrieben.",
+      q: "Emil ___ gestern eine Bewerbung geschrieben.",
       options: ["hat", "ist", "haben"],
       answer: 0,
       explain: "schreiben идёт с haben, форма для er/sie/es — hat.",
@@ -226,7 +226,7 @@ export default {
     },
     {
       type: "choice",
-      q: "Ali ___ mit dem Bus zum Vorstellungsgespräch gefahren.",
+      q: "Emil ___ mit dem Bus zum Vorstellungsgespräch gefahren.",
       options: ["hat", "ist", "war"],
       answer: 1,
       explain: "fahren — движение, значит sein: ist gefahren.",
@@ -270,15 +270,15 @@ export default {
       text: "Guten Tag, Herr Aliyev. Danke für Ihre Bewerbung. Haben Sie schon Erfahrung als Fahrer?",
       mode: "choice",
       q: "О чём спрашивает фирма?",
-      options: ["Есть ли у Али опыт работы водителем", "Где Али живёт", "Сколько Али хочет зарабатывать"],
+      options: ["Есть ли у Эмиль опыт работы водителем", "Где Эмиль живёт", "Сколько Эмиль хочет зарабатывать"],
       answer: 0,
       ru: "Добрый день, господин Алиев. Спасибо за вашу заявку. У вас уже есть опыт работы водителем?",
     },
     {
       type: "order",
-      words: ["Jahre", "Ali", "gearbeitet", "hat", "einer", "drei", "Firma", "in"],
-      answer: "Ali hat drei Jahre in einer Firma gearbeitet.",
-      ru: "Али три года работал в одной фирме.",
+      words: ["Jahre", "Emil", "gearbeitet", "hat", "einer", "drei", "Firma", "in"],
+      answer: "Emil hat drei Jahre in einer Firma gearbeitet.",
+      ru: "Эмиль три года работал в одной фирме.",
     },
     {
       type: "choice",
@@ -350,10 +350,10 @@ export default {
     },
     {
       type: "choice",
-      q: "Wie lange dauert Alis Probezeit?",
+      q: "Wie lange dauert Emils Probezeit?",
       options: ["sechs Monate", "zwei Jahre", "eine Woche"],
       answer: 0,
-      explain: "Probezeit — испытательный срок; по закону он длится максимум шесть месяцев, у Али — ровно шесть (см. диалог с фрау Вагнер). Важно: договор действует уже с первого рабочего дня, никакого второго договора после испытательного срока не выдают — тот же договор просто продолжается. Меняется только срок уведомления об увольнении: во время Probezeit это две недели, после неё — обычный, более длинный.",
+      explain: "Probezeit — испытательный срок; по закону он длится максимум шесть месяцев, у Эмиль — ровно шесть (см. диалог с фрау Вагнер). Важно: договор действует уже с первого рабочего дня, никакого второго договора после испытательного срока не выдают — тот же договор просто продолжается. Меняется только срок уведомления об увольнении: во время Probezeit это две недели, после неё — обычный, более длинный.",
     },
     {
       type: "fill",
@@ -366,8 +366,8 @@ export default {
     {
       type: "translate",
       dir: "ru-de",
-      text: "Али нашёл новую работу.",
-      answers: ["Ali hat eine neue Arbeit gefunden.", "Ali hat eine neue Stelle gefunden."],
+      text: "Эмиль нашёл новую работу.",
+      answers: ["Emil hat eine neue Arbeit gefunden.", "Emil hat eine neue Stelle gefunden."],
       hint: "finden → gefunden",
     },
     {
@@ -396,17 +396,17 @@ export default {
     titleRu: "Собеседование",
     lines: [
       { speaker: "Frau Wagner", de: "Guten Tag, Herr Aliyev. Schön, dass Sie da sind. Nehmen Sie bitte Platz.", ru: "Добрый день, господин Алиев. Хорошо, что вы пришли. Садитесь, пожалуйста." },
-      { speaker: "Ali", de: "Guten Tag, Frau Wagner. Vielen Dank für die Einladung.", ru: "Добрый день, госпожа Вагнер. Большое спасибо за приглашение." },
+      { speaker: "Emil", de: "Guten Tag, Frau Wagner. Vielen Dank für die Einladung.", ru: "Добрый день, госпожа Вагнер. Большое спасибо за приглашение." },
       { speaker: "Frau Wagner", de: "Wir haben Ihre Bewerbung gelesen. Erzählen Sie kurz: Was haben Sie bisher gemacht?", ru: "Мы прочитали вашу заявку. Расскажите коротко: чем вы занимались до сих пор?" },
-      { speaker: "Ali", de: "Ich komme aus Aserbaidschan. Dort habe ich sechs Jahre als Elektriker gearbeitet.", ru: "Я из Азербайджана. Там я шесть лет работал электриком." },
+      { speaker: "Emil", de: "Ich komme aus Aserbaidschan. Dort habe ich sechs Jahre als Elektriker gearbeitet.", ru: "Я из Азербайджана. Там я шесть лет работал электриком." },
       { speaker: "Frau Wagner", de: "Und was haben Sie hier gemacht? Sie sind ja erst seit zwei Jahren hier.", ru: "А чем вы занимались здесь? Вы ведь здесь всего два года." },
-      { speaker: "Ali", de: "Ich habe einen Sprachkurs besucht und ein Praktikum im Lager gemacht.", ru: "Я ходил на языковой курс и прошёл стажировку на складе." },
+      { speaker: "Emil", de: "Ich habe einen Sprachkurs besucht und ein Praktikum im Lager gemacht.", ru: "Я ходил на языковой курс и прошёл стажировку на складе." },
       { speaker: "Frau Wagner", de: "Sehr gut. Die Stelle ist Vollzeit, mit Früh- und Spätschicht. Ist das für Sie in Ordnung?", ru: "Очень хорошо. Место — полная занятость, утренняя и вечерняя смены. Вас это устраивает?" },
-      { speaker: "Ali", de: "Ja, kein Problem. Ich habe auch früher in Schichten gearbeitet.", ru: "Да, без проблем. Я и раньше работал посменно." },
+      { speaker: "Emil", de: "Ja, kein Problem. Ich habe auch früher in Schichten gearbeitet.", ru: "Да, без проблем. Я и раньше работал посменно." },
       { speaker: "Frau Wagner", de: "Die Probezeit dauert sechs Monate. Haben Sie noch Fragen?", ru: "Испытательный срок длится шесть месяцев. У вас есть ещё вопросы?" },
-      { speaker: "Ali", de: "Ja, eine Frage: Wann kann ich anfangen?", ru: "Да, один вопрос: когда я могу начать?" },
+      { speaker: "Emil", de: "Ja, eine Frage: Wann kann ich anfangen?", ru: "Да, один вопрос: когда я могу начать?" },
       { speaker: "Frau Wagner", de: "Am ersten März. Wir rufen Sie aber diese Woche noch an.", ru: "Первого марта. Но мы вам ещё позвоним на этой неделе." },
-      { speaker: "Ali", de: "Vielen Dank, Frau Wagner. Auf Wiedersehen!", ru: "Большое спасибо, госпожа Вагнер. До свидания!" },
+      { speaker: "Emil", de: "Vielen Dank, Frau Wagner. Auf Wiedersehen!", ru: "Большое спасибо, госпожа Вагнер. До свидания!" },
     ],
   },
 
@@ -415,7 +415,7 @@ export default {
     scenario:
       "Ты увидел объявление: фирме нужен водитель. Позвони туда — трубку берёт Мия из отдела кадров. Скажи, что звонишь по объявлению, назови своё имя, расскажи в Perfekt, где и кем ты работал раньше, спроси про смены и зарплату и узнай, как подать заявку.",
     tutorBrief:
-      "Mia works in the HR department of a logistics company and answers the phone. Ali calls about a job ad for a driver. Greet him, ask his name, ask where he has worked so far (Wo haben Sie bisher gearbeitet?), ask whether he has a driving licence, tell him the job is shift work, answer his question about the pay, and tell him to send his CV by e-mail. Use Sie with Ali. Target structures: Perfekt with haben and sein (ich habe ... gearbeitet, ich habe ein Praktikum gemacht, ich bin ... gefahren), Partizip II at the end of the sentence, questions with Haben Sie ...? and Wo/Wann haben Sie ...? Keep to A2 work vocabulary, short sentences, and correct him gently if he puts the Partizip II in the wrong place.",
+      "Mia works in the HR department of a logistics company and answers the phone. Emil calls about a job ad for a driver. Greet him, ask his name, ask where he has worked so far (Wo haben Sie bisher gearbeitet?), ask whether he has a driving licence, tell him the job is shift work, answer his question about the pay, and tell him to send his CV by e-mail. Use Sie with Emil. Target structures: Perfekt with haben and sein (ich habe ... gearbeitet, ich habe ein Praktikum gemacht, ich bin ... gefahren), Partizip II at the end of the sentence, questions with Haben Sie ...? and Wo/Wann haben Sie ...? Keep to A2 work vocabulary, short sentences, and correct him gently if he puts the Partizip II in the wrong place.",
     phrases: [
       { de: "Ich rufe wegen der Stellenanzeige an.", ru: "Я звоню по объявлению о вакансии." },
       { de: "Ich habe drei Jahre als Fahrer gearbeitet.", ru: "Я три года работал водителем." },
@@ -435,7 +435,7 @@ export default {
       {
         say: "Ah, die Stelle als Fahrer. Wie heißen Sie, bitte?",
         sayRu: "А, место водителя. Как вас зовут?",
-        hint: "Mein Name ist Ali …",
+        hint: "Mein Name ist Emil …",
         expect: ["ali", "name", "heiße", "heisse"],
       },
       {
@@ -520,7 +520,7 @@ export default {
       type: "listen",
       text: "Guten Tag, Herr Aliyev. Wir haben Ihre Bewerbung bekommen. Können Sie am Donnerstag um zehn Uhr zum Gespräch kommen?",
       mode: "choice",
-      q: "Когда Али должен прийти на собеседование?",
+      q: "Когда Эмиль должен прийти на собеседование?",
       options: ["В среду в десять", "В четверг в десять", "В четверг в двенадцать"],
       answer: 1,
       ru: "Добрый день, господин Алиев. Мы получили вашу заявку. Вы можете прийти на собеседование в четверг в десять часов?",

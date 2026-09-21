@@ -38,7 +38,7 @@ export function renderFlashcards({ container, level, onDone, onExit }) {
   const v0 = () => cards[i];
 
   /**
-   * Read the card aloud, matching the side Ali is looking at:
+   * Read the card aloud, matching the side Emil is looking at:
    * front — the word, then the German example;
    * back  — the Russian meaning, then the German example and its translation.
    * Russian uses Mia's own multilingual voice, so both sides sound like the same person.
@@ -93,7 +93,7 @@ export function renderFlashcards({ container, level, onDone, onExit }) {
     cardEl.onclick = () => flip();
     setTimeout(speak, 250);
     const next = cards[i + 1];
-    // warm the next card while Ali reads this one — both sides, since he can flip either way
+    // warm the next card while Emil reads this one — both sides, since he can flip either way
     if (next) setTimeout(async () => {
       await speech.prefetch(next.de, { rate: RATES.word });
       await speech.prefetch(next.example, { rate: RATES.example });

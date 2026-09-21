@@ -18,7 +18,7 @@ export default {
   vocab: [
     { de: "die Wohnung", ru: "квартира", plural: "die Wohnungen", example: "Wir suchen eine Wohnung mit drei Zimmern.", exampleRu: "Мы ищем квартиру с тремя комнатами." },
     { de: "die Wohnungssuche", ru: "поиск квартиры", example: "Die Wohnungssuche dauert bei uns schon vier Monate.", exampleRu: "Поиск квартиры длится у нас уже четыре месяца." },
-    { de: "die Anzeige", ru: "объявление", plural: "die Anzeigen", example: "Ali hat die Anzeige im Internet gefunden.", exampleRu: "Али нашёл объявление в интернете." },
+    { de: "die Anzeige", ru: "объявление", plural: "die Anzeigen", example: "Emil hat die Anzeige im Internet gefunden.", exampleRu: "Эмиль нашёл объявление в интернете." },
     { de: "die Besichtigung", ru: "просмотр (квартиры)", plural: "die Besichtigungen", example: "Die Besichtigung ist am Donnerstag um 17 Uhr.", exampleRu: "Просмотр квартиры в четверг в 17 часов." },
     { de: "der Vermieter", ru: "арендодатель, хозяин квартиры", plural: "die Vermieter", example: "Der Vermieter wohnt im selben Haus.", exampleRu: "Арендодатель живёт в том же доме." },
     { de: "der Mieter", ru: "квартиросъёмщик, жилец", plural: "die Mieter", example: "Die alten Mieter ziehen Ende Juni aus.", exampleRu: "Старые жильцы выезжают в конце июня." },
@@ -380,26 +380,26 @@ export default {
     titleRu: "Просмотр квартиры",
     lines: [
       { speaker: "Frau Weber", de: "Guten Tag, kommen Sie bitte herein. Das ist die Wohnung, die Sie in der Anzeige gesehen haben.", ru: "Добрый день, проходите, пожалуйста. Это квартира, которую вы видели в объявлении." },
-      { speaker: "Ali", de: "Guten Tag. Vielen Dank für die Besichtigung. Die Wohnung ist heller, als ich dachte.", ru: "Добрый день. Большое спасибо за просмотр. Квартира светлее, чем я думал." },
+      { speaker: "Emil", de: "Guten Tag. Vielen Dank für die Besichtigung. Die Wohnung ist heller, als ich dachte.", ru: "Добрый день. Большое спасибо за просмотр. Квартира светлее, чем я думал." },
       { speaker: "Frau Weber", de: "Sie liegt im Erdgeschoss, aber die Fenster gehen nach Süden. 68 Quadratmeter Wohnfläche, drei Zimmer.", ru: "Она находится на первом этаже, но окна выходят на юг. 68 квадратных метров жилой площади, три комнаты." },
-      { speaker: "Ali", de: "Sehr gut. Meine Tochter ist sechs, sie braucht bald ein eigenes Zimmer. Gehört auch ein Keller dazu?", ru: "Очень хорошо. Моей дочери шесть, ей скоро понадобится своя комната. Подвал тоже входит?" },
+      { speaker: "Emil", de: "Sehr gut. Meine Tochter ist sechs, sie braucht bald ein eigenes Zimmer. Gehört auch ein Keller dazu?", ru: "Очень хорошо. Моей дочери шесть, ей скоро понадобится своя комната. Подвал тоже входит?" },
       { speaker: "Frau Weber", de: "Ja, jede Wohnung hat einen Keller. Einen Aufzug gibt es leider nicht, aber unten brauchen Sie ihn nicht.", ru: "Да, у каждой квартиры есть подвал. Лифта, к сожалению, нет, но внизу он вам не нужен." },
-      { speaker: "Ali", de: "Das stimmt. Und die Heizung — wird hier mit Gas geheizt?", ru: "Это верно. А отопление — здесь отапливается газом?" },
+      { speaker: "Emil", de: "Das stimmt. Und die Heizung — wird hier mit Gas geheizt?", ru: "Это верно. А отопление — здесь отапливается газом?" },
       { speaker: "Frau Weber", de: "Genau. Die Kaltmiete beträgt 620 Euro, dazu kommen 150 Euro Nebenkosten.", ru: "Именно так. Аренда без коммунальных расходов составляет 620 евро, плюс 150 евро коммунальных расходов." },
-      { speaker: "Ali", de: "Und wie hoch ist die Kaution? Wie lang ist die Kündigungsfrist?", ru: "А сколько составляет залог? Какой срок расторжения договора?" },
+      { speaker: "Emil", de: "Und wie hoch ist die Kaution? Wie lang ist die Kündigungsfrist?", ru: "А сколько составляет залог? Какой срок расторжения договора?" },
       { speaker: "Frau Weber", de: "Die Kaution beträgt zwei Monatsmieten, die Kündigungsfrist drei Monate. Um die Reparaturen kümmert sich die Hausverwaltung.", ru: "Залог составляет две месячные аренды, срок расторжения договора — три месяца. Ремонтом занимается управляющая компания." },
-      { speaker: "Ali", de: "Das klingt fair. Ich arbeite als Fahrer und habe einen festen Vertrag; einen Nachweis über mein Einkommen bringe ich gern mit.", ru: "Звучит справедливо. Я работаю водителем, и у меня постоянный договор; справку о доходах я с удовольствием принесу." },
+      { speaker: "Emil", de: "Das klingt fair. Ich arbeite als Fahrer und habe einen festen Vertrag; einen Nachweis über mein Einkommen bringe ich gern mit.", ru: "Звучит справедливо. Я работаю водителем, и у меня постоянный договор; справку о доходах я с удовольствием принесу." },
       { speaker: "Frau Weber", de: "Sehr gut. Die alten Mieter ziehen Ende Juni aus, Sie könnten also am ersten Juli einziehen.", ru: "Очень хорошо. Старые жильцы выезжают в конце июня, так что вы могли бы въехать первого июля." },
-      { speaker: "Ali", de: "Das passt uns gut. Wann können wir den Mietvertrag unterschreiben?", ru: "Нам это подходит. Когда мы можем подписать договор аренды?" },
+      { speaker: "Emil", de: "Das passt uns gut. Wann können wir den Mietvertrag unterschreiben?", ru: "Нам это подходит. Когда мы можем подписать договор аренды?" },
     ],
   },
 
   speaking: {
     title: "Звонок по объявлению о квартире",
     scenario:
-      "Ты нашёл объявление о трёхкомнатной квартире и звонишь хозяйке. Скажи, почему ты звонишь, и спроси, свободна ли ещё квартира. Расскажи коротко о себе: ты работаешь водителем, у тебя постоянный договор, вас трое — ты, жена Айсель и шестилетняя дочь. Спроси про коммунальные расходы, залог, балкон и подвал. В конце договорись о просмотре и попрощайся.",
+      "Ты нашёл объявление о трёхкомнатной квартире и звонишь хозяйке. Скажи, почему ты звонишь, и спроси, свободна ли ещё квартира. Расскажи коротко о себе: ты работаешь водителем, у тебя постоянный договор, вас трое — ты, жена Севиль и шестилетняя дочь. Спроси про коммунальные расходы, залог, балкон и подвал. В конце договорись о просмотре и попрощайся.",
     tutorBrief:
-      "Mia Weber is a private landlady in Germany. Ali is calling about her flat advertisement. Use Sie with him throughout — this is a first phone call. Confirm the flat is still available, ask how many people will live there and what he does for a living, then give the numbers: Kaltmiete 620 Euro, Nebenkosten 150 Euro, Kaution two months' rent, three-month Kündigungsfrist. Answer his questions about the Balkon, the Keller and the Heizung, then offer a viewing appointment on Thursday at 17:00 and say goodbye. Target structures: relative clauses in Nominativ, Akkusativ and Dativ (die Wohnung, die ich gesehen habe; der Vermieter, dem ich geschrieben habe) and relative clauses with a preposition (die Wohnung, in der wir wohnen; der Punkt, über den wir sprechen). Keep to B1 housing and contract vocabulary; clear, natural sentences, no legal jargon.",
+      "Mia Weber is a private landlady in Germany. Emil is calling about her flat advertisement. Use Sie with him throughout — this is a first phone call. Confirm the flat is still available, ask how many people will live there and what he does for a living, then give the numbers: Kaltmiete 620 Euro, Nebenkosten 150 Euro, Kaution two months' rent, three-month Kündigungsfrist. Answer his questions about the Balkon, the Keller and the Heizung, then offer a viewing appointment on Thursday at 17:00 and say goodbye. Target structures: relative clauses in Nominativ, Akkusativ and Dativ (die Wohnung, die ich gesehen habe; der Vermieter, dem ich geschrieben habe) and relative clauses with a preposition (die Wohnung, in der wir wohnen; der Punkt, über den wir sprechen). Keep to B1 housing and contract vocabulary; clear, natural sentences, no legal jargon.",
     phrases: [
       { de: "Guten Tag, ich rufe wegen der Anzeige an.", ru: "Добрый день, я звоню по объявлению." },
       { de: "Ist die Wohnung noch frei?", ru: "Квартира ещё свободна?" },

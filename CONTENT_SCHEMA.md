@@ -1,4 +1,4 @@
-# Level content contract (Deutsch für Ali)
+# Level content contract (Lingua Mia)
 
 Every level lives in `public/js/content/levelNN.js` (NN = two digits, `level01.js` … `level12.js`) and is an ES module:
 
@@ -6,7 +6,7 @@ Every level lives in `public/js/content/levelNN.js` (NN = two digits, `level01.j
 export default { ...level object... };
 ```
 
-The learner is **Ali**, 31 years old, Russian speaker, level A1 (beginner). All *instructions, explanations, translations* are in **Russian**. All *target language material* is in **German** (correct spelling with ä ö ü ß, nouns with article, `du`-form when addressing Ali). Use Ali's name in examples now and then. Tone: friendly, adult, never childish.
+The learner is **Emil**, 31 years old, Russian speaker, level A1 (beginner). All *instructions, explanations, translations* are in **Russian**. All *target language material* is in **German** (correct spelling with ä ö ü ß, nouns with article, `du`-form when addressing Emil). Use Emil's name in examples now and then. Tone: friendly, adult, never childish.
 
 Validate a file with: `node tools/validate-content.mjs public/js/content/level05.js` — it must print `OK`.
 
@@ -20,7 +20,7 @@ Validate a file with: `node tools/validate-content.mjs public/js/content/level05
 | `titleRu` | string | Russian title |
 | `emoji` | string | one emoji |
 | `color` | string | hex accent color, e.g. `"#7c5cff"` (use the one assigned to you) |
-| `intro` | string | 1–2 Russian sentences: what Ali will learn |
+| `intro` | string | 1–2 Russian sentences: what Emil will learn |
 | `goals` | string[] | 3–4 short Russian goals ("Представиться и спросить имя") |
 | `vocab` | Vocab[] | 24–32 items |
 | `grammar` | Grammar[] | 2–3 items |
@@ -32,7 +32,7 @@ Validate a file with: `node tools/validate-content.mjs public/js/content/level05
 ### Vocab
 ```js
 { de: "der Name", ru: "имя", plural: "die Namen",      // plural only for nouns (optional)
-  example: "Mein Name ist Ali.", exampleRu: "Меня зовут Али." }
+  example: "Mein Name ist Emil.", exampleRu: "Меня зовут Эмиль." }
 ```
 - Nouns: always with article in `de` ("die Frau", "das Kind"). Verbs in infinitive ("kommen"). Phrases allowed ("Guten Morgen").
 - `example` is a full simple German sentence, `exampleRu` its Russian translation. Both required.
@@ -42,7 +42,7 @@ Validate a file with: `node tools/validate-content.mjs public/js/content/level05
 { title: "Глагол sein (быть)",
   body: "Короткое объяснение на русском (2–5 предложений). Переносы строк допустимы.",
   table: { headers: ["Лицо", "sein"], rows: [["ich", "bin"], ["du", "bist"], ["er/sie/es", "ist"], ["wir", "sind"], ["ihr", "seid"], ["sie/Sie", "sind"]] }, // optional
-  examples: [{ de: "Ich bin Ali.", ru: "Я Али." }] }   // 2–4 examples
+  examples: [{ de: "Ich bin Emil.", ru: "Я Эмиль." }] }   // 2–4 examples
 ```
 
 ### Exercise types (exact shapes)
@@ -63,7 +63,7 @@ Every exercise may have an optional `explain` (Russian, one sentence, shown afte
 
 3. **translate** — translate a short sentence
 ```js
-{ type: "translate", dir: "ru-de", text: "Меня зовут Али.", answers: ["Ich heiße Ali.", "Mein Name ist Ali."], hint: "heißen / Name" }
+{ type: "translate", dir: "ru-de", text: "Меня зовут Эмиль.", answers: ["Ich heiße Emil.", "Mein Name ist Emil."], hint: "heißen / Name" }
 { type: "translate", dir: "de-ru", text: "Woher kommst du?", answers: ["Откуда ты?", "Откуда ты родом?"], hint: "woher = откуда" }
 ```
 Comparison is forgiving (case, punctuation, ß/ss, ё/е are ignored), but list every natural variant in `answers` (2–4). Keep sentences ≤ 6 words.
@@ -76,7 +76,7 @@ Comparison is forgiving (case, punctuation, ß/ss, ё/е are ignored), but list 
 
 Optional `alt: ["Ich fahre um sechs nach Hause."]` — other word orders that are just as correct and
 mean the same as `ru`. Use it when the sentence genuinely has two natural orders (typically when a
-time or place phrase can stand either in first position or after the verb), so Ali is not marked
+time or place phrase can stand either in first position or after the verb), so Emil is not marked
 wrong for good German. Each entry must be buildable from exactly the same chips — the validator
 checks this. Do not list orders that are merely grammatical but unnatural, or that contradict `ru`.
 
@@ -86,16 +86,16 @@ checks this. Do not list orders that are merely grammatical but unnatural, or th
 ```
 4–6 pairs, all Russian sides distinct.
 
-6. **listen** — the app reads `text` aloud (TTS), Ali answers
+6. **listen** — the app reads `text` aloud (TTS), Emil answers
 ```js
 { type: "listen", text: "Guten Tag, ich heiße Anna.", mode: "choice", options: ["Anna", "Anne", "Hanna"], answer: 0, q: "Как зовут женщину?", ru: "Добрый день, меня зовут Анна." }
 { type: "listen", text: "Ich komme aus Berlin.", mode: "type", answers: ["Ich komme aus Berlin."], ru: "Я из Берлина." }
 ```
-`mode: "choice"` needs `q`, `options`, `answer`; `mode: "type"` needs `answers` (Ali types what he heard). `ru` = translation, always present.
+`mode: "choice"` needs `q`, `options`, `answer`; `mode: "type"` needs `answers` (Emil types what he heard). `ru` = translation, always present.
 
-7. **speak** — Ali repeats the sentence into the microphone (speech recognition compares)
+7. **speak** — Emil repeats the sentence into the microphone (speech recognition compares)
 ```js
-{ type: "speak", text: "Ich heiße Ali.", ru: "Меня зовут Али." }
+{ type: "speak", text: "Ich heiße Emil.", ru: "Меня зовут Эмиль." }
 ```
 Short (2–6 words), pronounceable, useful in real life.
 
@@ -108,26 +108,26 @@ Short (2–6 words), pronounceable, useful in real life.
 ```js
 { title: "Im Sprachkurs", titleRu: "На курсах немецкого",
   lines: [ { speaker: "Mia", de: "Hallo! Ich bin Mia. Und du?", ru: "Привет! Я Мия. А ты?" },
-           { speaker: "Ali",  de: "Hallo Mia, ich bin Ali.",      ru: "Привет, Мия, я Али." } ] }
+           { speaker: "Emil",  de: "Hallo Mia, ich bin Emil.",      ru: "Привет, Мия, я Эмиль." } ] }
 ```
-8–12 lines, 2 speakers (one of them is `"Ali"`), sentences short and natural, uses this level's vocab and grammar.
+8–12 lines, 2 speakers (one of them is `"Emil"`), sentences short and natural, uses this level's vocab and grammar.
 
 ### Speaking (voice practice with the tutor "Mia")
 ```js
 { title: "Знакомство на вечеринке",
-  scenario: "Русское описание ситуации для Али: Ты на вечеринке в Берлине. Познакомься с Мией: скажи, как тебя зовут, откуда ты, сколько тебе лет.",
-  tutorBrief: "English brief for the AI tutor: Mia meets Ali at a party. Ask his name, where he is from, his age, what languages he speaks. Target structures: ich heiße, ich komme aus, ich bin ... Jahre alt, ich spreche. Keep to A1 vocab from the greeting topic.",
-  phrases: [ { de: "Ich heiße Ali.", ru: "Меня зовут Али." }, ... ],      // 6–8 useful phrases
+  scenario: "Русское описание ситуации для Эмиль: Ты на вечеринке в Берлине. Познакомься с Мией: скажи, как тебя зовут, откуда ты, сколько тебе лет.",
+  tutorBrief: "English brief for the AI tutor: Mia meets Emil at a party. Ask his name, where he is from, his age, what languages he speaks. Target structures: ich heiße, ich komme aus, ich bin ... Jahre alt, ich spreche. Keep to A1 vocab from the greeting topic.",
+  phrases: [ { de: "Ich heiße Emil.", ru: "Меня зовут Эмиль." }, ... ],      // 6–8 useful phrases
   script: [                                                              // 6–8 turns, used when AI is offline
     { say: "Hallo! Ich bin Mia. Wie heißt du?", sayRu: "Привет! Я Мия. Как тебя зовут?", hint: "Ich heiße …", expect: ["heiße", "heisse", "bin", "name"] },
     ...
-    { say: "Super, Ali! Das war sehr gut. Bis bald!", sayRu: "Отлично, Али! Это было очень хорошо. До скорого!", hint: "Tschüss, Mia!", expect: ["tschüss", "tschuss", "bis", "ciao"] }
+    { say: "Super, Emil! Das war sehr gut. Bis bald!", sayRu: "Отлично, Эмиль! Это было очень хорошо. До скорого!", hint: "Tschüss, Mia!", expect: ["tschüss", "tschuss", "bis", "ciao"] }
   ] }
 ```
-`expect` = lowercase keywords; if Ali's recognized speech contains any of them the turn counts as passed. The last script turn must be a goodbye.
+`expect` = lowercase keywords; if Emil's recognized speech contains any of them the turn counts as passed. The last script turn must be a goodbye.
 
 ## Quality bar
 - Native-quality German, A1 vocabulary (Goethe-Zertifikat A1 word list), no grammar beyond the level's plan.
-- Russian is natural, short, encouraging; Ali is addressed as «ты».
+- Russian is natural, short, encouraging; Emil is addressed as «ты».
 - Avoid politics, religion, alcohol, dating; everyday adult life is fine (work, city, café, travel, sport, family).
 - Only plain data: strings, numbers, arrays, objects. No functions, no imports, no comments needed.

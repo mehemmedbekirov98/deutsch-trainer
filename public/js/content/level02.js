@@ -30,7 +30,7 @@ export default {
     { de: "elf", ru: "одиннадцать", example: "Elf plus eins ist zwölf.", exampleRu: "Одиннадцать плюс один — двенадцать." },
     { de: "zwölf", ru: "двенадцать", example: "Die Nummer ist zwölf.", exampleRu: "Номер — двенадцать." },
     { de: "zwanzig", ru: "двадцать", example: "Anna ist zwanzig Jahre alt.", exampleRu: "Анне двадцать лет." },
-    { de: "dreißig", ru: "тридцать", example: "Ali ist einunddreißig Jahre alt.", exampleRu: "Али тридцать один год." },
+    { de: "dreißig", ru: "тридцать", example: "Emil ist einunddreißig Jahre alt.", exampleRu: "Эмиль тридцать один год." },
     { de: "hundert", ru: "сто", example: "Zehn mal zehn ist hundert.", exampleRu: "Десять на десять — сто." },
     { de: "die Zahl", ru: "число", plural: "die Zahlen", example: "Die Zahl ist richtig.", exampleRu: "Число правильное." },
     { de: "die Nummer", ru: "номер", plural: "die Nummern", example: "Wie ist deine Nummer?", exampleRu: "Какой у тебя номер?" },
@@ -40,11 +40,11 @@ export default {
     { de: "das Jahr", ru: "год", plural: "die Jahre", example: "Ich bin einunddreißig Jahre alt.", exampleRu: "Мне тридцать один год." },
     { de: "die Telefonnummer", ru: "номер телефона", plural: "die Telefonnummern", example: "Meine Telefonnummer ist 030 12 34 56.", exampleRu: "Мой номер телефона — 030 12 34 56." },
     { de: "das Handy", ru: "мобильный телефон", plural: "die Handys", example: "Hast du ein Handy?", exampleRu: "У тебя есть мобильный телефон?" },
-    { de: "die E-Mail", ru: "электронная почта, e-mail", plural: "die E-Mails", example: "Meine E-Mail ist ali@mail.de.", exampleRu: "Мой e-mail — ali@mail.de." },
+    { de: "die E-Mail", ru: "электронная почта, e-mail", plural: "die E-Mails", example: "Meine E-Mail ist emil@mail.de.", exampleRu: "Мой e-mail — emil@mail.de." },
     { de: "die Adresse", ru: "адрес", plural: "die Adressen", example: "Wie ist Ihre Adresse?", exampleRu: "Какой у Вас адрес?" },
     { de: "das Alphabet", ru: "алфавит", example: "Das Alphabet hat sechsundzwanzig Buchstaben.", exampleRu: "В алфавите двадцать шесть букв." },
     { de: "der Buchstabe", ru: "буква", plural: "die Buchstaben", example: "Das ist der Buchstabe B.", exampleRu: "Это буква B." },
-    { de: "buchstabieren", ru: "произносить по буквам, диктовать по буквам", example: "Ich buchstabiere: A – L – I.", exampleRu: "Диктую по буквам: A – L – I." },
+    { de: "buchstabieren", ru: "произносить по буквам, диктовать по буквам", example: "Ich buchstabiere: E – M – I – L.", exampleRu: "Диктую по буквам: E – M – I – L." },
     { de: "haben", ru: "иметь", example: "Ich habe eine Frage.", exampleRu: "У меня есть вопрос." },
     { de: "der Euro", ru: "евро", plural: "die Euro", example: "Das kostet zwei Euro.", exampleRu: "Это стоит два евро." },
     { de: "langsam", ru: "медленно", example: "Langsam, bitte!", exampleRu: "Помедленнее, пожалуйста!" },
@@ -108,7 +108,7 @@ export default {
     {
       title: "Окончания глаголов, вопросы «да/нет» и алфавит",
       body:
-        "У правильных глаголов (wohnen, kommen, buchstabieren) окончания всегда одинаковые: ich -e, du -st, er/sie/es -t, wir -en, ihr -t, sie/Sie -en. Слово man («люди вообще», безличное) ведёт себя как er: Wie schreibt man das?\nВопрос, на который отвечают «да» или «нет», начинается с глагола: Hast du ein Handy? – Ja. Bist du Ali? – Ja, ich bin Ali.\nАлфавит (как называются буквы): A а, B бе, C це, D де, E э, F эф, G ге, H ха, I и, J йот, K ка, L эль, M эм, N эн, O о, P пе, Q ку, R эр, S эс, T тэ, U у, V фау, W ве, X икс, Y ипсилон, Z цет. Ä а-умлаут, Ö о-умлаут, Ü у-умлаут, ß эс-цет. Спросить: Wie schreibt man das? — Ответ: Ich buchstabiere: A – L – I.\nСлова mein / dein / Ihr («мой / твой / Ваш») пока просто запомни в готовых фразах: Meine Nummer ist …, Wie ist deine Adresse? Подробно разберём их в уровне 3.",
+        "У правильных глаголов (wohnen, kommen, buchstabieren) окончания всегда одинаковые: ich -e, du -st, er/sie/es -t, wir -en, ihr -t, sie/Sie -en. Слово man («люди вообще», безличное) ведёт себя как er: Wie schreibt man das?\nВопрос, на который отвечают «да» или «нет», начинается с глагола: Hast du ein Handy? – Ja. Bist du Emil? – Ja, ich bin Emil.\nАлфавит (как называются буквы): A а, B бе, C це, D де, E э, F эф, G ге, H ха, I и, J йот, K ка, L эль, M эм, N эн, O о, P пе, Q ку, R эр, S эс, T тэ, U у, V фау, W ве, X икс, Y ипсилон, Z цет. Ä а-умлаут, Ö о-умлаут, Ü у-умлаут, ß эс-цет. Спросить: Wie schreibt man das? — Ответ: Ich buchstabiere: E – M – I – L.\nСлова mein / dein / Ihr («мой / твой / Ваш») пока просто запомни в готовых фразах: Meine Nummer ist …, Wie ist deine Adresse? Подробно разберём их в уровне 3.",
       table: {
         headers: ["Лицо", "Окончание", "wohnen"],
         rows: [
@@ -319,8 +319,8 @@ export default {
     },
     {
       type: "choice",
-      q: "«Bist du Ali?» — какой ответ правильный?",
-      options: ["Ja, ich bin Ali.", "Ja, ich bist Ali.", "Ja, du bin Ali."],
+      q: "«Bist du Emil?» — какой ответ правильный?",
+      options: ["Ja, ich bin Emil.", "Ja, ich bist Emil.", "Ja, du bin Emil."],
       answer: 0,
       explain: "Вопрос «да/нет» начинается с глагола, а в ответе: Ja, ich bin …",
     },
@@ -391,18 +391,18 @@ export default {
     title: "Die Kursliste",
     titleRu: "Список группы",
     lines: [
-      { speaker: "Mia", de: "Ali, ich habe eine Frage. Wie alt bist du?", ru: "Али, у меня вопрос. Сколько тебе лет?" },
-      { speaker: "Ali", de: "Ich bin einunddreißig Jahre alt. Und du?", ru: "Мне тридцать один год. А тебе?" },
+      { speaker: "Mia", de: "Emil, ich habe eine Frage. Wie alt bist du?", ru: "Эмиль, у меня вопрос. Сколько тебе лет?" },
+      { speaker: "Emil", de: "Ich bin einunddreißig Jahre alt. Und du?", ru: "Мне тридцать один год. А тебе?" },
       { speaker: "Mia", de: "Ich bin achtundzwanzig. Hast du ein Handy?", ru: "Мне двадцать восемь. У тебя есть мобильный?" },
-      { speaker: "Ali", de: "Ja. Meine Nummer ist null eins sieben sechs, dreiundzwanzig, elf, neunundvierzig.", ru: "Да. Мой номер — 0176 23 11 49." },
+      { speaker: "Emil", de: "Ja. Meine Nummer ist null eins sieben sechs, dreiundzwanzig, elf, neunundvierzig.", ru: "Да. Мой номер — 0176 23 11 49." },
       { speaker: "Mia", de: "Langsam, bitte! Null eins sieben sechs, dreiundzwanzig, elf, neunundvierzig?", ru: "Помедленнее, пожалуйста! 0176 23 11 49?" },
-      { speaker: "Ali", de: "Ja, richtig. Ich habe auch eine E-Mail-Adresse.", ru: "Да, верно. У меня есть и адрес электронной почты." },
+      { speaker: "Emil", de: "Ja, richtig. Ich habe auch eine E-Mail-Adresse.", ru: "Да, верно. У меня есть и адрес электронной почты." },
       { speaker: "Mia", de: "Wie ist deine E-Mail-Adresse?", ru: "Какой у тебя адрес электронной почты?" },
-      { speaker: "Ali", de: "ali@mail.de. Ich buchstabiere: A – L – I.", ru: "ali@mail.de. Диктую по буквам: A – L – I." },
+      { speaker: "Emil", de: "emil@mail.de. Ich buchstabiere: E – M – I – L.", ru: "emil@mail.de. Диктую по буквам: E – M – I – L." },
       { speaker: "Mia", de: "Danke! Und wie ist deine Adresse?", ru: "Спасибо! А какой у тебя адрес?" },
-      { speaker: "Ali", de: "Hauptstraße zwölf, eins null eins eins fünf Berlin.", ru: "Хауптштрассе 12, 10115 Берлин." },
-      { speaker: "Mia", de: "Super, danke, Ali! Das ist alles.", ru: "Отлично, спасибо, Али! Это всё." },
-      { speaker: "Ali", de: "Bitte, Mia. Bis morgen!", ru: "Пожалуйста, Мия. До завтра!" },
+      { speaker: "Emil", de: "Hauptstraße zwölf, eins null eins eins fünf Berlin.", ru: "Хауптштрассе 12, 10115 Берлин." },
+      { speaker: "Mia", de: "Super, danke, Emil! Das ist alles.", ru: "Отлично, спасибо, Эмиль! Это всё." },
+      { speaker: "Emil", de: "Bitte, Mia. Bis morgen!", ru: "Пожалуйста, Мия. До завтра!" },
     ],
   },
 
@@ -411,21 +411,21 @@ export default {
     scenario:
       "Ты записываешься на курс немецкого. Мия заполняет анкету: скажи ей, сколько тебе лет, есть ли у тебя мобильный, назови номер телефона, e-mail и адрес, продиктуй имя по буквам.",
     tutorBrief:
-      "Mia is registering Ali for a German course and fills in a form. Ask his age, whether he has a mobile phone, his phone number, his e-mail address, his address, and ask him to spell his name (Wie schreibt man das? Bitte buchstabieren). Repeat numbers back to confirm. Target structures: Ich bin ... Jahre alt; Ich habe ein Handy; Meine Nummer / E-Mail / Adresse ist ...; numbers 0-100; Ich buchstabiere. Keep to A1 vocabulary from the greetings and numbers topics, no possessive articles beyond mein/dein/Ihr as fixed phrases, no past tense.",
+      "Mia is registering Emil for a German course and fills in a form. Ask his age, whether he has a mobile phone, his phone number, his e-mail address, his address, and ask him to spell his name (Wie schreibt man das? Bitte buchstabieren). Repeat numbers back to confirm. Target structures: Ich bin ... Jahre alt; Ich habe ein Handy; Meine Nummer / E-Mail / Adresse ist ...; numbers 0-100; Ich buchstabiere. Keep to A1 vocabulary from the greetings and numbers topics, no possessive articles beyond mein/dein/Ihr as fixed phrases, no past tense.",
     phrases: [
       { de: "Ich bin einunddreißig Jahre alt.", ru: "Мне тридцать один год." },
       { de: "Ja, ich habe ein Handy.", ru: "Да, у меня есть мобильный." },
       { de: "Meine Telefonnummer ist …", ru: "Мой номер телефона — …" },
-      { de: "Meine E-Mail ist ali@mail.de.", ru: "Мой e-mail — ali@mail.de." },
-      { de: "Ich buchstabiere: A – L – I.", ru: "Диктую по буквам: A – L – I." },
+      { de: "Meine E-Mail ist emil@mail.de.", ru: "Мой e-mail — emil@mail.de." },
+      { de: "Ich buchstabiere: E – M – I – L.", ru: "Диктую по буквам: E – M – I – L." },
       { de: "Meine Adresse ist Hauptstraße zwölf.", ru: "Мой адрес — Хауптштрассе, 12." },
       { de: "Langsam, bitte!", ru: "Помедленнее, пожалуйста!" },
       { de: "Wie bitte?", ru: "Простите, как? (Повторите, пожалуйста.)" },
     ],
     script: [
       {
-        say: "Hallo Ali! Ich bin Mia. Wie alt bist du?",
-        sayRu: "Привет, Али! Я Мия. Сколько тебе лет?",
+        say: "Hallo Emil! Ich bin Mia. Wie alt bist du?",
+        sayRu: "Привет, Эмиль! Я Мия. Сколько тебе лет?",
         hint: "Ich bin … Jahre alt.",
         expect: ["jahre", "alt", "einunddreißig", "einunddreissig", "31", "bin"],
       },
@@ -448,9 +448,9 @@ export default {
         expect: ["ja", "mail", "punkt", "at", "ät", "habe", "adresse"],
       },
       {
-        say: "Wie schreibt man Ali? Bitte buchstabieren.",
-        sayRu: "Как пишется «Ali»? Продиктуй по буквам, пожалуйста.",
-        hint: "A – L – I.",
+        say: "Wie schreibt man Emil? Bitte buchstabieren.",
+        sayRu: "Как пишется «Emil»? Продиктуй по буквам, пожалуйста.",
+        hint: "E – M – I – L.",
         expect: ["ali", "a l i", "buchstabiere", "buchstabieren"],
       },
       {
@@ -460,8 +460,8 @@ export default {
         expect: ["straße", "strasse", "adresse", "berlin", "weg", "platz", "nummer"],
       },
       {
-        say: "Perfekt, Ali! Alles ist richtig. Danke und bis morgen!",
-        sayRu: "Отлично, Али! Всё верно. Спасибо и до завтра!",
+        say: "Perfekt, Emil! Alles ist richtig. Danke und bis morgen!",
+        sayRu: "Отлично, Эмиль! Всё верно. Спасибо и до завтра!",
         hint: "Danke, Mia! Bis morgen!",
         expect: ["tschüss", "tschuss", "bis", "danke", "ciao", "wiedersehen"],
       },
@@ -471,8 +471,8 @@ export default {
   exam: [
     {
       type: "choice",
-      q: "Али 31 год. Как это сказать?",
-      options: ["Ali ist dreißigeins Jahre alt.", "Ali ist einunddreißig Jahre alt.", "Ali ist dreiunddreißig Jahre alt."],
+      q: "Эмиль 31 год. Как это сказать?",
+      options: ["Emil ist dreißigeins Jahre alt.", "Emil ist einunddreißig Jahre alt.", "Emil ist dreiunddreißig Jahre alt."],
       answer: 1,
       explain: "31 = ein-und-dreißig.",
     },

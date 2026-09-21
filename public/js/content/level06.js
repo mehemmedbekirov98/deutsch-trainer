@@ -35,10 +35,10 @@ export default {
     { de: "das Fenster", ru: "окно", plural: "die Fenster", example: "Das Fenster ist groß.", exampleRu: "Окно большое." },
     { de: "die Tür", ru: "дверь", plural: "die Türen", example: "Die Tür ist neu.", exampleRu: "Дверь новая." },
     { de: "die Miete", ru: "арендная плата, аренда", plural: "die Mieten", example: "Die Miete ist 700 Euro.", exampleRu: "Аренда 700 евро." },
-    { de: "mieten", ru: "снимать (жильё)", example: "Ali möchte eine Wohnung mieten.", exampleRu: "Али хочет снять квартиру." },
-    { de: "wohnen", ru: "жить, проживать", example: "Ali wohnt in Berlin.", exampleRu: "Али живёт в Берлине." },
+    { de: "mieten", ru: "снимать (жильё)", example: "Emil möchte eine Wohnung mieten.", exampleRu: "Эмиль хочет снять квартиру." },
+    { de: "wohnen", ru: "жить, проживать", example: "Emil wohnt in Berlin.", exampleRu: "Эмиль живёт в Берлине." },
     { de: "die Anzeige", ru: "объявление", plural: "die Anzeigen", example: "Hier ist eine Anzeige: 2 Zimmer, Küche, Bad.", exampleRu: "Вот объявление: 2 комнаты, кухня, ванная." },
-    { de: "der Stock", ru: "этаж", plural: "die Stockwerke", example: "Ali wohnt im ersten Stock.", exampleRu: "Али живёт на первом этаже." },
+    { de: "der Stock", ru: "этаж", plural: "die Stockwerke", example: "Emil wohnt im ersten Stock.", exampleRu: "Эмиль живёт на первом этаже." },
     { de: "es gibt", ru: "есть, имеется", example: "Es gibt eine Küche und ein Bad.", exampleRu: "Есть кухня и ванная." },
     { de: "groß", ru: "большой", example: "Das Zimmer ist groß.", exampleRu: "Комната большая." },
     { de: "klein", ru: "маленький", example: "Das Bad ist klein.", exampleRu: "Ванная маленькая." },
@@ -111,7 +111,7 @@ export default {
       examples: [
         { de: "Das Zimmer ist klein, aber hell.", ru: "Комната маленькая, но светлая." },
         { de: "Die Miete ist nicht billig.", ru: "Аренда не дешёвая." },
-        { de: "Ali wohnt im zweiten Stock.", ru: "Али живёт на втором этаже." },
+        { de: "Emil wohnt im zweiten Stock.", ru: "Эмиль живёт на втором этаже." },
       ],
     },
   ],
@@ -166,11 +166,11 @@ export default {
     },
     {
       type: "fill",
-      sentence: "Ali ___ in Berlin.",
+      sentence: "Emil ___ in Berlin.",
       answers: ["wohnt"],
       options: ["wohnt", "wohne", "wohnst"],
-      ru: "Али живёт в Берлине.",
-      explain: "er (Ali) → wohnt.",
+      ru: "Эмиль живёт в Берлине.",
+      explain: "er (Emil) → wohnt.",
     },
     {
       type: "choice",
@@ -305,7 +305,7 @@ export default {
     },
     {
       type: "choice",
-      q: "Ali wohnt … Stock.",
+      q: "Emil wohnt … Stock.",
       options: ["im ersten", "in erste", "am ersten"],
       answer: 0,
       explain: "Этаж: im ersten / zweiten / dritten Stock.",
@@ -352,9 +352,9 @@ export default {
     },
     {
       type: "order",
-      words: ["im", "Ali", "Stock", "wohnt", "zweiten"],
-      answer: "Ali wohnt im zweiten Stock.",
-      ru: "Али живёт на втором этаже.",
+      words: ["im", "Emil", "Stock", "wohnt", "zweiten"],
+      answer: "Emil wohnt im zweiten Stock.",
+      ru: "Эмиль живёт на втором этаже.",
     },
     {
       type: "translate",
@@ -390,16 +390,16 @@ export default {
     title: "Die Wohnungsbesichtigung",
     titleRu: "Осмотр квартиры",
     lines: [
-      { speaker: "Frau Schulz", de: "Guten Tag! Sind Sie Ali? Das hier ist die Wohnung.", ru: "Добрый день! Вы Али? Вот это квартира." },
-      { speaker: "Ali", de: "Guten Tag, Frau Schulz. Ja, ich bin Ali. Oh, die Wohnung ist sehr hell!", ru: "Добрый день, госпожа Шульц. Да, я Али. О, квартира очень светлая!" },
+      { speaker: "Frau Schulz", de: "Guten Tag! Sind Sie Emil? Das hier ist die Wohnung.", ru: "Добрый день! Вы Эмиль? Вот это квартира." },
+      { speaker: "Emil", de: "Guten Tag, Frau Schulz. Ja, ich bin Emil. Oh, die Wohnung ist sehr hell!", ru: "Добрый день, госпожа Шульц. Да, я Эмиль. О, квартира очень светлая!" },
       { speaker: "Frau Schulz", de: "Ja. Es gibt zwei Zimmer, eine Küche und ein Bad.", ru: "Да. Есть две комнаты, кухня и ванная." },
-      { speaker: "Ali", de: "Und wo ist das Schlafzimmer?", ru: "А где спальня?" },
+      { speaker: "Emil", de: "Und wo ist das Schlafzimmer?", ru: "А где спальня?" },
       { speaker: "Frau Schulz", de: "Hier, neben dem Wohnzimmer. Das Bett ist am Fenster.", ru: "Здесь, рядом с гостиной. Кровать у окна." },
-      { speaker: "Ali", de: "Gibt es einen Balkon?", ru: "Есть балкон?" },
+      { speaker: "Emil", de: "Gibt es einen Balkon?", ru: "Есть балкон?" },
       { speaker: "Frau Schulz", de: "Ja, der Balkon ist hinter der Küche. Und der Flur ist groß.", ru: "Да, балкон за кухней. И коридор большой." },
-      { speaker: "Ali", de: "Sehr gut. Wie hoch ist die Miete?", ru: "Очень хорошо. Сколько стоит аренда?" },
+      { speaker: "Emil", de: "Sehr gut. Wie hoch ist die Miete?", ru: "Очень хорошо. Сколько стоит аренда?" },
       { speaker: "Frau Schulz", de: "Die Miete ist 700 Euro. Die Wohnung ist im dritten Stock.", ru: "Аренда 700 евро. Квартира на третьем этаже." },
-      { speaker: "Ali", de: "Das ist nicht billig, aber die Wohnung ist super. Ich möchte die Wohnung mieten.", ru: "Это не дёшево, но квартира отличная. Я хочу снять эту квартиру." },
+      { speaker: "Emil", de: "Das ist nicht billig, aber die Wohnung ist super. Ich möchte die Wohnung mieten.", ru: "Это не дёшево, но квартира отличная. Я хочу снять эту квартиру." },
     ],
   },
 
@@ -408,7 +408,7 @@ export default {
     scenario:
       "Мия в гостях у тебя в Берлине и спрашивает про твою квартиру. Расскажи, где ты живёшь, сколько у тебя комнат, есть ли балкон, где стоит мебель, светлая ли квартира и сколько стоит аренда.",
     tutorBrief:
-      "Mia visits Ali in his flat in Berlin and asks about it. Ask where he lives, how many rooms the flat has, whether there is a balcony or garden (es gibt + Akkusativ), where the sofa / bed / table is (Wo? + Dativ: im, auf dem, neben dem, am), whether the flat is bright or dark, big or small, and how high the rent is (teuer / billig). Target structures: Ich wohne in …, Meine Wohnung hat … Zimmer, Es gibt einen/eine/ein …, Das Sofa ist im Wohnzimmer, Die Wohnung ist hell, Die Miete ist … Euro. Keep to A1 vocabulary of the topic Wohnen; no imperative, no modal verbs except möchten, no Perfekt.",
+      "Mia visits Emil in his flat in Berlin and asks about it. Ask where he lives, how many rooms the flat has, whether there is a balcony or garden (es gibt + Akkusativ), where the sofa / bed / table is (Wo? + Dativ: im, auf dem, neben dem, am), whether the flat is bright or dark, big or small, and how high the rent is (teuer / billig). Target structures: Ich wohne in …, Meine Wohnung hat … Zimmer, Es gibt einen/eine/ein …, Das Sofa ist im Wohnzimmer, Die Wohnung ist hell, Die Miete ist … Euro. Keep to A1 vocabulary of the topic Wohnen; no imperative, no modal verbs except möchten, no Perfekt.",
     phrases: [
       { de: "Ich wohne in Berlin.", ru: "Я живу в Берлине." },
       { de: "Meine Wohnung hat zwei Zimmer.", ru: "В моей квартире две комнаты." },
@@ -421,8 +421,8 @@ export default {
     ],
     script: [
       {
-        say: "Hallo Ali! Schöne Wohnung! Wo wohnst du jetzt?",
-        sayRu: "Привет, Али! Красивая квартира! Где ты сейчас живёшь?",
+        say: "Hallo Emil! Schöne Wohnung! Wo wohnst du jetzt?",
+        sayRu: "Привет, Эмиль! Красивая квартира! Где ты сейчас живёшь?",
         hint: "Ich wohne in …",
         expect: ["wohne", "berlin", "wohnung"],
       },
@@ -457,8 +457,8 @@ export default {
         expect: ["euro", "teuer", "billig", "miete"],
       },
       {
-        say: "Danke, Ali! Deine Wohnung ist wirklich schön. Bis bald!",
-        sayRu: "Спасибо, Али! Твоя квартира правда красивая. До скорого!",
+        say: "Danke, Emil! Deine Wohnung ist wirklich schön. Bis bald!",
+        sayRu: "Спасибо, Эмиль! Твоя квартира правда красивая. До скорого!",
         hint: "Tschüss, Mia!",
         expect: ["tschüss", "tschuss", "bis", "ciao", "wiedersehen"],
       },
@@ -521,9 +521,9 @@ export default {
     },
     {
       type: "fill",
-      sentence: "Ali wohnt ___ dritten Stock.",
+      sentence: "Emil wohnt ___ dritten Stock.",
       answers: ["im"],
-      ru: "Али живёт на третьем этаже.",
+      ru: "Эмиль живёт на третьем этаже.",
       explain: "im dritten Stock (in + dem = im).",
     },
     {

@@ -1,8 +1,8 @@
 export default {
   openers: [
     {
-      de: "Hallo Ali! Schön, dass du da bist. Wie war dein Tag heute?",
-      ru: "Привет, Али! Как хорошо, что ты зашёл. Ну как сегодня день прошёл?",
+      de: "Hallo Emil! Schön, dass du da bist. Wie war dein Tag heute?",
+      ru: "Привет, Эмиль! Как хорошо, что ты зашёл. Ну как сегодня день прошёл?",
       hint: "Mein Tag war gut, aber ich bin müde. — День был хороший, но я устал.",
       expect: ["gut", "super", "schlecht", "müde", "lang", "normal", "okay", "arbeit"],
       topic: "day"
@@ -15,22 +15,22 @@ export default {
       topic: "day"
     },
     {
-      de: "Hallo Ali! Wie geht es dir heute?",
-      ru: "Привет, Али! Как ты сегодня?",
+      de: "Hallo Emil! Wie geht es dir heute?",
+      ru: "Привет, Эмиль! Как ты сегодня?",
       hint: "Danke, mir geht es heute gut. — Спасибо, сегодня у меня всё хорошо.",
       expect: ["gut", "super", "schlecht", "müde", "okay", "danke", "nicht gut"],
       topic: "mood"
     },
     {
-      de: "Hi Ali! Bist du heute fröhlich oder eher müde?",
-      ru: "Привет, Али! Ну как ты сегодня — весёлый или уставший?",
+      de: "Hi Emil! Bist du heute fröhlich oder eher müde?",
+      ru: "Привет, Эмиль! Ну как ты сегодня — весёлый или уставший?",
       hint: "Ich bin ein bisschen müde, aber fröhlich. — Я немного устал, но весёлый.",
       expect: ["fröhlich", "müde", "gut", "traurig", "bisschen", "ja", "nein"],
       topic: "mood"
     },
     {
-      de: "Guten Tag, Ali! Ich habe Hunger. Was isst du gern?",
-      ru: "Добрый день, Али! Я голодная. А ты что любишь есть?",
+      de: "Guten Tag, Emil! Ich habe Hunger. Was isst du gern?",
+      ru: "Добрый день, Эмиль! Я голодная. А ты что любишь есть?",
       hint: "Ich esse gern Fleisch mit Reis. — Я люблю есть мясо с рисом.",
       expect: ["fleisch", "reis", "suppe", "brot", "fisch", "gemüse", "pizza", "alles"],
       topic: "food"
@@ -43,15 +43,15 @@ export default {
       topic: "food"
     },
     {
-      de: "Guten Morgen, Ali! Ich trinke gerade Kaffee. Trinkst du auch Kaffee?",
-      ru: "Доброе утро, Али! Я как раз пью кофе. Ты тоже пьёшь кофе?",
+      de: "Guten Morgen, Emil! Ich trinke gerade Kaffee. Trinkst du auch Kaffee?",
+      ru: "Доброе утро, Эмиль! Я как раз пью кофе. Ты тоже пьёшь кофе?",
       hint: "Ja, ich trinke morgens gern Kaffee. — Да, я по утрам люблю кофе.",
       expect: ["ja", "nein", "kaffee", "tee", "morgens", "viel", "manchmal"],
       topic: "food"
     },
     {
-      de: "Hallo Ali! Hier in Berlin regnet es wieder. Wie ist das Wetter bei dir?",
-      ru: "Привет, Али! У нас в Берлине опять дождь. А какая погода у тебя?",
+      de: "Hallo Emil! Hier in Berlin regnet es wieder. Wie ist das Wetter bei dir?",
+      ru: "Привет, Эмиль! У нас в Берлине опять дождь. А какая погода у тебя?",
       hint: "Bei mir ist es warm und sonnig. — У меня тепло и солнечно.",
       expect: ["sonne", "sonnig", "regen", "warm", "kalt", "wind", "schön", "heiß"],
       topic: "weather"
@@ -64,22 +64,22 @@ export default {
       topic: "weather"
     },
     {
-      de: "Hallo Ali! Arbeitest du heute oder hast du frei?",
-      ru: "Привет, Али! Ты сегодня работаешь или выходной?",
+      de: "Hallo Emil! Arbeitest du heute oder hast du frei?",
+      ru: "Привет, Эмиль! Ты сегодня работаешь или выходной?",
       hint: "Ja, ich arbeite heute bis sechs Uhr. — Да, сегодня я работаю до шести.",
       expect: ["ja", "nein", "arbeite", "frei", "heute", "morgen", "immer"],
       topic: "work"
     },
     {
-      de: "Hi Ali! Sag mal, was bist du von Beruf?",
-      ru: "Привет, Али! Слушай, а кем ты работаешь?",
+      de: "Hi Emil! Sag mal, was bist du von Beruf?",
+      ru: "Привет, Эмиль! Слушай, а кем ты работаешь?",
       hint: "Ich arbeite als Fahrer in einer Firma. — Я работаю водителем в фирме.",
       expect: ["ich bin", "arbeite", "als", "fahrer", "koch", "beruf", "firma"],
       topic: "work"
     },
     {
-      de: "Hallo Ali! Was machst du gern am Abend?",
-      ru: "Привет, Али! А что ты любишь делать вечером?",
+      de: "Hallo Emil! Was machst du gern am Abend?",
+      ru: "Привет, Эмиль! А что ты любишь делать вечером?",
       hint: "Am Abend sehe ich gern Fußball im Fernsehen. — Вечером я люблю смотреть футбол по телевизору.",
       expect: ["fernsehen", "musik", "fußball", "lesen", "schlafen", "handy", "freunde", "spazieren"],
       topic: "freetime"
@@ -92,36 +92,36 @@ export default {
       topic: "freetime"
     },
     {
-      de: "Hallo Ali! Ich höre sehr gern Musik. Welche Musik hörst du gern?",
-      ru: "Привет, Али! Я очень люблю музыку. А ты какую музыку слушаешь?",
+      de: "Hallo Emil! Ich höre sehr gern Musik. Welche Musik hörst du gern?",
+      ru: "Привет, Эмиль! Я очень люблю музыку. А ты какую музыку слушаешь?",
       hint: "Ich höre gern Pop und Rap. — Я люблю слушать поп и рэп.",
       expect: ["musik", "rap", "pop", "rock", "höre", "alles", "gern"],
       topic: "freetime"
     },
     {
-      de: "Hallo Ali! Hast du Geschwister?",
-      ru: "Привет, Али! У тебя есть братья или сёстры?",
+      de: "Hallo Emil! Hast du Geschwister?",
+      ru: "Привет, Эмиль! У тебя есть братья или сёстры?",
       hint: "Ja, ich habe einen Bruder und eine Schwester. — Да, у меня есть брат и сестра.",
       expect: ["ja", "nein", "bruder", "schwester", "zwei", "drei", "keine"],
       topic: "family"
     },
     {
-      de: "Hi! Wohnt deine Familie auch in Govsan?",
-      ru: "Привет! А твоя семья тоже живёт в Говсане?",
-      hint: "Ja, meine Familie wohnt auch in Govsan. — Да, моя семья тоже живёт в Говсане.",
+      de: "Hi! Wohnt deine Familie auch in Baku?",
+      ru: "Привет! А твоя семья тоже живёт в Баку?",
+      hint: "Ja, meine Familie wohnt auch in Baku. — Да, моя семья тоже живёт в Баку.",
       expect: ["ja", "nein", "familie", "mutter", "vater", "baku", "dort"],
       topic: "family"
     },
     {
-      de: "Hallo Ali! Wohnst du in einem Haus oder in einer Wohnung?",
-      ru: "Привет, Али! Ты живёшь в доме или в квартире?",
+      de: "Hallo Emil! Wohnst du in einem Haus oder in einer Wohnung?",
+      ru: "Привет, Эмиль! Ты живёшь в доме или в квартире?",
       hint: "Ich wohne mit meiner Familie in einer Wohnung. — Я живу с семьёй в квартире.",
       expect: ["haus", "wohnung", "zimmer", "klein", "groß", "familie"],
       topic: "home"
     },
     {
-      de: "Hallo Ali! Bald ist Wochenende. Was machst du dann?",
-      ru: "Привет, Али! Скоро выходные. А ты что будешь делать?",
+      de: "Hallo Emil! Bald ist Wochenende. Was machst du dann?",
+      ru: "Привет, Эмиль! Скоро выходные. А ты что будешь делать?",
       hint: "Am Wochenende treffe ich meine Freunde. — На выходных я встречаюсь с друзьями.",
       expect: ["nichts", "schlafen", "familie", "freunde", "arbeit", "fußball", "weiß nicht"],
       topic: "plans"
@@ -134,36 +134,36 @@ export default {
       topic: "plans"
     },
     {
-      de: "Hallo Ali! Wie geht es mit deinem Deutsch?",
-      ru: "Привет, Али! Ну как у тебя дела с немецким?",
+      de: "Hallo Emil! Wie geht es mit deinem Deutsch?",
+      ru: "Привет, Эмиль! Ну как у тебя дела с немецким?",
       hint: "Es geht langsam, aber ein bisschen besser. — Идёт медленно, но немного лучше.",
       expect: ["gut", "schwer", "langsam", "bisschen", "besser", "schlecht", "okay"],
       topic: "german"
     },
     {
-      de: "Hi Ali! Lernst du jeden Tag Deutsch?",
-      ru: "Привет, Али! Ты каждый день занимаешься немецким?",
+      de: "Hi Emil! Lernst du jeden Tag Deutsch?",
+      ru: "Привет, Эмиль! Ты каждый день занимаешься немецким?",
       hint: "Ja, ich lerne jeden Abend ein bisschen. — Да, я каждый вечер немного занимаюсь.",
       expect: ["ja", "nein", "jeden", "manchmal", "abends", "wenig", "versuche"],
       topic: "german"
     },
     {
-      de: "Hallo Ali! Erzähl mir von deiner Stadt. Ist sie groß?",
-      ru: "Привет, Али! Расскажи мне про свой город. Он большой?",
-      hint: "Nein, Govsan ist klein, aber Baku ist groß. — Нет, Говсан маленький, а Баку большой.",
+      de: "Hallo Emil! Erzähl mir von deiner Stadt. Ist sie groß?",
+      ru: "Привет, Эмиль! Расскажи мне про свой город. Он большой?",
+      hint: "Nein, Baku ist klein, aber Baku ist groß. — Нет, Баку маленький, а Баку большой.",
       expect: ["groß", "klein", "ja", "nein", "menschen", "meer", "baku", "ruhig"],
       topic: "city"
     },
     {
-      de: "Guten Morgen, Ali! Hast du gut geschlafen?",
-      ru: "Доброе утро, Али! Ты хорошо поспал?",
+      de: "Guten Morgen, Emil! Hast du gut geschlafen?",
+      ru: "Доброе утро, Эмиль! Ты хорошо поспал?",
       hint: "Ja, ich habe gut geschlafen, danke. — Да, я хорошо поспал, спасибо.",
       expect: ["ja", "nein", "gut", "schlecht", "wenig", "müde", "stunden"],
       topic: "health"
     },
     {
-      de: "Hallo Ali! Du klingst heute müde. Stimmt das?",
-      ru: "Привет, Али! Голос у тебя сегодня усталый. Или мне кажется?",
+      de: "Hallo Emil! Du klingst heute müde. Stimmt das?",
+      ru: "Привет, Эмиль! Голос у тебя сегодня усталый. Или мне кажется?",
       hint: "Ja, ich bin ein bisschen müde. — Да, я немного устал.",
       expect: ["ja", "nein", "müde", "bisschen", "arbeit", "geht", "kaffee"],
       topic: "health"
@@ -727,7 +727,7 @@ export default {
     positive: [
       { de: "Das ist schön!", ru: "Как хорошо!" },
       { de: "Oh, das freut mich!", ru: "Ой, я прямо рада!" },
-      { de: "Super, Ali!", ru: "Супер, Али!" },
+      { de: "Super, Emil!", ru: "Супер, Эмиль!" },
       { de: "Das klingt gut.", ru: "Звучит здорово." },
       { de: "Sehr schön! Ich freue mich für dich.", ru: "Очень здорово! Я за тебя рада." },
       { de: "Toll! Das mag ich auch.", ru: "Класс! Я такое тоже люблю." },
@@ -834,12 +834,12 @@ export default {
   ],
 
   goodbyes: [
-    { de: "Tschüss, Ali! Bis bald.", ru: "Пока, Али! До скорого." },
+    { de: "Tschüss, Emil! Bis bald.", ru: "Пока, Эмиль! До скорого." },
     { de: "Mach's gut! Bis morgen.", ru: "Давай, береги себя! До завтра." },
-    { de: "Schönen Tag noch, Ali!", ru: "Хорошего тебе дня, Али!" },
+    { de: "Schönen Tag noch, Emil!", ru: "Хорошего тебе дня, Эмиль!" },
     { de: "Gute Nacht! Schlaf gut.", ru: "Спокойной ночи! Спи крепко." },
     { de: "Bis später! Ich freue mich schon.", ru: "До скорого! Уже жду." },
-    { de: "Schönes Wochenende, Ali!", ru: "Хороших выходных, Али!" },
+    { de: "Schönes Wochenende, Emil!", ru: "Хороших выходных, Эмиль!" },
     { de: "Danke für das Gespräch. Das war schön.", ru: "Спасибо за разговор. Было здорово." },
     { de: "Ruh dich gut aus. Tschüss!", ru: "Отдохни как следует. Пока!" },
     { de: "Bis zum nächsten Mal! Du machst das gut.", ru: "До следующего раза! У тебя хорошо получается." },

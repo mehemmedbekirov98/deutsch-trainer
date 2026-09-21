@@ -1,4 +1,4 @@
-# Deutsch für Ali on Netlify.
+# Lingua Mia on Netlify.
 #
 # The site is plain static files — no build, no bundler, no framework — so "publish" is simply the
 # folder the browser gets. Only three things need a server at all: Claude, speech synthesis, and

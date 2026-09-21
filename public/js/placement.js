@@ -2,14 +2,14 @@
 //
 // Восемнадцать вопросов, по шесть на ступень, от «Wie heißt du?» до Konjunktiv II. Смысл не в
 // оценке, а в том, чтобы не заставлять человека, который уже что-то знает, проходить «Hallo, ich
-// heiße Ali» — и не бросать новичка сразу в придаточные. Поэтому тест короткий, без таймера и
+// heiße Emil» — и не бросать новичка сразу в придаточные. Поэтому тест короткий, без таймера и
 // без права на ошибку в духе экзамена: ошибся — идём дальше, в конце просто скажем, где начать.
 //
 // Шкала: ступень засчитана, если из её шести вопросов верны хотя бы четыре, и все предыдущие
 // ступени тоже засчитаны. Ошибиться в паре вопросов — нормально, угадать четыре из шести на трёх
 // вариантах — маловероятно.
 import { el, nextTick, shuffle } from "./utils.js";
-import { store, CEFR_TITLE, CEFR_FIRST } from "./store.js";
+import { store, CEFR, CEFR_TITLE, CEFR_FIRST } from "./store.js";
 import { sfx, confetti, toast } from "./fx.js";
 import { speech, RATES } from "./speech.js";
 
@@ -73,7 +73,7 @@ export function gradeAnswers(correctByBand) {
  * что его гоняют по кругу, — но варианты внутри вопроса перемешиваются, чтобы ответ нельзя было
  * угадать по позиции.
  */
-export function renderPlacement(container, { onDone } = {}) {
+export function renderPlacement(container, { onDone, onExit } = {}) {
   const items = QUESTIONS.map((q) => {
     const order = shuffle(q.options.map((text, i) => ({ text, right: i === q.answer })));
     return { ...q, order };
@@ -126,6 +126,8 @@ export function renderPlacement(container, { onDone } = {}) {
 
   const finish = () => {
     const band = gradeAnswers(correct);
+    const claim = store.state.cefrClaim || "A1";
+    const lower = CEFR.indexOf(band) < CEFR.indexOf(claim);
     const total = correct.A1 + correct.A2 + correct.B1;
     bar.style.width = "100%";
     counter.textContent = "Готово";
@@ -145,12 +147,21 @@ export function renderPlacement(container, { onDone } = {}) {
         el("p", { class: "muted small" }, band === "A1"
           ? "Начнём с самого начала — это нормально и это правильный старт. Всё остальное откроется по пути."
           : `Уроки с уровня ${band} уже открыты. Предыдущие никуда не делись — заглядывай, если захочешь повторить.`),
+        // Опускать заявленный уровень тест не должен молча: человек мог зайти сюда из любопытства,
+        // уже пройдя половину B1, и «начать сначала» ему никто не предлагал.
+        lower ? el("p", { class: "muted small" },
+          `Сейчас у тебя заявлен ${claim}, и всё пройденное останется на месте. Если хочешь пойти с ${band} — скажи, я переключу.`) : null,
         el("div", { class: "placement-actions" },
           el("button", { class: "btn primary big", type: "button", onClick: () => {
-            store.update((s) => { s.cefrClaim = band; s.introSeen = true; });
+            store.update((s) => { s.introSeen = true; });
+            store.claimCefr(band, { allowLower: lower });
             toast(`Уровень ${band}. Открыл уроки с ${CEFR_FIRST[band]}-го.`, { icon: "🎓", ms: 5000 });
             onDone?.(band);
-          } }, `Начать с уровня ${band} →`),
+          } }, lower ? `Всё равно начать с ${band} →` : `Начать с уровня ${band} →`),
+          lower ? el("button", { class: "btn ghost", type: "button", onClick: () => {
+            store.update((s) => { s.introSeen = true; });
+            onDone?.(claim);
+          } }, `Оставить ${claim}`) : null,
           el("button", { class: "btn ghost", type: "button", onClick: () => { i = 0; correct.A1 = correct.A2 = correct.B1 = 0; draw(); } }, "Пройти заново"),
         ),
       ),
@@ -163,7 +174,11 @@ export function renderPlacement(container, { onDone } = {}) {
         el("div", {},
           el("div", { class: "prologue-kicker" }, "Проверка уровня"),
           el("div", { class: "placement-title" }, "18 вопросов, минуты три")),
-        counter),
+        el("div", { class: "placement-head-right" },
+          counter,
+          // focus-режим убирает всю навигацию, так что без этой кнопки из теста нет выхода
+          el("button", { class: "link-btn quiet", type: "button", onClick: () => onExit?.() }, "Выйти из теста")),
+      ),
       el("div", { class: "progress-track" }, bar),
       host,
     ),

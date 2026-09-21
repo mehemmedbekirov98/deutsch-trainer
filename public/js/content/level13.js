@@ -16,13 +16,13 @@ export default {
   ],
 
   vocab: [
-    { de: "die Wohnung", ru: "квартира", plural: "die Wohnungen", example: "Ali sucht eine Wohnung mit drei Zimmern.", exampleRu: "Али ищет квартиру с тремя комнатами." },
+    { de: "die Wohnung", ru: "квартира", plural: "die Wohnungen", example: "Emil sucht eine Wohnung mit drei Zimmern.", exampleRu: "Эмиль ищет квартиру с тремя комнатами." },
     { de: "der Umzug", ru: "переезд", plural: "die Umzüge", example: "Der Umzug hat den ganzen Tag gedauert.", exampleRu: "Переезд занял весь день." },
     { de: "die Miete", ru: "аренда, квартплата", plural: "die Mieten", example: "Die Miete ist 750 Euro im Monat.", exampleRu: "Аренда — 750 евро в месяц." },
     { de: "die Nebenkosten", ru: "коммунальные расходы (мн. ч.)", example: "Die Nebenkosten sind nicht in der Miete.", exampleRu: "Коммунальные расходы не входят в аренду." },
-    { de: "die Kaution", ru: "залог за квартиру", plural: "die Kautionen", example: "Ali bezahlt die Kaution vor dem Umzug.", exampleRu: "Али платит залог до переезда." },
+    { de: "die Kaution", ru: "залог за квартиру", plural: "die Kautionen", example: "Emil bezahlt die Kaution vor dem Umzug.", exampleRu: "Эмиль платит залог до переезда." },
     { de: "der Mietvertrag", ru: "договор аренды", plural: "die Mietverträge", example: "Am Freitag unterschreiben wir den Mietvertrag.", exampleRu: "В пятницу мы подписываем договор аренды." },
-    { de: "der Vermieter", ru: "арендодатель, хозяин квартиры", plural: "die Vermieter", example: "Der Vermieter gibt Ali die Schlüssel.", exampleRu: "Хозяин квартиры даёт Али ключи." },
+    { de: "der Vermieter", ru: "арендодатель, хозяин квартиры", plural: "die Vermieter", example: "Der Vermieter gibt Emil die Schlüssel.", exampleRu: "Хозяин квартиры даёт Эмиль ключи." },
     { de: "der Nachbar", ru: "сосед", plural: "die Nachbarn", example: "Unser Nachbar ist sehr freundlich.", exampleRu: "Наш сосед очень приветливый." },
     { de: "die Hausordnung", ru: "правила дома", plural: "die Hausordnungen", example: "In der Hausordnung steht: Ab 22 Uhr ist Ruhe.", exampleRu: "В правилах дома написано: после 22 часов — тишина." },
     { de: "das Wohnzimmer", ru: "гостиная", plural: "die Wohnzimmer", example: "Im Wohnzimmer steht ein großes Sofa.", exampleRu: "В гостиной стоит большой диван." },
@@ -37,16 +37,16 @@ export default {
     { de: "die Möbel", ru: "мебель (мн. ч.)", example: "Die Möbel sind schon in der neuen Wohnung.", exampleRu: "Мебель уже в новой квартире." },
     { de: "der Schrank", ru: "шкаф", plural: "die Schränke", example: "Der Schrank steht zwischen dem Fenster und der Tür.", exampleRu: "Шкаф стоит между окном и дверью." },
     { de: "das Regal", ru: "полка, стеллаж", plural: "die Regale", example: "Die Bücher stehen im Regal.", exampleRu: "Книги стоят на полке." },
-    { de: "das Sofa", ru: "диван", plural: "die Sofas", example: "Am Abend sitzt Ali gern auf dem Sofa.", exampleRu: "Вечером Али любит сидеть на диване." },
+    { de: "das Sofa", ru: "диван", plural: "die Sofas", example: "Am Abend sitzt Emil gern auf dem Sofa.", exampleRu: "Вечером Эмиль любит сидеть на диване." },
     { de: "der Teppich", ru: "ковёр", plural: "die Teppiche", example: "Der Teppich ist neu und weich.", exampleRu: "Ковёр новый и мягкий." },
     { de: "die Lampe", ru: "лампа", plural: "die Lampen", example: "Über dem Tisch hängt eine Lampe.", exampleRu: "Над столом висит лампа." },
     { de: "der Karton", ru: "картонная коробка", plural: "die Kartons", example: "Wir tragen die Kartons in den Keller.", exampleRu: "Мы несём коробки в подвал." },
     { de: "einziehen", ru: "въезжать (в квартиру)", example: "Wir ziehen am ersten Mai ein.", exampleRu: "Мы въезжаем первого мая." },
     { de: "ausziehen", ru: "съезжать (с квартиры)", example: "Die alten Nachbarn ziehen im Juli aus.", exampleRu: "Старые соседи съезжают в июле." },
-    { de: "umziehen", ru: "переезжать", example: "Ali zieht nach Leipzig um.", exampleRu: "Али переезжает в Лейпциг." },
+    { de: "umziehen", ru: "переезжать", example: "Emil zieht nach Leipzig um.", exampleRu: "Эмиль переезжает в Лейпциг." },
     { de: "aufräumen", ru: "убирать, наводить порядок", example: "Am Samstag räume ich die Wohnung auf.", exampleRu: "В субботу я убираю квартиру." },
     { de: "sich anmelden", ru: "зарегистрироваться (по месту жительства)", example: "Nach dem Umzug muss man sich anmelden.", exampleRu: "После переезда нужно зарегистрироваться по месту жительства." },
-    { de: "das Bürgeramt", ru: "бюргерамт (ведомство по месту жительства)", plural: "die Bürgerämter", example: "Ali hat am Montag einen Termin im Bürgeramt.", exampleRu: "У Али в понедельник приём в бюргерамте." },
+    { de: "das Bürgeramt", ru: "бюргерамт (ведомство по месту жительства)", plural: "die Bürgerämter", example: "Emil hat am Montag einen Termin im Bürgeramt.", exampleRu: "У Эмиль в понедельник приём в бюргерамте." },
   ],
 
   grammar: [
@@ -67,7 +67,7 @@ export default {
         ],
       },
       examples: [
-        { de: "Ali stellt das Sofa ins Wohnzimmer.", ru: "Али ставит диван в гостиную." },
+        { de: "Emil stellt das Sofa ins Wohnzimmer.", ru: "Эмиль ставит диван в гостиную." },
         { de: "Das Sofa steht jetzt im Wohnzimmer.", ru: "Диван теперь стоит в гостиной." },
         { de: "Ich hänge die Lampe über den Tisch.", ru: "Я вешаю лампу над столом." },
         { de: "Die Lampe hängt über dem Tisch.", ru: "Лампа висит над столом." },
@@ -82,7 +82,7 @@ export default {
         rows: [
           ["einziehen", "Wir ziehen am Montag ein.", "Мы въезжаем в понедельник."],
           ["ausziehen", "Die Nachbarn ziehen bald aus.", "Соседи скоро съезжают."],
-          ["umziehen", "Ali zieht im Mai um.", "Али переезжает в мае."],
+          ["umziehen", "Emil zieht im Mai um.", "Эмиль переезжает в мае."],
           ["aufräumen", "Ich räume die Küche auf.", "Я убираю кухню."],
           ["sich anmelden", "Ich melde mich im Bürgeramt an.", "Я регистрируюсь в бюргерамте."],
           ["mitbringen", "Bring bitte einen Karton mit!", "Принеси, пожалуйста, коробку!"],
@@ -91,7 +91,7 @@ export default {
       examples: [
         { de: "Wir ziehen am 1. Juni in die neue Wohnung ein.", ru: "Мы въезжаем в новую квартиру первого июня." },
         { de: "Räum bitte dein Zimmer auf!", ru: "Убери, пожалуйста, свою комнату!" },
-        { de: "Ali muss sich im Bürgeramt anmelden.", ru: "Али должен зарегистрироваться в бюргерамте." },
+        { de: "Emil muss sich im Bürgeramt anmelden.", ru: "Эмиль должен зарегистрироваться в бюргерамте." },
         { de: "Wann ziehst du aus?", ru: "Когда ты съезжаешь?" },
       ],
     },
@@ -111,7 +111,7 @@ export default {
         ],
       },
       examples: [
-        { de: "Ali ist letzte Woche umgezogen.", ru: "Али переехал на прошлой неделе." },
+        { de: "Emil ist letzte Woche umgezogen.", ru: "Эмиль переехал на прошлой неделе." },
         { de: "Wir sind am Samstag eingezogen.", ru: "Мы въехали в субботу." },
         { de: "Ich habe das Wohnzimmer aufgeräumt.", ru: "Я убрал гостиную." },
         { de: "Hast du dich schon angemeldet?", ru: "Ты уже зарегистрировался?" },
@@ -158,7 +158,7 @@ export default {
     },
     {
       type: "choice",
-      q: "Ali nimmt die Wohnung. Was unterschreibt er?",
+      q: "Emil nimmt die Wohnung. Was unterschreibt er?",
       options: ["den Mietvertrag", "die Hausordnung", "die Nebenkosten"],
       answer: 0,
       explain: "Подписывают договор: den Mietvertrag unterschreiben.",
@@ -192,10 +192,10 @@ export default {
     },
     {
       type: "fill",
-      sentence: "Ali hängt das Foto an ___ Wand.",
+      sentence: "Emil hängt das Foto an ___ Wand.",
       answers: ["die"],
       options: ["die", "der", "dem"],
-      ru: "Али вешает фотографию на стену.",
+      ru: "Эмиль вешает фотографию на стену.",
       explain: "hängen (вешать) + wohin? → Akkusativ: an die Wand.",
     },
     {
@@ -282,9 +282,9 @@ export default {
     },
     {
       type: "order",
-      words: ["um", "Ali", "Leipzig", "nach", "zieht"],
-      answer: "Ali zieht nach Leipzig um.",
-      ru: "Али переезжает в Лейпциг.",
+      words: ["um", "Emil", "Leipzig", "nach", "zieht"],
+      answer: "Emil zieht nach Leipzig um.",
+      ru: "Эмиль переезжает в Лейпциг.",
     },
     {
       type: "translate",
@@ -302,16 +302,16 @@ export default {
     },
     {
       type: "listen",
-      text: "Guten Tag, hier ist Ali. Ich habe eine Frage zur Wohnung in der Gartenstraße. Ist sie noch frei?",
+      text: "Guten Tag, hier ist Emil. Ich habe eine Frage zur Wohnung in der Gartenstraße. Ist sie noch frei?",
       mode: "choice",
-      q: "Почему Али звонит?",
+      q: "Почему Эмиль звонит?",
       options: ["Из-за квартиры", "Из-за работы", "Из-за врача"],
       answer: 0,
-      ru: "Добрый день, это Али. У меня вопрос по квартире на Гартенштрассе. Она ещё свободна?",
+      ru: "Добрый день, это Эмиль. У меня вопрос по квартире на Гартенштрассе. Она ещё свободна?",
     },
     {
       type: "choice",
-      q: "Perfekt: «Ali ___ letzte Woche umgezogen.»",
+      q: "Perfekt: «Emil ___ letzte Woche umgezogen.»",
       options: ["hat", "ist", "sind"],
       answer: 1,
       explain: "umziehen — смена места, поэтому Perfekt с sein: ist umgezogen.",
@@ -375,17 +375,17 @@ export default {
     titleRu: "Просмотр квартиры",
     lines: [
       { speaker: "Frau Berger", de: "Guten Tag! Schön, dass Sie da sind. Kommen Sie herein, das ist der Flur.", ru: "Добрый день! Хорошо, что вы пришли. Проходите, это прихожая." },
-      { speaker: "Ali", de: "Guten Tag, Frau Berger. Die Wohnung ist hell, das gefällt mir.", ru: "Добрый день, госпожа Бергер. Квартира светлая, мне это нравится." },
+      { speaker: "Emil", de: "Guten Tag, Frau Berger. Die Wohnung ist hell, das gefällt mir.", ru: "Добрый день, госпожа Бергер. Квартира светлая, мне это нравится." },
       { speaker: "Frau Berger", de: "Hier links ist die Küche, und rechts sind das Bad und das Schlafzimmer.", ru: "Здесь слева кухня, а справа ванная и спальня." },
-      { speaker: "Ali", de: "Und das Wohnzimmer? Hat es einen Balkon?", ru: "А гостиная? В ней есть балкон?" },
+      { speaker: "Emil", de: "Und das Wohnzimmer? Hat es einen Balkon?", ru: "А гостиная? В ней есть балкон?" },
       { speaker: "Frau Berger", de: "Ja, der Balkon ist hinter dem Wohnzimmer. Im Keller haben Sie auch einen Platz für die Fahrräder.", ru: "Да, балкон за гостиной. В подвале у вас ещё есть место для велосипедов." },
-      { speaker: "Ali", de: "Sehr gut. Wie hoch ist die Miete?", ru: "Очень хорошо. Сколько стоит аренда?" },
+      { speaker: "Emil", de: "Sehr gut. Wie hoch ist die Miete?", ru: "Очень хорошо. Сколько стоит аренда?" },
       { speaker: "Frau Berger", de: "750 Euro plus 150 Euro Nebenkosten. Und die Kaution: zwei Monatsmieten.", ru: "750 евро плюс 150 евро коммунальных. И залог — две месячные арендные платы." },
-      { speaker: "Ali", de: "Wann kann ich einziehen?", ru: "Когда я могу въехать?" },
+      { speaker: "Emil", de: "Wann kann ich einziehen?", ru: "Когда я могу въехать?" },
       { speaker: "Frau Berger", de: "Die alten Mieter ziehen Ende April aus. Sie können am 1. Mai einziehen.", ru: "Старые жильцы съезжают в конце апреля. Вы можете въехать первого мая." },
-      { speaker: "Ali", de: "Das passt gut. Ich nehme die Wohnung. Wann unterschreiben wir den Mietvertrag?", ru: "Это мне подходит. Я беру квартиру. Когда мы подпишем договор аренды?" },
+      { speaker: "Emil", de: "Das passt gut. Ich nehme die Wohnung. Wann unterschreiben wir den Mietvertrag?", ru: "Это мне подходит. Я беру квартиру. Когда мы подпишем договор аренды?" },
       { speaker: "Frau Berger", de: "Kommen Sie am Freitag um 16 Uhr in mein Büro. Bringen Sie bitte Ihren Pass mit.", ru: "Приходите в пятницу в 16 часов ко мне в офис. Принесите, пожалуйста, паспорт." },
-      { speaker: "Ali", de: "Alles klar. Vielen Dank, Frau Berger. Bis Freitag!", ru: "Понятно. Большое спасибо, госпожа Бергер. До пятницы!" },
+      { speaker: "Emil", de: "Alles klar. Vielen Dank, Frau Berger. Bis Freitag!", ru: "Понятно. Большое спасибо, госпожа Бергер. До пятницы!" },
     ],
   },
 
@@ -394,7 +394,7 @@ export default {
     scenario:
       "Ты нашёл объявление о трёхкомнатной квартире и пришёл на просмотр. Мия — хозяйка квартиры, она говорит тебе «Sie». Поздоровайся, спроси, сколько в квартире комнат, сколько стоит аренда и коммунальные, есть ли балкон и подвал, и когда можно въехать. В конце скажи, что квартира тебе нравится.",
     tutorBrief:
-      "Mia is a landlady showing Ali a three-room flat. She uses Sie with him. Show him the rooms one by one (Flur, Küche, Bad, Schlafzimmer, Wohnzimmer, Balkon, Keller), answer his questions about the Miete, the Nebenkosten and the Kaution, and tell him when he can move in (the old tenants move out at the end of April). Target structures: Wechselpräpositionen with wo/wohin (in der Küche, an die Wand, auf dem Balkon, im Keller), separable verbs einziehen / ausziehen / umziehen / aufräumen, and the Perfekt of separable verbs. Keep to A2 housing vocabulary, short friendly sentences, and gently correct him if he mixes up Akkusativ and Dativ.",
+      "Mia is a landlady showing Emil a three-room flat. She uses Sie with him. Show him the rooms one by one (Flur, Küche, Bad, Schlafzimmer, Wohnzimmer, Balkon, Keller), answer his questions about the Miete, the Nebenkosten and the Kaution, and tell him when he can move in (the old tenants move out at the end of April). Target structures: Wechselpräpositionen with wo/wohin (in der Küche, an die Wand, auf dem Balkon, im Keller), separable verbs einziehen / ausziehen / umziehen / aufräumen, and the Perfekt of separable verbs. Keep to A2 housing vocabulary, short friendly sentences, and gently correct him if he mixes up Akkusativ and Dativ.",
     phrases: [
       { de: "Guten Tag, ich möchte die Wohnung sehen.", ru: "Добрый день, я хотел бы посмотреть квартиру." },
       { de: "Wie viele Zimmer hat die Wohnung?", ru: "Сколько комнат в квартире?" },
@@ -406,8 +406,8 @@ export default {
     ],
     script: [
       {
-        say: "Guten Tag! Sie sind Ali, richtig? Kommen Sie herein.",
-        sayRu: "Добрый день! Вы Али, верно? Проходите.",
+        say: "Guten Tag! Sie sind Emil, richtig? Kommen Sie herein.",
+        sayRu: "Добрый день! Вы Эмиль, верно? Проходите.",
         hint: "Guten Tag, ich möchte die Wohnung sehen.",
         expect: ["guten", "tag", "hallo", "wohnung", "ali"],
       },
@@ -442,8 +442,8 @@ export default {
         expect: ["gefällt", "gefaellt", "gut", "schön", "schoen", "nehme", "super"],
       },
       {
-        say: "Das freut mich, Ali! Dann bis Freitag im Büro. Auf Wiedersehen!",
-        sayRu: "Я рада, Али! Тогда до пятницы в офисе. До свидания!",
+        say: "Das freut mich, Emil! Dann bis Freitag im Büro. Auf Wiedersehen!",
+        sayRu: "Я рада, Эмиль! Тогда до пятницы в офисе. До свидания!",
         hint: "Vielen Dank, auf Wiedersehen!",
         expect: ["danke", "wiedersehen", "tschüss", "tschuss", "bis"],
       },
@@ -514,7 +514,7 @@ export default {
     },
     {
       type: "choice",
-      q: "Ali zieht um. Was muss er im Bürgeramt machen?",
+      q: "Emil zieht um. Was muss er im Bürgeramt machen?",
       options: ["sich anmelden", "aufräumen", "die Miete bezahlen"],
       answer: 0,
       explain: "После переезда в Германии нужно зарегистрироваться: sich anmelden.",

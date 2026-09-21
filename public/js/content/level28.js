@@ -16,7 +16,7 @@ export default {
   ],
 
   vocab: [
-    { de: "die Ausbildung", ru: "профессиональное образование, обучение", plural: "die Ausbildungen", example: "Ali hat seine Ausbildung als Elektriker in Aserbaidschan gemacht.", exampleRu: "Али выучился на электрика в Азербайджане." },
+    { de: "die Ausbildung", ru: "профессиональное образование, обучение", plural: "die Ausbildungen", example: "Emil hat seine Ausbildung als Elektriker in Aserbaidschan gemacht.", exampleRu: "Эмиль выучился на электрика в Азербайджане." },
     { de: "die Anerkennung", ru: "признание (диплома)", plural: "die Anerkennungen", example: "Die Anerkennung hat fast ein Jahr gedauert.", exampleRu: "Признание диплома заняло почти год." },
     { de: "der Abschluss", ru: "диплом, окончание учёбы", plural: "die Abschlüsse", example: "Mein Abschluss ist in Deutschland noch nicht anerkannt.", exampleRu: "Мой диплом в Германии ещё не признан." },
     { de: "das Zeugnis", ru: "свидетельство, аттестат", plural: "die Zeugnisse", example: "Bitte bringen Sie Ihr Zeugnis im Original mit.", exampleRu: "Пожалуйста, принесите ваш аттестат в оригинале." },
@@ -25,7 +25,7 @@ export default {
     { de: "die Übersetzung", ru: "перевод", plural: "die Übersetzungen", example: "Die Übersetzung muss beglaubigt sein.", exampleRu: "Перевод должен быть заверен." },
     { de: "beglaubigen", ru: "заверять (копию, перевод)", example: "Wer kann mir die Kopien beglaubigen?", exampleRu: "Кто может заверить мне копии?" },
     { de: "der Antrag", ru: "заявление", plural: "die Anträge", example: "Ich habe den Antrag letzte Woche abgeschickt.", exampleRu: "Я отправил заявление на прошлой неделе." },
-    { de: "beantragen", ru: "подавать заявление на что-то", example: "Ali will die Anerkennung beantragen.", exampleRu: "Али хочет подать заявление на признание диплома." },
+    { de: "beantragen", ru: "подавать заявление на что-то", example: "Emil will die Anerkennung beantragen.", exampleRu: "Эмиль хочет подать заявление на признание диплома." },
     { de: "die Behörde", ru: "ведомство, государственное учреждение", plural: "die Behörden", example: "Die Behörde antwortet leider sehr langsam.", exampleRu: "Ведомство, к сожалению, отвечает очень медленно." },
     { de: "die Handwerkskammer", ru: "ремесленная палата", plural: "die Handwerkskammern", example: "Für Elektriker ist die Handwerkskammer zuständig.", exampleRu: "Электриками занимается ремесленная палата." },
     { de: "der Nachweis", ru: "подтверждение, справка", plural: "die Nachweise", example: "Ich brauche einen Nachweis über meine Berufserfahrung.", exampleRu: "Мне нужна справка о моём опыте работы." },
@@ -36,7 +36,7 @@ export default {
     { de: "die Fachkraft", ru: "квалифицированный специалист", plural: "die Fachkräfte", example: "Deutschland sucht Fachkräfte aus dem Ausland.", exampleRu: "Германия ищет квалифицированных специалистов из-за рубежа." },
     { de: "die Weiterbildung", ru: "повышение квалификации, курсы", plural: "die Weiterbildungen", example: "Die Weiterbildung dauert sechs Monate.", exampleRu: "Курс повышения квалификации длится шесть месяцев." },
     { de: "die Prüfung", ru: "экзамен", plural: "die Prüfungen", example: "Die Prüfung war schwer, aber fair.", exampleRu: "Экзамен был трудный, но честный." },
-    { de: "bestehen", ru: "сдать (экзамен)", example: "Ali hat die Prüfung beim ersten Mal bestanden.", exampleRu: "Али сдал экзамен с первого раза." },
+    { de: "bestehen", ru: "сдать (экзамен)", example: "Emil hat die Prüfung beim ersten Mal bestanden.", exampleRu: "Эмиль сдал экзамен с первого раза." },
     { de: "sich bewerben", ru: "подавать заявку на работу", example: "Ich bewerbe mich bei einer Firma in Leipzig.", exampleRu: "Я подаю заявку в фирму в Лейпциге." },
     { de: "die Bewerbung", ru: "заявка на работу, резюме с письмом", plural: "die Bewerbungen", example: "Die Bewerbung schicke ich per E-Mail.", exampleRu: "Заявку я отправляю по электронной почте." },
     { de: "das Bewerbungsgespräch", ru: "собеседование", plural: "die Bewerbungsgespräche", example: "Das Bewerbungsgespräch ist am Donnerstag um zehn.", exampleRu: "Собеседование в четверг в десять." },
@@ -51,7 +51,7 @@ export default {
     {
       title: "Придаточные с obwohl (хотя) и наречие trotzdem",
       body:
-        "Obwohl вводит уступку: «хотя», «несмотря на то что». Это союз, поэтому спрягаемый глагол уходит в самый конец придаточного, а перед obwohl стоит запятая: Ali arbeitet als Fahrer, obwohl er Elektriker ist.\nПридаточное с obwohl может стоять и первым. Тогда главное предложение начинается сразу с глагола: Obwohl es teuer war, hat er bezahlt.\nTrotzdem («несмотря на это») — не союз, а наречие. Оно занимает первое место в обычном предложении, и глагол сразу за ним: Das Wetter war schlecht. Trotzdem ist er gefahren.\nЕсли в придаточном Perfekt или модальный глагол, в конец уходит именно спрягаемая часть: …, obwohl er viel gearbeitet hat; …, obwohl er früh aufstehen muss.",
+        "Obwohl вводит уступку: «хотя», «несмотря на то что». Это союз, поэтому спрягаемый глагол уходит в самый конец придаточного, а перед obwohl стоит запятая: Emil arbeitet als Fahrer, obwohl er Elektriker ist.\nПридаточное с obwohl может стоять и первым. Тогда главное предложение начинается сразу с глагола: Obwohl es teuer war, hat er bezahlt.\nTrotzdem («несмотря на это») — не союз, а наречие. Оно занимает первое место в обычном предложении, и глагол сразу за ним: Das Wetter war schlecht. Trotzdem ist er gefahren.\nЕсли в придаточном Perfekt или модальный глагол, в конец уходит именно спрягаемая часть: …, obwohl er viel gearbeitet hat; …, obwohl er früh aufstehen muss.",
       table: {
         headers: ["Слово", "Что идёт после него", "Пример"],
         rows: [
@@ -62,9 +62,9 @@ export default {
         ],
       },
       examples: [
-        { de: "Ali arbeitet als Fahrer, obwohl er Elektriker ist.", ru: "Али работает водителем, хотя он электрик." },
+        { de: "Emil arbeitet als Fahrer, obwohl er Elektriker ist.", ru: "Эмиль работает водителем, хотя он электрик." },
         { de: "Obwohl die Übersetzung teuer war, hat er sie bezahlt.", ru: "Хотя перевод был дорогим, он его оплатил." },
-        { de: "Der Kurs ist teuer. Trotzdem macht Ali ihn.", ru: "Курс дорогой. Несмотря на это, Али его проходит." },
+        { de: "Der Kurs ist teuer. Trotzdem macht Emil ihn.", ru: "Курс дорогой. Несмотря на это, Эмиль его проходит." },
       ],
     },
     {
@@ -192,7 +192,7 @@ export default {
     },
     {
       type: "choice",
-      q: "Ali sucht eine neue Stelle, ___ er schon Arbeit hat.",
+      q: "Emil sucht eine neue Stelle, ___ er schon Arbeit hat.",
       options: ["obwohl", "damit", "um"],
       answer: 0,
       explain: "Смысл уступки «хотя у него уже есть работа» → obwohl.",
@@ -210,10 +210,10 @@ export default {
     },
     {
       type: "fill",
-      sentence: "___ die Gebühr hoch war, hat Ali den Antrag gestellt.",
+      sentence: "___ die Gebühr hoch war, hat Emil den Antrag gestellt.",
       answers: ["Obwohl"],
       options: ["Obwohl", "Trotzdem", "Deshalb"],
-      ru: "Хотя пошлина была высокой, Али подал заявление.",
+      ru: "Хотя пошлина была высокой, Эмиль подал заявление.",
       explain: "Здесь придаточное с глаголом в конце (war), значит нужен союз obwohl, а не наречие trotzdem.",
     },
     {
@@ -224,10 +224,10 @@ export default {
     },
     {
       type: "choice",
-      q: "Der Weg zur Kammer ist weit. ___ fährt Ali jeden Monat hin.",
+      q: "Der Weg zur Kammer ist weit. ___ fährt Emil jeden Monat hin.",
       options: ["Trotzdem", "Obwohl", "Damit"],
       answer: 0,
-      explain: "trotzdem — наречие: оно стоит на первом месте, а глагол сразу за ним (fährt Ali).",
+      explain: "trotzdem — наречие: оно стоит на первом месте, а глагол сразу за ним (fährt Emil).",
     },
     {
       type: "translate",
@@ -243,7 +243,7 @@ export default {
     },
     {
       type: "choice",
-      q: "Ali besucht einen Abendkurs, ___ sein Deutsch zu verbessern.",
+      q: "Emil besucht einen Abendkurs, ___ sein Deutsch zu verbessern.",
       options: ["um", "damit", "dass"],
       answer: 0,
       explain: "Перед zu + Infinitiv в конце стоит um: um … zu verbessern.",
@@ -283,16 +283,16 @@ export default {
     },
     {
       type: "order",
-      words: ["mehr", "Ali", "um", "eine", "verdienen", "macht", "zu", "Weiterbildung"],
-      answer: "Ali macht eine Weiterbildung, um mehr zu verdienen.",
-      ru: "Али проходит курс повышения квалификации, чтобы больше зарабатывать.",
+      words: ["mehr", "Emil", "um", "eine", "verdienen", "macht", "zu", "Weiterbildung"],
+      answer: "Emil macht eine Weiterbildung, um mehr zu verdienen.",
+      ru: "Эмиль проходит курс повышения квалификации, чтобы больше зарабатывать.",
     },
     {
       type: "choice",
-      q: "Aysel passt auf unsere Tochter auf, ___ ich zum Kurs gehen kann.",
+      q: "Sevil passt auf unsere Tochter auf, ___ ich zum Kurs gehen kann.",
       options: ["damit", "um", "obwohl"],
       answer: 0,
-      explain: "Подлежащие разные (Aysel — ich), поэтому только damit.",
+      explain: "Подлежащие разные (Sevil — ich), поэтому только damit.",
     },
     {
       type: "fill",
@@ -304,9 +304,9 @@ export default {
     },
     {
       type: "order",
-      words: ["damit", "Mia", "sie", "alles", "versteht", "erklärt", "Ali", "langsam"],
-      answer: "Mia erklärt alles langsam, damit Ali sie versteht.",
-      ru: "Мия объясняет всё медленно, чтобы Али её понимал.",
+      words: ["damit", "Mia", "sie", "alles", "versteht", "erklärt", "Emil", "langsam"],
+      answer: "Mia erklärt alles langsam, damit Emil sie versteht.",
+      ru: "Мия объясняет всё медленно, чтобы Эмиль её понимал.",
     },
     {
       type: "choice",
@@ -386,17 +386,17 @@ export default {
     titleRu: "В ремесленной палате",
     lines: [
       { speaker: "Frau Weber", de: "Guten Tag! Bitte setzen Sie sich. Was kann ich für Sie tun?", ru: "Добрый день! Присаживайтесь, пожалуйста. Чем могу вам помочь?" },
-      { speaker: "Ali", de: "Guten Tag. Ich bin Elektriker und möchte die Anerkennung meines Abschlusses beantragen.", ru: "Добрый день. Я электрик и хочу подать заявление на признание моего диплома." },
+      { speaker: "Emil", de: "Guten Tag. Ich bin Elektriker und möchte die Anerkennung meines Abschlusses beantragen.", ru: "Добрый день. Я электрик и хочу подать заявление на признание моего диплома." },
       { speaker: "Frau Weber", de: "Sehr gut. Wo haben Sie Ihre Ausbildung gemacht?", ru: "Очень хорошо. Где вы получали образование?" },
-      { speaker: "Ali", de: "In Aserbaidschan. Ich habe drei Jahre gelernt und danach zehn Jahre gearbeitet.", ru: "В Азербайджане. Я учился три года, а потом десять лет работал." },
+      { speaker: "Emil", de: "In Aserbaidschan. Ich habe drei Jahre gelernt und danach zehn Jahre gearbeitet.", ru: "В Азербайджане. Я учился три года, а потом десять лет работал." },
       { speaker: "Frau Weber", de: "Dann brauchen wir das Zeugnis, eine beglaubigte Übersetzung und einen Nachweis über Ihre Berufserfahrung.", ru: "Тогда нам нужны аттестат, заверенный перевод и справка о вашем опыте работы." },
-      { speaker: "Ali", de: "Das Zeugnis habe ich dabei. Die Übersetzung lasse ich nächste Woche machen.", ru: "Аттестат у меня с собой. Перевод я закажу на следующей неделе." },
+      { speaker: "Emil", de: "Das Zeugnis habe ich dabei. Die Übersetzung lasse ich nächste Woche machen.", ru: "Аттестат у меня с собой. Перевод я закажу на следующей неделе." },
       { speaker: "Frau Weber", de: "Bringen Sie die Unterlagen möglichst früh, damit wir den Antrag noch im Oktober prüfen können.", ru: "Принесите документы как можно раньше, чтобы мы успели проверить заявление ещё в октябре." },
-      { speaker: "Ali", de: "Das mache ich. Obwohl die Gebühr ziemlich hoch ist, möchte ich den Antrag stellen.", ru: "Так и сделаю. Хотя пошлина довольно высокая, я хочу подать заявление." },
+      { speaker: "Emil", de: "Das mache ich. Obwohl die Gebühr ziemlich hoch ist, möchte ich den Antrag stellen.", ru: "Так и сделаю. Хотя пошлина довольно высокая, я хочу подать заявление." },
       { speaker: "Frau Weber", de: "Das verstehe ich gut. Viele kommen zu uns, um hier als Fachkraft zu arbeiten.", ru: "Я вас хорошо понимаю. Многие приходят к нам, чтобы работать здесь квалифицированным специалистом." },
-      { speaker: "Ali", de: "Genau. Und wie lange dauert die Prüfung der Unterlagen?", ru: "Именно. А сколько длится проверка документов?" },
+      { speaker: "Emil", de: "Genau. Und wie lange dauert die Prüfung der Unterlagen?", ru: "Именно. А сколько длится проверка документов?" },
       { speaker: "Frau Weber", de: "Normalerweise drei Monate. Wenn Ihre Ausbildung gleichwertig ist, schreiben wir Ihnen sofort.", ru: "Обычно три месяца. Если ваше образование окажется равноценным, мы сразу вам напишем." },
-      { speaker: "Ali", de: "Vielen Dank für die Beratung. Auf Wiedersehen!", ru: "Большое спасибо за консультацию. До свидания!" },
+      { speaker: "Emil", de: "Vielen Dank für die Beratung. Auf Wiedersehen!", ru: "Большое спасибо за консультацию. До свидания!" },
     ],
   },
 
@@ -405,7 +405,7 @@ export default {
     scenario:
       "Ты пришёл на консультацию по образованию. Расскажи, кто ты по профессии и кем работаешь сейчас, скажи, что твой диплом ещё не признан, и объясни, зачем тебе курс: используй um … zu и damit. Скажи, что времени мало, но ты всё равно хочешь учиться (obwohl / trotzdem). В конце спроси, какие нужны документы, и попрощайся. Консультант обращается к тебе на «Sie» — так принято в учреждениях.",
     tutorBrief:
-      "Mia is an education counsellor at a Bildungsberatung office in Germany; Ali has come for advice about a Weiterbildung. Address him formally with Sie, as a real counsellor would. Ask what he trained as and what he does now, whether his foreign qualification is already recognised, why he wants the course, whether he has enough time next to his job, and finish by telling him you need a few documents. Target structures: obwohl / trotzdem, um … zu + Infinitiv, damit, and vocabulary of training and recognition (Ausbildung, Anerkennung, Abschluss, Unterlagen, Weiterbildung, Berufserfahrung). Keep it B1: clear, adult, practical sentences, no rare words. End with a friendly goodbye.",
+      "Mia is an education counsellor at a Bildungsberatung office in Germany; Emil has come for advice about a Weiterbildung. Address him formally with Sie, as a real counsellor would. Ask what he trained as and what he does now, whether his foreign qualification is already recognised, why he wants the course, whether he has enough time next to his job, and finish by telling him you need a few documents. Target structures: obwohl / trotzdem, um … zu + Infinitiv, damit, and vocabulary of training and recognition (Ausbildung, Anerkennung, Abschluss, Unterlagen, Weiterbildung, Berufserfahrung). Keep it B1: clear, adult, practical sentences, no rare words. End with a friendly goodbye.",
     phrases: [
       { de: "Ich möchte mich über eine Weiterbildung informieren.", ru: "Я хотел бы узнать о курсах повышения квалификации." },
       { de: "Ich bin gelernter Elektriker, arbeite aber als Fahrer.", ru: "Я по образованию электрик, но работаю водителем." },
@@ -475,10 +475,10 @@ export default {
     },
     {
       type: "fill",
-      sentence: "Ali fährt nach Leipzig, um seinen Bruder ___.",
+      sentence: "Emil fährt nach Leipzig, um seinen Bruder ___.",
       answers: ["abzuholen"],
       options: ["abzuholen", "abholen", "zu abholen"],
-      ru: "Али едет в Лейпциг, чтобы забрать брата.",
+      ru: "Эмиль едет в Лейпциг, чтобы забрать брата.",
       explain: "abholen — глагол с отделяемой приставкой, поэтому zu стоит внутри: abzuholen.",
     },
     {

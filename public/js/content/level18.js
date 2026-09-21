@@ -23,14 +23,14 @@ export default {
     { de: "der Nachtisch", ru: "десерт", plural: "die Nachtische", example: "Zum Nachtisch essen wir Eis.", exampleRu: "На десерт мы едим мороженое." },
     { de: "der Kellner", ru: "официант", plural: "die Kellner", example: "Der Kellner bringt das Essen an den Tisch.", exampleRu: "Официант приносит еду к столу." },
     { de: "der Tisch", ru: "стол, столик", plural: "die Tische", example: "Wir haben einen Tisch am Fenster.", exampleRu: "У нас столик у окна." },
-    { de: "bestellen", ru: "заказывать", example: "Ali bestellt Hähnchen mit Kartoffeln.", exampleRu: "Али заказывает курицу с картошкой." },
+    { de: "bestellen", ru: "заказывать", example: "Emil bestellt Hähnchen mit Kartoffeln.", exampleRu: "Эмиль заказывает курицу с картошкой." },
     { de: "empfehlen", ru: "рекомендовать, советовать", example: "Was können Sie uns empfehlen?", exampleRu: "Что вы можете нам посоветовать?" },
     { de: "reservieren", ru: "бронировать", example: "Ich habe einen Tisch für zwei Personen reserviert.", exampleRu: "Я забронировал столик на двоих." },
     { de: "die Rechnung", ru: "счёт", plural: "die Rechnungen", example: "Die Rechnung macht 24 Euro.", exampleRu: "Счёт составляет 24 евро." },
     { de: "das Trinkgeld", ru: "чаевые", plural: "die Trinkgelder", example: "In Deutschland gibt man oft Trinkgeld.", exampleRu: "В Германии часто дают чаевые." },
     { de: "die Suppe", ru: "суп", plural: "die Suppen", example: "Die Suppe ist heute sehr gut.", exampleRu: "Суп сегодня очень хороший." },
     { de: "der Salat", ru: "салат", plural: "die Salate", example: "Ich esse jeden Tag einen Salat.", exampleRu: "Я каждый день ем салат." },
-    { de: "das Fleisch", ru: "мясо", example: "Ali isst gern Fleisch mit Gemüse.", exampleRu: "Али любит мясо с овощами." },
+    { de: "das Fleisch", ru: "мясо", example: "Emil isst gern Fleisch mit Gemüse.", exampleRu: "Эмиль любит мясо с овощами." },
     { de: "das Hähnchen", ru: "курица (блюдо)", plural: "die Hähnchen", example: "Das Hähnchen mit Reis schmeckt sehr gut.", exampleRu: "Курица с рисом очень вкусная." },
     { de: "der Fisch", ru: "рыба", plural: "die Fische", example: "Am Freitag essen wir Fisch.", exampleRu: "В пятницу мы едим рыбу." },
     { de: "das Gemüse", ru: "овощи", example: "Iss mehr Gemüse, das ist gesund!", exampleRu: "Ешь больше овощей, это полезно!" },
@@ -69,7 +69,7 @@ export default {
         { de: "Die Suppe ist billiger als der Salat.", ru: "Суп дешевле салата." },
         { de: "Dieses Restaurant ist am billigsten.", ru: "Этот ресторан самый дешёвый." },
         { de: "Der Fisch ist heute schärfer als gestern.", ru: "Рыба сегодня острее, чем вчера." },
-        { de: "Ali nimmt die größte Portion.", ru: "Али берёт самую большую порцию." },
+        { de: "Emil nimmt die größte Portion.", ru: "Эмиль берёт самую большую порцию." },
       ],
     },
     {
@@ -88,7 +88,7 @@ export default {
       },
       examples: [
         { de: "Ich esse gern Fisch, aber ich esse lieber Hähnchen.", ru: "Я люблю рыбу, но курицу люблю больше." },
-        { de: "Am liebsten isst Ali Suppe mit Brot.", ru: "Больше всего Али любит суп с хлебом." },
+        { de: "Am liebsten isst Emil Suppe mit Brot.", ru: "Больше всего Эмиль любит суп с хлебом." },
         { de: "Deine Suppe schmeckt besser als meine.", ru: "Твой суп вкуснее моего." },
         { de: "Hier kocht man am besten.", ru: "Здесь готовят лучше всего." },
       ],
@@ -107,7 +107,7 @@ export default {
         ],
       },
       examples: [
-        { de: "Mia isst mehr Gemüse als Ali.", ru: "Мия ест больше овощей, чем Али." },
+        { de: "Mia isst mehr Gemüse als Emil.", ru: "Мия ест больше овощей, чем Эмиль." },
         { de: "Die Nudeln sind so lecker wie die Kartoffeln.", ru: "Макароны такие же вкусные, как картошка." },
         { de: "Hier ist es nicht so teuer wie im Zentrum.", ru: "Здесь не так дорого, как в центре." },
       ],
@@ -146,7 +146,7 @@ export default {
     },
     {
       type: "choice",
-      q: "Ali isst kein ___. Er nimmt lieber Gemüse mit Reis.",
+      q: "Emil isst kein ___. Er nimmt lieber Gemüse mit Reis.",
       options: ["Fleisch", "Salz", "Trinkgeld"],
       answer: 0,
       explain: "das Fleisch — мясо.",
@@ -276,10 +276,10 @@ export default {
     },
     {
       type: "fill",
-      sentence: "___ isst Ali Suppe mit Brot.",
+      sentence: "___ isst Emil Suppe mit Brot.",
       answers: ["Am liebsten"],
       options: ["Am liebsten", "Lieber", "Gern"],
-      ru: "Больше всего Али любит суп с хлебом.",
+      ru: "Больше всего Эмиль любит суп с хлебом.",
       explain: "am liebsten — больше всего; стоит на первом месте, а глагол — на втором.",
     },
     {
@@ -379,17 +379,17 @@ export default {
     titleRu: "В ресторане",
     lines: [
       { speaker: "Kellner", de: "Guten Abend! Haben Sie einen Tisch reserviert?", ru: "Добрый вечер! Вы бронировали столик?" },
-      { speaker: "Ali", de: "Guten Abend. Ja, auf den Namen Ali, ein Tisch für zwei Personen.", ru: "Добрый вечер. Да, на имя Али, столик на двоих." },
+      { speaker: "Emil", de: "Guten Abend. Ja, auf den Namen Emil, ein Tisch für zwei Personen.", ru: "Добрый вечер. Да, на имя Эмиль, столик на двоих." },
       { speaker: "Kellner", de: "Sehr gut. Hier ist Ihr Tisch, und hier ist die Speisekarte.", ru: "Очень хорошо. Вот ваш столик, а вот меню." },
-      { speaker: "Ali", de: "Danke. Was können Sie uns empfehlen?", ru: "Спасибо. Что вы можете нам посоветовать?" },
+      { speaker: "Emil", de: "Danke. Was können Sie uns empfehlen?", ru: "Спасибо. Что вы можете нам посоветовать?" },
       { speaker: "Kellner", de: "Als Vorspeise haben wir heute einen Salat mit Käse. Als Hauptgericht ist das Hähnchen mit Reis am besten.", ru: "На закуску у нас сегодня салат с сыром. Из основных блюд лучше всего курица с рисом." },
-      { speaker: "Ali", de: "Ist das Hähnchen scharf? Ich esse nicht so gern scharf.", ru: "Курица острая? Я не очень люблю острое." },
+      { speaker: "Emil", de: "Ist das Hähnchen scharf? Ich esse nicht so gern scharf.", ru: "Курица острая? Я не очень люблю острое." },
       { speaker: "Kellner", de: "Nein, der Fisch ist viel schärfer als das Hähnchen.", ru: "Нет, рыба намного острее курицы." },
-      { speaker: "Ali", de: "Dann nehme ich das Hähnchen. Bringen Sie mir bitte auch Brot und Salz.", ru: "Тогда я возьму курицу. Принесите мне, пожалуйста, ещё хлеб и соль." },
+      { speaker: "Emil", de: "Dann nehme ich das Hähnchen. Bringen Sie mir bitte auch Brot und Salz.", ru: "Тогда я возьму курицу. Принесите мне, пожалуйста, ещё хлеб и соль." },
       { speaker: "Kellner", de: "Gern. Möchten Sie später auch einen Nachtisch probieren?", ru: "С удовольствием. Хотите потом ещё попробовать десерт?" },
-      { speaker: "Ali", de: "Vielleicht. Das Restaurant gefällt mir, hier ist es ruhiger als im Zentrum.", ru: "Может быть. Ресторан мне нравится, здесь тише, чем в центре." },
+      { speaker: "Emil", de: "Vielleicht. Das Restaurant gefällt mir, hier ist es ruhiger als im Zentrum.", ru: "Может быть. Ресторан мне нравится, здесь тише, чем в центре." },
       { speaker: "Kellner", de: "Das freut mich. Und hat Ihnen das Essen geschmeckt?", ru: "Я рад. А еда вам понравилась?" },
-      { speaker: "Ali", de: "Es hat sehr gut geschmeckt. Kann ich bitte zahlen?", ru: "Было очень вкусно. Можно расплатиться?" },
+      { speaker: "Emil", de: "Es hat sehr gut geschmeckt. Kann ich bitte zahlen?", ru: "Было очень вкусно. Можно расплатиться?" },
     ],
   },
 
@@ -398,7 +398,7 @@ export default {
     scenario:
       "Ты сидишь в ресторане, Мия — официантка. Сделай заказ: скажи, что хочешь заказать, выбери основное блюдо, скажи, что ты любишь больше — рис или картошку, закажи напиток. В конце скажи, что было вкусно, что ты наелся, и попроси счёт.",
     tutorBrief:
-      "Mia is the waitress in a small German restaurant. Ali is sitting at his table. Ask whether he is ready to order, what he takes as a main dish, whether he prefers rice or potatoes, whether he wants a starter, what he would like to drink; later ask whether the food tasted good and whether he wants a dessert, then bring the bill and say goodbye. Use Sie with Ali. Target structures: ich möchte bestellen; als Hauptgericht nehme ich …; ich esse lieber … als …; das schmeckt besser als …; am liebsten …; ich bin satt; die Rechnung, bitte. Keep to A2 food and restaurant vocabulary; short sentences; correct the comparative forms gently if he says \"besser wie\".",
+      "Mia is the waitress in a small German restaurant. Emil is sitting at his table. Ask whether he is ready to order, what he takes as a main dish, whether he prefers rice or potatoes, whether he wants a starter, what he would like to drink; later ask whether the food tasted good and whether he wants a dessert, then bring the bill and say goodbye. Use Sie with Emil. Target structures: ich möchte bestellen; als Hauptgericht nehme ich …; ich esse lieber … als …; das schmeckt besser als …; am liebsten …; ich bin satt; die Rechnung, bitte. Keep to A2 food and restaurant vocabulary; short sentences; correct the comparative forms gently if he says \"besser wie\".",
     phrases: [
       { de: "Ich möchte bitte bestellen.", ru: "Я хотел бы сделать заказ." },
       { de: "Als Hauptgericht nehme ich das Hähnchen.", ru: "На основное блюдо я возьму курицу." },
@@ -452,8 +452,8 @@ export default {
         expect: ["satt", "rechnung", "nein", "zahlen", "bitte"],
       },
       {
-        say: "Das macht 19 Euro. Vielen Dank und einen schönen Abend, Ali! Bis bald!",
-        sayRu: "С вас 19 евро. Большое спасибо и хорошего вечера, Али! До скорого!",
+        say: "Das macht 19 Euro. Vielen Dank und einen schönen Abend, Emil! Bis bald!",
+        sayRu: "С вас 19 евро. Большое спасибо и хорошего вечера, Эмиль! До скорого!",
         hint: "Danke, tschüss!",
         expect: ["danke", "tschüss", "tschuss", "wiedersehen", "abend"],
       },
@@ -470,9 +470,9 @@ export default {
     },
     {
       type: "fill",
-      sentence: "Ali isst gern Nudeln, aber Kartoffeln isst er ___.",
+      sentence: "Emil isst gern Nudeln, aber Kartoffeln isst er ___.",
       answers: ["lieber"],
-      ru: "Али любит макароны, но картошку он любит больше.",
+      ru: "Эмиль любит макароны, но картошку он любит больше.",
       explain: "gern → lieber.",
     },
     {
@@ -523,7 +523,7 @@ export default {
     },
     {
       type: "choice",
-      q: "Ali sagt: «Ich bin satt.» Что это значит?",
+      q: "Emil sagt: «Ich bin satt.» Что это значит?",
       options: ["Он голоден.", "Он наелся.", "Он хочет пить."],
       answer: 1,
       explain: "satt — сытый, наевшийся.",

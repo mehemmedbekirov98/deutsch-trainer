@@ -1,11 +1,12 @@
 // Accounts on the client: who is signed in, and the screen that gets them signed in.
 //
-// The work is done by Supabase (see backend.js). This file is the part Ali sees — and the part
+// The work is done by Supabase (see backend.js). This file is the part Emil sees — and the part
 // that speaks Russian. Registering stays optional: without an account the app keeps a local save
 // in this browser, exactly as it always did. Nobody is stopped at a login wall.
 import { el, nextTick } from "./utils.js";
 import { toast, sfx, confetti } from "./fx.js";
 import { backend } from "./backend.js";
+import { markCarryOver } from "./store.js";
 import { logoSvg } from "./logo.js";
 
 export const session = {
@@ -30,7 +31,7 @@ export const requestReset = (email) => backend.resetPassword(email);
 /* ------------------------------------------------------------------ pieces */
 
 /**
- * A labelled field. Ali fills these in on a phone, one-handed, in the evening — so the label stays
+ * A labelled field. Emil fills these in on a phone, one-handed, in the evening — so the label stays
  * visible above the input instead of disappearing into a placeholder the moment he starts typing.
  */
 function field({ label, type = "text", placeholder = "", autocomplete, icon, hint }) {
@@ -91,7 +92,7 @@ export function renderAuth(container, { onDone, localXp = 0, adoptLocal = null }
     formHost.innerHTML = "";
 
     const msg = el("div", { class: "auth-msg" });
-    const name = field({ label: "Как тебя зовут", icon: "🙂", placeholder: "Али", autocomplete: "name" });
+    const name = field({ label: "Как тебя зовут", icon: "🙂", placeholder: "Эмиль", autocomplete: "name" });
     const email = field({ label: "Почта", icon: "📧", type: "email", placeholder: "ali@example.com", autocomplete: "username" });
     const pass = field({
       label: isForgot ? "" : "Пароль", icon: "🔒", type: "password",
@@ -135,6 +136,10 @@ export function renderAuth(container, { onDone, localXp = 0, adoptLocal = null }
           if (name.input.value.trim().length < 2) throw new Error("Напиши, как тебя зовут — хотя бы две буквы.");
           if (String(pass.input.value).length < 8) throw new Error("Пароль — минимум 8 символов.");
           busy(true, "Создаю аккаунт…");
+          // Remember the tick BEFORE the account exists: with email confirmation on, sign-up ends
+          // here and the person comes back in a separate visit, by which time this screen — and
+          // everything it knew — is gone. store.init() honours it on that next visit.
+          if (keep.checked && localXp > 0) markCarryOver(email.input.value.trim());
           const { needsConfirm } = await backend.signUp({
             email: email.input.value.trim(), name: name.input.value.trim(), password: pass.input.value,
           });
@@ -144,6 +149,9 @@ export function renderAuth(container, { onDone, localXp = 0, adoptLocal = null }
               el("div", { class: "auth-done-icon" }, "📬"),
               el("h2", {}, "Проверь почту"),
               el("p", { class: "muted" }, `Отправил письмо на ${email.input.value.trim()}. Нажми ссылку в нём, чтобы подтвердить адрес — и возвращайся сюда.`),
+              keep.checked && localXp > 0
+                ? el("p", { class: "muted small" }, `Прогресс из этого браузера — ${localXp} XP — перенесётся, как только ты первый раз войдёшь.`)
+                : null,
               el("button", { class: "btn ghost", type: "button", onClick: () => { tab = "login"; draw(); } }, "← Ко входу"),
             ));
             return;
@@ -204,7 +212,7 @@ export function renderAuth(container, { onDone, localXp = 0, adoptLocal = null }
   const brand = el("div", { class: "auth-brand" },
     el("div", { class: "auth-brand-top" },
       el("div", { class: "auth-brand-mark" }),
-      el("div", {}, el("div", { class: "auth-brand-name" }, "Deutsch für Ali"), el("div", { class: "auth-brand-tag" }, "немецкий от A1 до B1")),
+      el("div", {}, el("div", { class: "auth-brand-name" }, "Lingua Mia"), el("div", { class: "auth-brand-tag" }, "немецкий от A1 до B1")),
     ),
     el("h1", { class: "auth-brand-title" }, "Каждый вечер — ", el("span", { class: "grad" }, "на шаг ближе"), " к Германии."),
     el("ul", { class: "auth-points" },

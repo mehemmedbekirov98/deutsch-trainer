@@ -17,7 +17,7 @@ export default {
 
   vocab: [
     { de: "der Kopf", ru: "голова", plural: "die Köpfe", example: "Mein Kopf tut weh.", exampleRu: "У меня болит голова." },
-    { de: "der Bauch", ru: "живот", plural: "die Bäuche", example: "Ali hat Bauchschmerzen.", exampleRu: "У Али болит живот." },
+    { de: "der Bauch", ru: "живот", plural: "die Bäuche", example: "Emil hat Bauchschmerzen.", exampleRu: "У Эмиль болит живот." },
     { de: "der Rücken", ru: "спина", plural: "die Rücken", example: "Mein Rücken tut weh.", exampleRu: "У меня болит спина." },
     { de: "das Bein", ru: "нога", plural: "die Beine", example: "Meine Beine sind müde.", exampleRu: "Мои ноги устали." },
     { de: "der Arm", ru: "рука (от плеча до кисти)", plural: "die Arme", example: "Der Arm tut mir weh.", exampleRu: "У меня болит рука." },
@@ -28,11 +28,11 @@ export default {
     { de: "der Zahn", ru: "зуб", plural: "die Zähne", example: "Ich habe Zahnschmerzen.", exampleRu: "У меня болит зуб." },
     { de: "der Hals", ru: "горло, шея", plural: "die Hälse", example: "Mein Hals tut weh.", exampleRu: "У меня болит горло." },
     { de: "brauchen", ru: "нуждаться; мне нужно", example: "Ich brauche einen Termin.", exampleRu: "Мне нужна запись на приём." },
-    { de: "krank", ru: "больной, болен", example: "Ali ist heute krank.", exampleRu: "Али сегодня болен." },
+    { de: "krank", ru: "больной, болен", example: "Emil ist heute krank.", exampleRu: "Эмиль сегодня болен." },
     { de: "gesund", ru: "здоровый", example: "Bald bist du wieder gesund.", exampleRu: "Скоро ты снова будешь здоров." },
     { de: "die Schmerzen", ru: "боли (мн. ч.)", example: "Ich habe Schmerzen im Rücken.", exampleRu: "У меня боли в спине." },
     { de: "das Fieber", ru: "температура, жар", example: "Ich habe Fieber.", exampleRu: "У меня температура." },
-    { de: "der Husten", ru: "кашель", example: "Ali hat Husten.", exampleRu: "У Али кашель." },
+    { de: "der Husten", ru: "кашель", example: "Emil hat Husten.", exampleRu: "У Эмиль кашель." },
     { de: "der Schnupfen", ru: "насморк", example: "Ich habe Schnupfen.", exampleRu: "У меня насморк." },
     { de: "die Erkältung", ru: "простуда", plural: "die Erkältungen", example: "Das ist nur eine Erkältung.", exampleRu: "Это всего лишь простуда." },
     { de: "der Arzt", ru: "врач", plural: "die Ärzte", example: "Ich gehe heute zum Arzt.", exampleRu: "Я сегодня иду к врачу." },
@@ -40,10 +40,10 @@ export default {
     { de: "der Termin", ru: "запись на приём, встреча", plural: "die Termine", example: "Ich habe um 10 Uhr einen Termin.", exampleRu: "У меня приём в 10 часов." },
     { de: "die Praxis", ru: "врачебный кабинет, практика", plural: "die Praxen", example: "Die Praxis ist im zweiten Stock.", exampleRu: "Кабинет врача на втором этаже." },
     { de: "das Medikament", ru: "лекарство", plural: "die Medikamente", example: "Ich brauche ein Medikament.", exampleRu: "Мне нужно лекарство." },
-    { de: "die Tablette", ru: "таблетка", plural: "die Tabletten", example: "Nimm eine Tablette, Ali!", exampleRu: "Прими таблетку, Али!" },
+    { de: "die Tablette", ru: "таблетка", plural: "die Tabletten", example: "Nimm eine Tablette, Emil!", exampleRu: "Прими таблетку, Эмиль!" },
     { de: "die Apotheke", ru: "аптека", plural: "die Apotheken", example: "Die Apotheke ist neben der Praxis.", exampleRu: "Аптека рядом с кабинетом врача." },
     { de: "das Rezept", ru: "рецепт", plural: "die Rezepte", example: "Hier ist Ihr Rezept.", exampleRu: "Вот ваш рецепт." },
-    { de: "Gute Besserung!", ru: "Выздоравливай! / Поправляйтесь!", example: "Gute Besserung, Ali!", exampleRu: "Выздоравливай, Али!" },
+    { de: "Gute Besserung!", ru: "Выздоравливай! / Поправляйтесь!", example: "Gute Besserung, Emil!", exampleRu: "Выздоравливай, Эмиль!" },
     { de: "sich ausruhen", ru: "отдыхать", example: "Ich muss mich heute ausruhen.", exampleRu: "Мне надо сегодня отдохнуть." },
     { de: "müde", ru: "усталый", example: "Ich bin sehr müde.", exampleRu: "Я очень устал." },
     { de: "weh tun", ru: "болеть (о части тела)", example: "Mein Bein tut weh.", exampleRu: "У меня болит нога." },
@@ -68,7 +68,7 @@ export default {
       },
       examples: [
         { de: "Du sollst im Bett bleiben.", ru: "Тебе следует оставаться в постели." },
-        { de: "Ali soll viel Tee trinken.", ru: "Али надо пить много чая." },
+        { de: "Emil soll viel Tee trinken.", ru: "Эмиль надо пить много чая." },
         { de: "Darf ich morgen arbeiten?", ru: "Можно мне завтра работать?" },
         { de: "Sie dürfen keinen Sport machen.", ru: "Вам нельзя заниматься спортом." },
       ],
@@ -89,7 +89,7 @@ export default {
         { de: "Mein Hals tut weh.", ru: "У меня болит горло." },
         { de: "Meine Füße tun weh.", ru: "У меня болят ноги." },
         { de: "Ich habe Kopfschmerzen und Fieber.", ru: "У меня головная боль и температура." },
-        { de: "Was tut dir weh, Ali?", ru: "Что у тебя болит, Али?" },
+        { de: "Was tut dir weh, Emil?", ru: "Что у тебя болит, Эмиль?" },
       ],
     },
     {
@@ -109,7 +109,7 @@ export default {
       },
       examples: [
         { de: "Trinken Sie viel Wasser!", ru: "Пейте много воды!" },
-        { de: "Nimm die Tabletten, Ali!", ru: "Прими таблетки, Али!" },
+        { de: "Nimm die Tabletten, Emil!", ru: "Прими таблетки, Эмиль!" },
         { de: "Bleiben Sie bitte zu Hause!", ru: "Оставайтесь, пожалуйста, дома!" },
       ],
     },
@@ -232,11 +232,11 @@ export default {
     },
     {
       type: "fill",
-      sentence: "Ali ___ im Bett bleiben.",
+      sentence: "Emil ___ im Bett bleiben.",
       answers: ["soll"],
       options: ["soll", "sollst", "sollen"],
-      ru: "Али следует оставаться в постели.",
-      explain: "er (Ali) → soll, без окончания.",
+      ru: "Эмиль следует оставаться в постели.",
+      explain: "er (Emil) → soll, без окончания.",
     },
     {
       type: "choice",
@@ -247,7 +247,7 @@ export default {
     },
     {
       type: "choice",
-      q: "Ali ist krank. Was sagt der Arzt?",
+      q: "Emil ist krank. Was sagt der Arzt?",
       options: ["Ruhen Sie sich aus!", "Arbeiten Sie viel!", "Machen Sie Sport!"],
       answer: 0,
       explain: "Больному врач советует отдыхать: Ruhen Sie sich aus!",
@@ -295,10 +295,10 @@ export default {
     },
     {
       type: "fill",
-      sentence: "___ zwei Tabletten, Ali!",
+      sentence: "___ zwei Tabletten, Emil!",
       answers: ["Nimm"],
       options: ["Nimm", "Nehmen", "Nehmt"],
-      ru: "Прими две таблетки, Али!",
+      ru: "Прими две таблетки, Эмиль!",
       explain: "Imperativ на du от nehmen — Nimm!",
     },
     {
@@ -318,7 +318,7 @@ export default {
       type: "listen",
       text: "Guten Tag, Praxis Doktor Weber. Möchten Sie einen Termin?",
       mode: "choice",
-      q: "Куда позвонил Али?",
+      q: "Куда позвонил Эмиль?",
       options: ["В аптеку", "В кабинет врача", "В больницу"],
       answer: 1,
       ru: "Добрый день, кабинет доктора Вебер. Вы хотите записаться на приём?",
@@ -343,7 +343,7 @@ export default {
     },
     {
       type: "choice",
-      q: "Ali hat Zahnschmerzen. Wohin soll er gehen?",
+      q: "Emil hat Zahnschmerzen. Wohin soll er gehen?",
       options: ["Zum Zahnarzt", "Zur Post", "Zum Bahnhof"],
       answer: 0,
       explain: "Zahnschmerzen — зубная боль, значит, к зубному врачу (Zahnarzt).",
@@ -365,8 +365,8 @@ export default {
     {
       type: "translate",
       dir: "de-ru",
-      text: "Gute Besserung, Ali!",
-      answers: ["Выздоравливай, Али!", "Поправляйся, Али!", "Скорейшего выздоровления, Али!"],
+      text: "Gute Besserung, Emil!",
+      answers: ["Выздоравливай, Эмиль!", "Поправляйся, Эмиль!", "Скорейшего выздоровления, Эмиль!"],
       hint: "Besserung — улучшение",
     },
   ],
@@ -376,15 +376,15 @@ export default {
     titleRu: "В кабинете врача",
     lines: [
       { speaker: "Frau Dr. Weber", de: "Guten Tag. Was fehlt Ihnen?", ru: "Добрый день. Что с вами?" },
-      { speaker: "Ali", de: "Guten Tag, Frau Doktor. Ich bin krank. Ich habe Kopfschmerzen und Fieber.", ru: "Добрый день, доктор. Я болен. У меня головная боль и температура." },
+      { speaker: "Emil", de: "Guten Tag, Frau Doktor. Ich bin krank. Ich habe Kopfschmerzen und Fieber.", ru: "Добрый день, доктор. Я болен. У меня головная боль и температура." },
       { speaker: "Frau Dr. Weber", de: "Haben Sie auch Husten oder Schnupfen?", ru: "А кашель или насморк у вас тоже есть?" },
-      { speaker: "Ali", de: "Ja, ich habe Schnupfen und Husten. Mein Hals tut auch weh.", ru: "Да, у меня насморк и кашель. Горло тоже болит." },
+      { speaker: "Emil", de: "Ja, ich habe Schnupfen und Husten. Mein Hals tut auch weh.", ru: "Да, у меня насморк и кашель. Горло тоже болит." },
       { speaker: "Frau Dr. Weber", de: "Sie haben eine Erkältung. Sie sollen im Bett bleiben und viel Tee trinken.", ru: "У вас простуда. Вам следует оставаться в постели и пить много чая." },
-      { speaker: "Ali", de: "Darf ich morgen arbeiten?", ru: "Можно мне завтра работать?" },
+      { speaker: "Emil", de: "Darf ich morgen arbeiten?", ru: "Можно мне завтра работать?" },
       { speaker: "Frau Dr. Weber", de: "Nein, Sie dürfen diese Woche nicht arbeiten. Ruhen Sie sich aus!", ru: "Нет, на этой неделе вам нельзя работать. Отдыхайте!" },
-      { speaker: "Ali", de: "Brauche ich Medikamente?", ru: "Мне нужны лекарства?" },
+      { speaker: "Emil", de: "Brauche ich Medikamente?", ru: "Мне нужны лекарства?" },
       { speaker: "Frau Dr. Weber", de: "Ja, hier ist ein Rezept. Nehmen Sie die Tabletten zweimal am Tag. Die Apotheke ist neben der Praxis.", ru: "Да, вот рецепт. Принимайте таблетки два раза в день. Аптека рядом с кабинетом." },
-      { speaker: "Ali", de: "Vielen Dank, Frau Doktor. Auf Wiedersehen!", ru: "Большое спасибо, доктор. До свидания!" },
+      { speaker: "Emil", de: "Vielen Dank, Frau Doktor. Auf Wiedersehen!", ru: "Большое спасибо, доктор. До свидания!" },
       { speaker: "Frau Dr. Weber", de: "Auf Wiedersehen und gute Besserung!", ru: "До свидания и выздоравливайте!" },
     ],
   },
@@ -394,7 +394,7 @@ export default {
     scenario:
       "Ты заболел: у тебя болит голова и горло, есть температура. Позвони в кабинет врача (Praxis Dr. Weber). Мия — администратор. Поздоровайся, скажи, что тебе нужна запись на приём, объясни, что с тобой, договорись о времени и назови свой номер телефона.",
     tutorBrief:
-      "Mia is the receptionist at a doctor's practice (Praxis Dr. Weber). Ali calls to make an appointment because he is ill. Greet him, ask his name, ask what is wrong (Was fehlt Ihnen?), ask whether he has fever, offer an appointment time today (e.g. um 15 Uhr) and ask for his phone number. Finish with Gute Besserung and Auf Wiederhören. Use Sie with Ali. Target structures: ich brauche einen Termin, ich habe Kopfschmerzen/Fieber/Husten, mein Hals tut weh, ich bin krank, ich kann um ... Uhr kommen. Keep to A1 vocabulary of the health topic; short sentences.",
+      "Mia is the receptionist at a doctor's practice (Praxis Dr. Weber). Emil calls to make an appointment because he is ill. Greet him, ask his name, ask what is wrong (Was fehlt Ihnen?), ask whether he has fever, offer an appointment time today (e.g. um 15 Uhr) and ask for his phone number. Finish with Gute Besserung and Auf Wiederhören. Use Sie with Emil. Target structures: ich brauche einen Termin, ich habe Kopfschmerzen/Fieber/Husten, mein Hals tut weh, ich bin krank, ich kann um ... Uhr kommen. Keep to A1 vocabulary of the health topic; short sentences.",
     phrases: [
       { de: "Ich brauche einen Termin.", ru: "Мне нужна запись на приём." },
       { de: "Ich habe Kopfschmerzen und Fieber.", ru: "У меня головная боль и температура." },
@@ -414,7 +414,7 @@ export default {
       {
         say: "Gern. Wie ist Ihr Name, bitte?",
         sayRu: "Хорошо. Как вас зовут?",
-        hint: "Mein Name ist Ali …",
+        hint: "Mein Name ist Emil …",
         expect: ["ali", "name", "heiße", "heisse"],
       },
       {
@@ -442,8 +442,8 @@ export default {
         expect: ["telefonnummer", "nummer", "null", "eins", "zwei", "drei", "vier", "fünf", "sechs", "sieben", "acht", "neun", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"],
       },
       {
-        say: "Danke, Ali. Bis 15 Uhr und gute Besserung! Auf Wiederhören!",
-        sayRu: "Спасибо, Али. До 15 часов и выздоравливайте! До свидания!",
+        say: "Danke, Emil. Bis 15 Uhr und gute Besserung! Auf Wiederhören!",
+        sayRu: "Спасибо, Эмиль. До 15 часов и выздоравливайте! До свидания!",
         hint: "Danke, auf Wiederhören!",
         expect: ["wiederhören", "wiederhoren", "danke", "tschüss", "tschuss", "wiedersehen"],
       },
@@ -453,10 +453,10 @@ export default {
   exam: [
     {
       type: "choice",
-      q: "Ali ___ heute nicht arbeiten, er hat Fieber.",
+      q: "Emil ___ heute nicht arbeiten, er hat Fieber.",
       options: ["darf", "dürfen", "darfst"],
       answer: 0,
-      explain: "er (Ali) → darf.",
+      explain: "er (Emil) → darf.",
     },
     {
       type: "fill",
@@ -476,7 +476,7 @@ export default {
     {
       type: "choice",
       q: "„Was fehlt Ihnen?“ — „___“",
-      options: ["Ich habe Halsschmerzen.", "Ich heiße Ali.", "Ich wohne in Berlin."],
+      options: ["Ich habe Halsschmerzen.", "Ich heiße Emil.", "Ich wohne in Berlin."],
       answer: 0,
       explain: "На вопрос врача отвечают, что болит.",
     },
@@ -505,19 +505,19 @@ export default {
     },
     {
       type: "choice",
-      q: "Ali, ___ bitte zum Arzt!",
+      q: "Emil, ___ bitte zum Arzt!",
       options: ["geh", "geht", "gehst"],
       answer: 0,
       explain: "Imperativ на du: Geh! (geht — это ihr, gehst — не Imperativ).",
     },
     {
       type: "listen",
-      text: "Hallo, hier ist Ali. Ich bin krank und habe Fieber. Ich kann heute leider nicht zur Arbeit kommen.",
+      text: "Hallo, hier ist Emil. Ich bin krank und habe Fieber. Ich kann heute leider nicht zur Arbeit kommen.",
       mode: "choice",
-      q: "Почему Али сегодня не идёт на работу?",
+      q: "Почему Эмиль сегодня не идёт на работу?",
       options: ["У него температура", "У него нет времени", "Он очень устал"],
       answer: 0,
-      ru: "Здравствуйте, это Али. Я болен, и у меня температура. К сожалению, я не могу сегодня прийти на работу.",
+      ru: "Здравствуйте, это Эмиль. Я болен, и у меня температура. К сожалению, я не могу сегодня прийти на работу.",
     },
     {
       type: "translate",

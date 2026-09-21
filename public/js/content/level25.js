@@ -33,7 +33,7 @@ export default {
     { de: "der Auftrag", ru: "заказ, задание", plural: "die Aufträge", example: "Heute haben wir drei Aufträge in Hamburg.", exampleRu: "Сегодня у нас три заказа в Гамбурге." },
     { de: "die Lieferung", ru: "поставка, доставка", plural: "die Lieferungen", example: "Die Lieferung kommt am Freitag an.", exampleRu: "Поставка придёт в пятницу." },
     { de: "das Lager", ru: "склад", plural: "die Lager", example: "Im Lager arbeiten fünf Kollegen.", exampleRu: "На складе работают пять коллег." },
-    { de: "der Lkw", ru: "грузовик", plural: "die Lkws", example: "Ali fährt seit zwei Jahren einen Lkw.", exampleRu: "Али уже два года водит грузовик." },
+    { de: "der Lkw", ru: "грузовик", plural: "die Lkws", example: "Emil fährt seit zwei Jahren einen Lkw.", exampleRu: "Эмиль уже два года водит грузовик." },
     { de: "das Gehalt", ru: "зарплата", plural: "die Gehälter", example: "Mit dem Gehalt bin ich zufrieden.", exampleRu: "Зарплатой я доволен." },
     { de: "der Feierabend", ru: "конец рабочего дня", plural: "die Feierabende", example: "Um halb fünf habe ich Feierabend.", exampleRu: "В половине пятого у меня заканчивается рабочий день." },
     { de: "die Schutzbrille", ru: "защитные очки", plural: "die Schutzbrillen", example: "In der Werkstatt trägt jeder eine Schutzbrille.", exampleRu: "В мастерской каждый носит защитные очки." },
@@ -45,7 +45,7 @@ export default {
     { de: "sich kümmern um", ru: "заниматься (чем-то), заботиться о", example: "Wer kümmert sich um die neuen Fahrer?", exampleRu: "Кто занимается новыми водителями?" },
     { de: "sich beschweren über", ru: "жаловаться на", example: "Der Kunde beschwert sich über den Lärm in der Werkstatt.", exampleRu: "Клиент жалуется на шум в мастерской." },
     { de: "achten auf", ru: "следить за, обращать внимание на", example: "Achte bitte auf die Sicherheit in der Werkstatt.", exampleRu: "Пожалуйста, следи за безопасностью в мастерской." },
-    { de: "sich verlassen auf", ru: "полагаться на", example: "Auf Ali kann sich jeder verlassen.", exampleRu: "На Али может положиться каждый." },
+    { de: "sich verlassen auf", ru: "полагаться на", example: "Auf Emil kann sich jeder verlassen.", exampleRu: "На Эмиль может положиться каждый." },
     { de: "teilnehmen an", ru: "участвовать в", example: "Jeder Mitarbeiter nimmt einmal im Jahr an einer Schulung teil.", exampleRu: "Каждый сотрудник раз в год участвует в обучении." },
     { de: "zuständig sein für", ru: "отвечать за", example: "Für die Schichtpläne ist die Chefin zuständig.", exampleRu: "За графики смен отвечает начальница." },
   ],
@@ -108,7 +108,7 @@ export default {
         ],
       },
       examples: [
-        { de: "Ali bewirbt sich um eine Stelle als Elektriker.", ru: "Али подаёт заявку на должность электрика." },
+        { de: "Emil bewirbt sich um eine Stelle als Elektriker.", ru: "Эмиль подаёт заявку на должность электрика." },
         { de: "Ich kümmere mich um die Lieferung nach Hamburg.", ru: "Я занимаюсь доставкой в Гамбург." },
         { de: "Wir nehmen alle an der Fortbildung teil.", ru: "Мы все участвуем в курсах повышения квалификации." },
         { de: "Worum kümmert sich der Betriebsrat?", ru: "Чем занимается производственный совет?" },
@@ -130,7 +130,7 @@ export default {
     },
     {
       type: "choice",
-      q: "Ali will ___. Er hat eine bessere Stelle gefunden.",
+      q: "Emil will ___. Er hat eine bessere Stelle gefunden.",
       options: ["kündigen", "einstellen", "teilnehmen"],
       answer: 0,
       explain: "kündigen — расторгнуть договор, уволиться. einstellen — наоборот, нанимать.",
@@ -287,7 +287,7 @@ export default {
     },
     {
       type: "choice",
-      q: "Ali nimmt ___ einem Deutschkurs teil.",
+      q: "Emil nimmt ___ einem Deutschkurs teil.",
       options: ["an", "in", "auf"],
       answer: 0,
       explain: "teilnehmen an + Dativ: an einem Kurs, an der Besprechung.",
@@ -344,7 +344,7 @@ export default {
     },
     {
       type: "choice",
-      q: "Ali bewirbt sich ___ eine Stelle als Fahrer.",
+      q: "Emil bewirbt sich ___ eine Stelle als Fahrer.",
       options: ["um", "über", "mit"],
       answer: 0,
       explain: "sich bewerben um + Akkusativ — подавать заявку на должность.",
@@ -382,17 +382,17 @@ export default {
     title: "Ein Gespräch mit der Chefin",
     titleRu: "Разговор с начальницей",
     lines: [
-      { speaker: "Frau Berger", de: "Ali, haben Sie kurz Zeit? Ich möchte über die neuen Schichten sprechen.", ru: "Али, у вас есть минутка? Я хотела бы поговорить о новых сменах." },
-      { speaker: "Ali", de: "Ja, natürlich. Die Schichtpläne werden ja jeden Monat neu gemacht, oder?", ru: "Да, конечно. Графики смен ведь каждый месяц составляют заново, верно?" },
+      { speaker: "Frau Berger", de: "Emil, haben Sie kurz Zeit? Ich möchte über die neuen Schichten sprechen.", ru: "Эмиль, у вас есть минутка? Я хотела бы поговорить о новых сменах." },
+      { speaker: "Emil", de: "Ja, natürlich. Die Schichtpläne werden ja jeden Monat neu gemacht, oder?", ru: "Да, конечно. Графики смен ведь каждый месяц составляют заново, верно?" },
       { speaker: "Frau Berger", de: "Genau. Ab April werden zwei neue Fahrer eingestellt, deshalb ändert sich einiges.", ru: "Именно. С апреля нанимают двух новых водителей, поэтому кое-что меняется." },
-      { speaker: "Ali", de: "Das ist gut. In den letzten Wochen habe ich viele Überstunden gemacht.", ru: "Это хорошо. В последние недели я много работал сверхурочно." },
+      { speaker: "Emil", de: "Das ist gut. In den letzten Wochen habe ich viele Überstunden gemacht.", ru: "Это хорошо. В последние недели я много работал сверхурочно." },
       { speaker: "Frau Berger", de: "Ich weiß, darum kümmere ich mich. Die Aufträge nach Leipzig übernehmen Sie aber weiter.", ru: "Я знаю, я этим занимаюсь. Но заказы в Лейпциг вы и дальше берёте на себя." },
-      { speaker: "Ali", de: "Gern. Auf mich können Sie sich verlassen. Eine Frage noch: Was ist mit der Fortbildung?", ru: "С удовольствием. На меня вы можете положиться. Ещё вопрос: что с курсами повышения квалификации?" },
+      { speaker: "Emil", de: "Gern. Auf mich können Sie sich verlassen. Eine Frage noch: Was ist mit der Fortbildung?", ru: "С удовольствием. На меня вы можете положиться. Ещё вопрос: что с курсами повышения квалификации?" },
       { speaker: "Frau Berger", de: "Sie findet im Mai statt. Alle Fahrer nehmen daran teil, und sie wird von der Firma bezahlt.", ru: "Они пройдут в мае. В них участвуют все водители, и оплачивает их фирма." },
-      { speaker: "Ali", de: "Sehr gut. Muss ich mich dafür anmelden?", ru: "Очень хорошо. Мне нужно на них записаться?" },
+      { speaker: "Emil", de: "Sehr gut. Muss ich mich dafür anmelden?", ru: "Очень хорошо. Мне нужно на них записаться?" },
       { speaker: "Frau Berger", de: "Nein, das wird im Büro erledigt. Achten Sie nur auf die E-Mail mit dem Termin.", ru: "Нет, это сделают в офисе. Только следите за письмом с датой." },
-      { speaker: "Ali", de: "Alles klar. Dann bis morgen, ich habe jetzt Feierabend.", ru: "Понятно. Тогда до завтра, у меня сейчас конец рабочего дня." },
-      { speaker: "Frau Berger", de: "Schönen Feierabend, Ali!", ru: "Хорошего вечера, Али!" },
+      { speaker: "Emil", de: "Alles klar. Dann bis morgen, ich habe jetzt Feierabend.", ru: "Понятно. Тогда до завтра, у меня сейчас конец рабочего дня." },
+      { speaker: "Frau Berger", de: "Schönen Feierabend, Emil!", ru: "Хорошего вечера, Эмиль!" },
     ],
   },
 
@@ -401,9 +401,9 @@ export default {
     scenario:
       "Ты заболел и звонишь утром в свою транспортную фирму. Скажи, кто ты и что сегодня не сможешь выйти. Объясни, когда отправишь больничный, что делать с доставкой в Лейпциг и может ли твою смену взять коллега. В конце скажи, когда примерно вернёшься, поблагодари и попрощайся.",
     tutorBrief:
-      "Mia is the dispatcher at the transport company where Ali works as a driver. Ali calls in sick early in the morning. Use Sie with him, stay friendly and businesslike. Ask how long he will be off, remind him the sick note has to be sent, ask what should happen with the delivery to Leipzig and whether a colleague should take his shift, and check whether the lorry is still in the workshop. Finish by wishing him a good recovery and saying goodbye. Target structures: Passiv Präsens (wird kontrolliert, wird repariert), Passiv with modal verbs (muss geschickt werden, kann erledigt werden), verbs with prepositions (sich kümmern um, sich verlassen auf, achten auf, teilnehmen an). Keep to B1 workplace vocabulary; short, natural sentences.",
+      "Mia is the dispatcher at the transport company where Emil works as a driver. Emil calls in sick early in the morning. Use Sie with him, stay friendly and businesslike. Ask how long he will be off, remind him the sick note has to be sent, ask what should happen with the delivery to Leipzig and whether a colleague should take his shift, and check whether the lorry is still in the workshop. Finish by wishing him a good recovery and saying goodbye. Target structures: Passiv Präsens (wird kontrolliert, wird repariert), Passiv with modal verbs (muss geschickt werden, kann erledigt werden), verbs with prepositions (sich kümmern um, sich verlassen auf, achten auf, teilnehmen an). Keep to B1 workplace vocabulary; short, natural sentences.",
     phrases: [
-      { de: "Guten Morgen, hier ist Ali.", ru: "Доброе утро, это Али." },
+      { de: "Guten Morgen, hier ist Emil.", ru: "Доброе утро, это Эмиль." },
       { de: "Ich bin leider krank und kann heute nicht kommen.", ru: "Я, к сожалению, болен и сегодня не смогу прийти." },
       { de: "Die Krankmeldung schicke ich heute noch per E-Mail.", ru: "Больничный я отправлю ещё сегодня по электронной почте." },
       { de: "Die Lieferung muss trotzdem heute erledigt werden.", ru: "Доставку всё равно нужно выполнить сегодня." },
@@ -416,7 +416,7 @@ export default {
       {
         say: "Spedition Berger, guten Morgen, hier ist Mia. Was kann ich für Sie tun?",
         sayRu: "Транспортная фирма «Бергер», доброе утро, это Мия. Чем могу помочь?",
-        hint: "Guten Morgen, hier ist Ali. Ich bin leider krank.",
+        hint: "Guten Morgen, hier ist Emil. Ich bin leider krank.",
         expect: ["ali", "krank", "guten", "morgen", "nicht kommen"],
       },
       {
@@ -450,8 +450,8 @@ export default {
         expect: ["ja", "werkstatt", "repariert", "wird", "nein"],
       },
       {
-        say: "Perfekt. Dann gute Besserung, Ali. Bis nächste Woche!",
-        sayRu: "Отлично. Тогда выздоравливайте, Али. До следующей недели!",
+        say: "Perfekt. Dann gute Besserung, Emil. Bis nächste Woche!",
+        sayRu: "Отлично. Тогда выздоравливайте, Эмиль. До следующей недели!",
         hint: "Vielen Dank und bis nächste Woche!",
         expect: ["danke", "vielen", "tschüss", "tschuss", "bis", "wiederhören"],
       },

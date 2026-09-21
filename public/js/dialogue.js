@@ -1,4 +1,4 @@
-// Dialogue player: listen to the level dialogue, then play Ali's role with the microphone
+// Dialogue player: listen to the level dialogue, then play Emil's role with the microphone
 import { el, normalize, similarity, spokenSimilarity, digitsToWords, sleep } from "./utils.js";
 import { speech, STT_ERRORS, RATES } from "./speech.js";
 import { sfx, confetti, xpFloat } from "./fx.js";
@@ -6,12 +6,12 @@ import { store } from "./store.js";
 
 export function renderDialogue({ container, level, onDone, onExit }) {
   const d = level.dialogue;
-  const other = d.lines.find((l) => l.speaker !== "Ali")?.speaker || "Mia";
-  // one warm female voice reads everything; Ali's lines are read a touch slower so the two are still easy to tell apart
-  const rateFor = (speaker) => (speaker === "Ali" ? RATES.dialogueAli : RATES.dialogueOther);
+  const other = d.lines.find((l) => l.speaker !== "Emil")?.speaker || "Mia";
+  // one warm female voice reads everything; Emil's lines are read a touch slower so the two are still easy to tell apart
+  const rateFor = (speaker) => (speaker === "Emil" ? RATES.dialogueAli : RATES.dialogueOther);
   /**
    * Replay a single line. It takes over from a running playback: speech.speak() stops whatever is
-   * playing, so without this the loop would wake up 350 ms later and talk over the very line Ali
+   * playing, so without this the loop would wake up 350 ms later and talk over the very line Emil
    * asked to hear again.
    */
   const replayLine = (l) => {
@@ -21,25 +21,25 @@ export function renderDialogue({ container, level, onDone, onExit }) {
   let mode = "listen"; // listen | play
   let playing = false;
   let stopped = false;
-  let aliDone = 0;
-  const aliLines = d.lines.filter((l) => l.speaker === "Ali").length;
+  let heroDone = 0;
+  const heroLines = d.lines.filter((l) => l.speaker === "Emil").length;
   container.innerHTML = "";
 
   const lines = d.lines.map((l, i) =>
-    el("div", { class: `dl-line ${l.speaker === "Ali" ? "ali" : "other"}` },
+    el("div", { class: `dl-line ${l.speaker === "Emil" ? "ali" : "other"}` },
       el("div", { class: "dl-speaker" }, l.speaker),
       el("div", { class: "dl-bubble" },
         el("div", { class: "dl-de", lang: "de" }, l.de, el("button", { class: "icon-btn tiny", type: "button", onClick: () => replayLine(l) }, "🔊")),
         el("div", { class: "dl-ru" }, l.ru),
-        l.speaker === "Ali" ? el("div", { class: "dl-mic-row" }, el("button", { class: "mic-btn small", type: "button", onClick: () => speakLine(i) }, "🎤"), el("span", { class: "dl-status muted" }, "")) : null,
+        l.speaker === "Emil" ? el("div", { class: "dl-mic-row" }, el("button", { class: "mic-btn small", type: "button", onClick: () => speakLine(i) }, "🎤"), el("span", { class: "dl-status muted" }, "")) : null,
       ),
     ),
   );
 
   const playBtn = el("button", { class: "btn primary big", type: "button", onClick: () => playAll() }, "▶ Прослушать диалог");
-  const roleBtn = el("button", { class: "btn ghost", type: "button", onClick: () => setMode("play") }, "🎭 Сыграть роль Али");
+  const roleBtn = el("button", { class: "btn ghost", type: "button", onClick: () => setMode("play") }, "🎭 Сыграть роль Эмиля");
   // The stage must never dead-end: the mic can be denied, missing or the recogniser offline.
-  // The button is always present but only offered once Ali has actually listened to the dialogue.
+  // The button is always present but only offered once Emil has actually listened to the dialogue.
   const noMicBtn = el("button", { class: "btn", hidden: true, type: "button", onClick: () => {
     if (store.level(level.id).dialogueDone) return;
     confetti(); sfx.levelUp();
@@ -47,7 +47,7 @@ export function renderDialogue({ container, level, onDone, onExit }) {
     store.grantXp(30);
     root_msg.textContent = `🎉 Диалог отмечен как пройденный! +${Math.round(30 * store.xpMultiplier())} XP`;
     onDone?.();
-  } }, "✓ Я прочитал реплики Али вслух");
+  } }, "✓ Я прочитал реплики Эмиля вслух");
   const showRu = el("label", { class: "toggle" }, (() => { const c = el("input", { type: "checkbox" }); c.checked = store.state.settings.showRu; c.addEventListener("change", () => { store.update((st) => { st.settings.showRu = c.checked; }); root.classList.toggle("hide-ru", !c.checked); }); return c; })(), el("span", { class: "toggle-track" }, el("span", { class: "toggle-thumb" })), el("span", { class: "toggle-label" }, "Перевод"));
 
   const root = el("div", { class: "session dialogue" },
@@ -58,7 +58,7 @@ export function renderDialogue({ container, level, onDone, onExit }) {
     ),
     el("div", { class: "session-body" }, el("div", { class: "dl-list" }, lines)),
     el("footer", { class: "session-foot" },
-      (root_msg = el("div", { class: "feedback dl-msg" }, "Сначала послушай весь диалог, потом сыграй роль Али — произнеси его реплики в микрофон.")),
+      (root_msg = el("div", { class: "feedback dl-msg" }, "Сначала послушай весь диалог, потом сыграй роль Эмиля — произнеси его реплики в микрофон.")),
       el("div", { class: "foot-actions" }, noMicBtn, roleBtn, playBtn),
     ),
   );
@@ -70,14 +70,14 @@ export function renderDialogue({ container, level, onDone, onExit }) {
     mode = m;
     root.classList.toggle("play-mode", m === "play");
     if (m === "play") {
-      root_msg.textContent = `Нажимай 🎤 у реплик Али и произноси их. Произнесено: ${aliDone}/${aliLines}`;
+      root_msg.textContent = `Нажимай 🎤 у реплик Эмиля и произноси их. Произнесено: ${heroDone}/${heroLines}`;
       roleBtn.textContent = "🎧 Режим прослушивания";
       roleBtn.onclick = () => setMode("listen");
       playBtn.textContent = "▶ Диалог с моими репликами";
       playBtn.onclick = () => playAll(true);
     } else {
-      root_msg.textContent = "Сначала послушай весь диалог, потом сыграй роль Али.";
-      roleBtn.textContent = "🎭 Сыграть роль Али";
+      root_msg.textContent = "Сначала послушай весь диалог, потом сыграй роль Эмиля.";
+      roleBtn.textContent = "🎭 Сыграть роль Эмиля";
       roleBtn.onclick = () => setMode("play");
       playBtn.textContent = "▶ Прослушать диалог";
       playBtn.onclick = () => playAll(false);
@@ -94,7 +94,7 @@ export function renderDialogue({ container, level, onDone, onExit }) {
       lines.forEach((x) => x.classList.remove("active"));
       lines[i].classList.add("active");
       lines[i].scrollIntoView({ behavior: "smooth", block: "center" });
-      if (interactive && l.speaker === "Ali") {
+      if (interactive && l.speaker === "Emil") {
         const ok = await speakLine(i, true);
         if (stopped) break;
         if (!ok) await sleep(300);
@@ -117,8 +117,8 @@ export function renderDialogue({ container, level, onDone, onExit }) {
       }
       if (!store.level(level.id).dialogueDone) noMicBtn.hidden = false;
       root_msg.textContent = speech.sttSupported
-        ? "Отлично! Теперь попробуй сыграть роль Али 🎭 Если микрофон не работает, отметь диалог кнопкой слева."
-        : "Отлично! Микрофон недоступен, поэтому отметь диалог кнопкой слева, когда прочитаешь реплики Али вслух.";
+        ? "Отлично! Теперь попробуй сыграть роль Эмиля 🎭 Если микрофон не работает, отметь диалог кнопкой слева."
+        : "Отлично! Микрофон недоступен, поэтому отметь диалог кнопкой слева, когда прочитаешь реплики Эмиля вслух.";
     }
   }
 
@@ -150,7 +150,7 @@ export function renderDialogue({ container, level, onDone, onExit }) {
     const ok = score >= 0.68 || (heard && normalize(l.de).includes(h) && h.length > 4);
     if (ok) {
       const firstTime = !row.classList.contains("done");
-      if (firstTime) { row.classList.add("done"); aliDone++; }
+      if (firstTime) { row.classList.add("done"); heroDone++; }
       status.textContent = `✅ ${Math.round(Math.max(score, 0.68) * 100)}% — «${heard}»`;
       sfx.correct();
       if (firstTime) {
@@ -158,13 +158,13 @@ export function renderDialogue({ container, level, onDone, onExit }) {
         store.grantXp(8);
         xpFloat(mic, 8);
       }
-      if (aliDone >= aliLines && !store.level(level.id).dialogueDone) {
+      if (heroDone >= heroLines && !store.level(level.id).dialogueDone) {
         confetti(); sfx.levelUp();
         store.update(() => { store.level(level.id).dialogueDone = true; });
         store.grantXp(30);
         root_msg.textContent = `🎉 Ты сыграл весь диалог! +${Math.round(30 * store.xpMultiplier())} XP`;
         onDone?.();
-      } else if (mode === "play") root_msg.textContent = `Произнесено: ${aliDone}/${aliLines}`;
+      } else if (mode === "play") root_msg.textContent = `Произнесено: ${heroDone}/${heroLines}`;
     } else {
       status.textContent = heard ? `❌ Я услышала: «${heard}». Попробуй ещё раз.` : "Ничего не услышала. Попробуй ещё раз.";
       sfx.wrong();

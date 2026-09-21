@@ -67,14 +67,14 @@ for (const q of ["Bist du ein Roboter?", "Hast du Kinder?", "Magst du Fußball?"
 }
 
 // ...while a statement about himself must never be mistaken for a question about her
-for (const s of ["Ich bin Programmierer", "Ich habe eine Katze", "Ich heiße Ali"]) {
+for (const s of ["Ich bin Programmierer", "Ich habe eine Katze", "Ich heiße Emil"]) {
   const u = understand(s);
   if (u.intent === "aboutHer") { failed++; console.log(`FAIL  ${s}: read as a question about Mia`); }
 }
 
 // She has to answer the content, not praise him and change the subject.
 const echoes = [
-  ["Ich heiße Ali", /Freut mich, Ali/],
+  ["Ich heiße Emil", /Freut mich, Emil/],
   ["Ich komme aus Baku", /aus Baku/i],
   ["Ich arbeite als Programmierer", /Programmierer/],
   ["Ich trinke gern Tee", /Tee/],
@@ -84,7 +84,7 @@ for (const [said, want] of echoes) {
   if (!want.test(r.de)) { failed++; console.log(`FAIL  "${said}" -> "${r.de}" does not pick up what he said`); }
 }
 
-// Ali writes in Russian, and rarely in the exact words a phrase list happens to store. She has an
+// Emil writes in Russian, and rarely in the exact words a phrase list happens to store. She has an
 // answer for all of these — she must actually find it instead of saying she cannot help.
 for (const q of ["расскажи про Берлин", "а ты что любишь есть?", "ты замужем?", "у тебя есть кот?",
                  "а ты откуда вообще", "как найти работу в Германии", "а музыку какую слушаешь"]) {
@@ -141,7 +141,7 @@ for (const text of ["я сегодня купил хлеб", "мой брат р
   else if (!r.explainRu) { failed++; console.log(`FAIL  "${text}" came back with no Russian`); }
 }
 
-// The phrasebook may only fire on an explicit request, or Mia recites Ali's own sentence back.
+// The phrasebook may only fire on an explicit request, or Mia recites Emil's own sentence back.
 for (const text of ["Мне не нравится немецкая грамматика", "У меня всё хорошо сегодня на работе"]) {
   if (understand(text).intent === "small") { failed++; console.log(`FAIL  "${text}" parroted from the phrasebook`); }
 }
@@ -232,7 +232,7 @@ for (const text of ["я сегодня купил хлеб", "мой брат р
   if (m && !text.includes(m[1])) { failed++; console.log(`FAIL  "${text}" -> она отвечает про «${m[1]}», которого он не говорил`); }
 }
 
-// Ali speaks into a microphone, which never produces a question mark, and types without one too.
+// Emil speaks into a microphone, which never produces a question mark, and types without one too.
 // Her whole knowledge base used to sit behind a gate that required one: 178 of 304 prepared
 // phrases could not be reached at all by voice.
 {
@@ -251,14 +251,14 @@ for (const text of ["вчера ходил в магазин", "мне нрав�
 }
 
 // The correction card rebuilt the sentence from the raw text using a normalised token, so a verb
-// with ß or an umlaut was never replaced and Ali saw his mistake twice with an arrow between.
-for (const [said, want] of [["Ich heißt Ali", "Ich heiße Ali"], ["Du heiße Mia", "Du heißt Mia"],
+// with ß or an umlaut was never replaced and Emil saw his mistake twice with an arrow between.
+for (const [said, want] of [["Ich heißt Emil", "Ich heiße Emil"], ["Du heiße Mia", "Du heißt Mia"],
                             ["Er komme aus Baku", "Er kommt aus Baku"]]) {
   const c = checkGerman(said);
   if (!c || c.corrected !== want) { failed++; console.log(`FAIL  checkGerman("${said}") -> ${c ? c.corrected : "null"}, want "${want}"`); }
 }
 // …and it must stay silent rather than show an unchanged "correction"
-for (const ok of ["Ich heiße Ali", "Du heißt Mia", "Er kommt aus Baku"]) {
+for (const ok of ["Ich heiße Emil", "Du heißt Mia", "Er kommt aus Baku"]) {
   if (checkGerman(ok)) { failed++; console.log(`FAIL  checkGerman("${ok}") предложило исправление для верной фразы`); }
 }
 
@@ -269,7 +269,7 @@ for (const [text, want] of [["у меня есть брат", /Bruder/], ["у м
 }
 
 // Every opener carries a written answer to itself — that is what «💡 Подсказка» shows on turn one.
-for (let i = 0; i < 20; i++) if (!opening("Ali").tip) { failed++; console.log("FAIL  опенер без подсказки"); break; }
+for (let i = 0; i < 20; i++) if (!opening("Emil").tip) { failed++; console.log("FAIL  опенер без подсказки"); break; }
 
 // A simple "thank you" must not open a brand-new topic every single time.
 {

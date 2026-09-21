@@ -17,7 +17,7 @@ export default {
 
   vocab: [
     { de: "die Reise", ru: "поездка, путешествие", plural: "die Reisen", example: "Die Reise nach Berlin war schön.", exampleRu: "Поездка в Берлин была хорошей." },
-    { de: "der Urlaub", ru: "отпуск", plural: "die Urlaube", example: "Im Urlaub war Ali am Meer.", exampleRu: "В отпуске Али был на море." },
+    { de: "der Urlaub", ru: "отпуск", plural: "die Urlaube", example: "Im Urlaub war Emil am Meer.", exampleRu: "В отпуске Эмиль был на море." },
     { de: "der Bahnhof", ru: "вокзал", plural: "die Bahnhöfe", example: "Der Bahnhof ist im Zentrum.", exampleRu: "Вокзал находится в центре." },
     { de: "der Flughafen", ru: "аэропорт", plural: "die Flughäfen", example: "Wir fahren mit dem Taxi zum Flughafen.", exampleRu: "Мы едем на такси в аэропорт." },
     { de: "der Zug", ru: "поезд", plural: "die Züge", example: "Der Zug nach Hamburg ist schnell.", exampleRu: "Поезд в Гамбург быстрый." },
@@ -31,7 +31,7 @@ export default {
     { de: "einfach", ru: "в одну сторону (о билете)", example: "Einfach oder hin und zurück?", exampleRu: "В одну сторону или туда и обратно?" },
     { de: "die Verspätung", ru: "задержка, опоздание", plural: "die Verspätungen", example: "Der Zug hat zehn Minuten Verspätung.", exampleRu: "Поезд опаздывает на десять минут." },
     { de: "der Koffer", ru: "чемодан", plural: "die Koffer", example: "Mein Koffer ist sehr schwer.", exampleRu: "Мой чемодан очень тяжёлый." },
-    { de: "der Reisepass", ru: "загранпаспорт", plural: "die Reisepässe", example: "Ali hat den Reisepass im Koffer.", exampleRu: "Паспорт Али в чемодане." },
+    { de: "der Reisepass", ru: "загранпаспорт", plural: "die Reisepässe", example: "Emil hat den Reisepass im Koffer.", exampleRu: "Паспорт Эмиль в чемодане." },
     { de: "das Hotel", ru: "отель", plural: "die Hotels", example: "Das Hotel liegt direkt am Strand.", exampleRu: "Отель находится прямо на пляже." },
     { de: "die Rezeption", ru: "ресепшен, стойка регистрации", plural: "die Rezeptionen", example: "Die Rezeption ist im Erdgeschoss.", exampleRu: "Ресепшен на первом этаже." },
     { de: "ein Zimmer reservieren", ru: "забронировать номер", example: "Ich möchte ein Zimmer für zwei Nächte reservieren.", exampleRu: "Я хочу забронировать номер на две ночи." },
@@ -41,7 +41,7 @@ export default {
     { de: "der Berg", ru: "гора", plural: "die Berge", example: "Im Winter fahren wir in die Berge.", exampleRu: "Зимой мы едем в горы." },
     { de: "der Stadtplan", ru: "карта города", plural: "die Stadtpläne", example: "Könnte ich bitte einen Stadtplan haben?", exampleRu: "Можно мне, пожалуйста, карту города?" },
     { de: "die Sehenswürdigkeit", ru: "достопримечательность", plural: "die Sehenswürdigkeiten", example: "Berlin hat viele Sehenswürdigkeiten.", exampleRu: "В Берлине много достопримечательностей." },
-    { de: "fahren", ru: "ехать", example: "Ali fährt mit dem Zug nach München.", exampleRu: "Али едет на поезде в Мюнхен." },
+    { de: "fahren", ru: "ехать", example: "Emil fährt mit dem Zug nach München.", exampleRu: "Эмиль едет на поезде в Мюнхен." },
     { de: "fliegen", ru: "лететь", example: "Wir fliegen morgen nach Spanien.", exampleRu: "Мы летим завтра в Испанию." },
     { de: "ankommen", ru: "прибывать", example: "Der Zug kommt um 14 Uhr an.", exampleRu: "Поезд прибывает в 14 часов." },
     { de: "abfahren", ru: "отправляться", example: "Der Bus fährt in fünf Minuten ab.", exampleRu: "Автобус отправляется через пять минут." },
@@ -67,7 +67,7 @@ export default {
         ],
       },
       examples: [
-        { de: "Ali ist nach München gefahren.", ru: "Али поехал в Мюнхен." },
+        { de: "Emil ist nach München gefahren.", ru: "Эмиль поехал в Мюнхен." },
         { de: "Wir sind um 10 Uhr angekommen.", ru: "Мы прибыли в 10 часов." },
         { de: "Ich bin zwei Wochen in Italien geblieben.", ru: "Я остался в Италии на две недели." },
         { de: "Bist du geflogen oder gefahren?", ru: "Ты летел или ехал?" },
@@ -111,7 +111,7 @@ export default {
         ],
       },
       examples: [
-        { de: "Ali fliegt in die Türkei, nach Istanbul.", ru: "Али летит в Турцию, в Стамбул." },
+        { de: "Emil fliegt in die Türkei, nach Istanbul.", ru: "Эмиль летит в Турцию, в Стамбул." },
         { de: "Im Sommer waren wir am Meer.", ru: "Летом мы были на море." },
         { de: "Könnte ich bitte den Schlüssel haben?", ru: "Можно мне, пожалуйста, ключ?" },
         { de: "Ich hätte gern eine Fahrkarte nach Bonn.", ru: "Я бы хотел билет до Бонна." },
@@ -267,8 +267,8 @@ export default {
     {
       type: "translate",
       dir: "ru-de",
-      text: "Али приехал в Мюнхен.",
-      answers: ["Ali ist nach München gefahren.", "Ali ist nach München gekommen.", "Ali ist in München angekommen."],
+      text: "Эмиль приехал в Мюнхен.",
+      answers: ["Emil ist nach München gefahren.", "Emil ist nach München gekommen.", "Emil ist in München angekommen."],
       hint: "Perfekt с sein: ist … gefahren / gekommen",
     },
     {
@@ -288,10 +288,10 @@ export default {
     },
     {
       type: "fill",
-      sentence: "Ali ___ im Urlaub kein Auto.",
+      sentence: "Emil ___ im Urlaub kein Auto.",
       answers: ["hatte"],
       options: ["hatte", "war", "ist"],
-      ru: "У Али в отпуске не было машины.",
+      ru: "У Эмиль в отпуске не было машины.",
       explain: "hatte — имел (Präteritum от haben).",
     },
     {
@@ -333,7 +333,7 @@ export default {
     },
     {
       type: "choice",
-      q: "Ali говорит другу (du): «___ bitte den Koffer!»",
+      q: "Emil говорит другу (du): «___ bitte den Koffer!»",
       options: ["Pack", "Packst", "Packen Sie"],
       answer: 0,
       explain: "Imperativ на du: Pack! (без -st и без местоимения).",
@@ -393,17 +393,17 @@ export default {
     titleRu: "На вокзале",
     lines: [
       { speaker: "Frau Schmidt", de: "Guten Tag, was kann ich für Sie tun?", ru: "Добрый день, чем могу помочь?" },
-      { speaker: "Ali", de: "Guten Tag. Ich hätte gern eine Fahrkarte nach München, bitte.", ru: "Добрый день. Я бы хотел билет до Мюнхена, пожалуйста." },
+      { speaker: "Emil", de: "Guten Tag. Ich hätte gern eine Fahrkarte nach München, bitte.", ru: "Добрый день. Я бы хотел билет до Мюнхена, пожалуйста." },
       { speaker: "Frau Schmidt", de: "Einfach oder hin und zurück?", ru: "В одну сторону или туда и обратно?" },
-      { speaker: "Ali", de: "Hin und zurück. Ich fahre am Freitag und komme am Sonntag zurück.", ru: "Туда и обратно. Я еду в пятницу и возвращаюсь в воскресенье." },
+      { speaker: "Emil", de: "Hin und zurück. Ich fahre am Freitag und komme am Sonntag zurück.", ru: "Туда и обратно. Я еду в пятницу и возвращаюсь в воскресенье." },
       { speaker: "Frau Schmidt", de: "Um wie viel Uhr möchten Sie fahren?", ru: "Во сколько вы хотите ехать?" },
-      { speaker: "Ali", de: "Am Morgen, so gegen neun Uhr.", ru: "Утром, примерно в девять." },
+      { speaker: "Emil", de: "Am Morgen, so gegen neun Uhr.", ru: "Утром, примерно в девять." },
       { speaker: "Frau Schmidt", de: "Es gibt einen Zug um 9:12 Uhr. Die Ankunft in München ist um 13:30 Uhr.", ru: "Есть поезд в 9:12. Прибытие в Мюнхен в 13:30." },
-      { speaker: "Ali", de: "Sehr gut. Wo fährt der Zug ab?", ru: "Очень хорошо. Откуда отправляется поезд?" },
+      { speaker: "Emil", de: "Sehr gut. Wo fährt der Zug ab?", ru: "Очень хорошо. Откуда отправляется поезд?" },
       { speaker: "Frau Schmidt", de: "Von Gleis 7. Die Fahrkarte kostet 89 Euro.", ru: "С седьмого пути. Билет стоит 89 евро." },
-      { speaker: "Ali", de: "Kann ich mit Karte bezahlen?", ru: "Можно заплатить картой?" },
+      { speaker: "Emil", de: "Kann ich mit Karte bezahlen?", ru: "Можно заплатить картой?" },
       { speaker: "Frau Schmidt", de: "Natürlich. Hier ist Ihre Fahrkarte. Gute Reise!", ru: "Конечно. Вот ваш билет. Счастливого пути!" },
-      { speaker: "Ali", de: "Vielen Dank! Auf Wiedersehen.", ru: "Большое спасибо! До свидания." },
+      { speaker: "Emil", de: "Vielen Dank! Auf Wiedersehen.", ru: "Большое спасибо! До свидания." },
     ],
   },
 
@@ -412,10 +412,10 @@ export default {
     scenario:
       "Ты приехал в отель на море. Мия работает на ресепшене. Скажи, что ты забронировал номер, назови своё имя, скажи, сколько ночей ты остаёшься и как ты приехал. Вежливо попроси карту города и спроси, где пляж.",
     tutorBrief:
-      "Mia is the receptionist at a small seaside hotel. Ali arrives to check in. Greet him formally (Sie), ask his name, how many nights he stays, how he travelled (train or plane), then hand him the key and ask if he needs anything else. Target structures: Ich habe ein Zimmer reserviert; Ich bleibe … Nächte; Ich bin mit dem Zug gefahren / geflogen; Könnte ich bitte … haben?; Ich hätte gern …; Wo ist der Strand? Keep to A1 travel and hotel vocabulary; short sentences.",
+      "Mia is the receptionist at a small seaside hotel. Emil arrives to check in. Greet him formally (Sie), ask his name, how many nights he stays, how he travelled (train or plane), then hand him the key and ask if he needs anything else. Target structures: Ich habe ein Zimmer reserviert; Ich bleibe … Nächte; Ich bin mit dem Zug gefahren / geflogen; Könnte ich bitte … haben?; Ich hätte gern …; Wo ist der Strand? Keep to A1 travel and hotel vocabulary; short sentences.",
     phrases: [
       { de: "Ich habe ein Zimmer reserviert.", ru: "Я забронировал номер." },
-      { de: "Mein Name ist Ali.", ru: "Меня зовут Али." },
+      { de: "Mein Name ist Emil.", ru: "Меня зовут Эмиль." },
       { de: "Ich bleibe zwei Nächte.", ru: "Я остаюсь на две ночи." },
       { de: "Ich bin mit dem Zug gefahren.", ru: "Я приехал на поезде." },
       { de: "Könnte ich bitte einen Stadtplan haben?", ru: "Можно мне, пожалуйста, карту города?" },
@@ -432,7 +432,7 @@ export default {
       {
         say: "Sehr gern. Wie ist Ihr Name, bitte?",
         sayRu: "С удовольствием. Как вас зовут?",
-        hint: "Mein Name ist Ali.",
+        hint: "Mein Name ist Emil.",
         expect: ["ali", "name", "heiße", "heisse"],
       },
       {
@@ -460,8 +460,8 @@ export default {
         expect: ["strand", "meer", "wo ist", "komme"],
       },
       {
-        say: "Der Strand ist gleich hinter dem Hotel. Schönen Urlaub, Ali! Bis später!",
-        sayRu: "Пляж сразу за отелем. Хорошего отпуска, Али! До встречи!",
+        say: "Der Strand ist gleich hinter dem Hotel. Schönen Urlaub, Emil! Bis später!",
+        sayRu: "Пляж сразу за отелем. Хорошего отпуска, Эмиль! До встречи!",
         hint: "Danke, bis später!",
         expect: ["danke", "bis", "tschüss", "tschuss", "wiedersehen"],
       },
@@ -471,7 +471,7 @@ export default {
   exam: [
     {
       type: "choice",
-      q: "Ali ___ gestern nach Köln gefahren.",
+      q: "Emil ___ gestern nach Köln gefahren.",
       options: ["hat", "ist", "sind"],
       answer: 1,
       explain: "Глаголы движения образуют Perfekt с sein.",
@@ -515,12 +515,12 @@ export default {
     },
     {
       type: "listen",
-      text: "Guten Tag, ich habe ein Zimmer für drei Nächte reserviert. Mein Name ist Ali.",
+      text: "Guten Tag, ich habe ein Zimmer für drei Nächte reserviert. Mein Name ist Emil.",
       mode: "choice",
-      q: "На сколько ночей Али забронировал номер?",
+      q: "На сколько ночей Эмиль забронировал номер?",
       options: ["на две ночи", "на три ночи", "на четыре ночи"],
       answer: 1,
-      ru: "Добрый день, я забронировал номер на три ночи. Меня зовут Али.",
+      ru: "Добрый день, я забронировал номер на три ночи. Меня зовут Эмиль.",
     },
     {
       type: "fill",

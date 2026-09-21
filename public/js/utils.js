@@ -1,7 +1,10 @@
 // Small DOM + text helpers shared by all modules
+import { translateText, plural as pluralI18n } from "./i18n.js";
 
 export const $ = (sel, root = document) => root.querySelector(sel);
 export const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
+
+const TRANSLATED_ATTRS = new Set(["title", "placeholder", "aria-label", "alt"]);
 
 /** Create an element: el('div', {class:'x', onClick: fn, dataset:{id:1}}, child, 'text') */
 export function el(tag, attrs = {}, ...children) {
@@ -22,11 +25,15 @@ export function el(tag, attrs = {}, ...children) {
     else if (k === "dataset") Object.assign(node.dataset, v);
     else if (k.startsWith("on") && typeof v === "function") node.addEventListener(k.slice(2).toLowerCase(), v);
     else if (k === "html") node.innerHTML = v;
+    // Подписи, которые видит человек, а не разметка: их тоже надо переводить.
+    else if (TRANSLATED_ATTRS.has(k)) node.setAttribute(k, translateText(String(v)));
     else node.setAttribute(k, v === true ? "" : v);
   }
   for (const c of children.flat(Infinity)) {
     if (c === null || c === undefined || c === false) continue;
-    node.append(c instanceof Node ? c : document.createTextNode(String(c)));
+    // Здесь и происходит перевод интерфейса. Весь текст на экране рождается этой строкой, так
+    // что одного места достаточно — и ни одна надпись не может «забыть» перевестись.
+    node.append(c instanceof Node ? c : document.createTextNode(translateText(String(c))));
   }
   return node;
 }
@@ -197,12 +204,13 @@ export function daysBetween(a, b) {
 
 export const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
-export function plural(n, one, few, many) {
-  const m10 = n % 10, m100 = n % 100;
-  if (m10 === 1 && m100 !== 11) return one;
-  if (m10 >= 2 && m10 <= 4 && (m100 < 10 || m100 >= 20)) return few;
-  return many;
-}
+/**
+ * «5 дней», «2 дня», «1 день» — и «5 gün» без всякого согласования.
+ *
+ * Азербайджанский существительное после числа не меняет, поэтому там три формы схлопываются в
+ * одну; решает это i18n, здесь остаётся только русская арифметика.
+ */
+export const plural = pluralI18n;
 
 /** Strip a leading article from a German vocab entry: "der Name" -> "Name" */
 export function stripArticle(de) {

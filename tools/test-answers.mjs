@@ -20,14 +20,14 @@ const cases = [
   ["Ich wohne in Moskua", ["Ich wohne in Moskau."], DE, true, "letter-swap typo tolerated"],
   ["Ich wohnt in Moskau", ["Ich wohne in Moskau."], DE, false, "verb ending error rejected"],
   ["Ich kommt aus Russland", ["Ich komme aus Russland."], DE, false, "verb ending error rejected"],
-  ["Ich heisse Ali", ["Ich heiße Ali.", "Mein Name ist Ali."], DE, true, "ss + missing period"],
-  ["Mein Name ist Ali", ["Ich heiße Ali.", "Mein Name ist Ali."], DE, true, "second accepted variant"],
+  ["Ich heisse Emil", ["Ich heiße Emil.", "Mein Name ist Emil."], DE, true, "ss + missing period"],
+  ["Mein Name ist Emil", ["Ich heiße Emil.", "Mein Name ist Emil."], DE, true, "second accepted variant"],
   ["Wie heißt du?", ["Wie heißt du?"], DE, true, "exact question"],
   ["Wie heiße du?", ["Wie heißt du?"], DE, false, "wrong verb form rejected"],
   // translation into Russian
   ["Откуда ты?", ["Откуда ты?", "Откуда ты родом?"], RU, true, "exact"],
   ["Откуда Вы?", ["Откуда ты?"], RU, true, "polite variant tolerated"],
-  ["Меня зовут Али", ["Меня зовут Али."], RU, true, "no period"],
+  ["Меня зовут Эмиль", ["Меня зовут Эмиль."], RU, true, "no period"],
   ["Как тебя зовут", ["Как тебя зовут?"], RU, true, "no question mark"],
 ];
 

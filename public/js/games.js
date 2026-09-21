@@ -1,4 +1,4 @@
-// Five small games built on the words Ali has already unlocked. They are deliberately quick — two
+// Five small games built on the words Emil has already unlocked. They are deliberately quick — two
 // or three minutes each — so they work as a warm-up before a level or as something to do when he
 // does not feel like a full lesson. All of them pay a little XP and a few coins, far less than a
 // real lesson, so playing is a break and never a shortcut past the levels.
@@ -10,7 +10,7 @@ import { speech, RATES } from "./speech.js";
 
 /* ------------------------------------------------------------------ helpers */
 
-/** Every word from the levels Ali has opened — games never teach ahead of where he is. */
+/** Every word from the levels Emil has opened — games never teach ahead of where he is. */
 function wordPool() {
   const unlocked = LEVELS.filter((l) => store.isUnlocked(l.id));
   const seen = new Set();
@@ -73,7 +73,7 @@ const bestOf = (id) => store.state.games?.[id]?.best ?? 0;
 
 /**
  * Say a German word out loud — hearing it is half the point of a vocabulary game.
- * No `force`: when Ali turns speech off in the settings he means everywhere, games included.
+ * No `force`: when Emil turns speech off in the settings he means everywhere, games included.
  */
 const say = (word) => speech.speak(stripArticle(word), { rate: RATES.word });
 
@@ -96,7 +96,7 @@ function shell({ container, title, subtitle, onExit }) {
   );
   container.innerHTML = "";
   container.append(root);
-  // The router fires this when Ali navigates away. Every game has async steps waiting on sleep(),
+  // The router fires this when Emil navigates away. Every game has async steps waiting on sleep(),
   // so without a shared flag an abandoned game would still pay out, toast and throw confetti over
   // whatever page he opened next.
   let dead = false;
@@ -627,7 +627,7 @@ function notEnough(container, onExit, what) {
 
 /**
  * `ready()` returns null when the game can be played, or the reason it cannot. Games draw on the
- * words Ali has unlocked, and the early levels simply do not have enough of some kinds yet — the
+ * words Emil has unlocked, and the early levels simply do not have enough of some kinds yet — the
  * catalogue says so on the card instead of letting him open a dead end.
  */
 export const GAMES = [

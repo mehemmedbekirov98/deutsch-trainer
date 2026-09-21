@@ -1,4 +1,4 @@
-// Deutsch für Ali — app shell, router and views
+// Lingua Mia — app shell, router and views
 import { $, $$, el, append, nextTick, shuffle, plural, todayKey, articleOf, stripArticle, escapeHtml, sleep } from "./utils.js";
 import { store, RANKS, ACHIEVEMENTS } from "./store.js";
 import { speech } from "./speech.js";
@@ -16,6 +16,9 @@ import { session, renderAuth, renderNewPassword, patchMe, changePassword, reques
 import { renderPlacement } from "./placement.js";
 import { backend } from "./backend.js";
 import { CEFR, CEFR_TITLE, CEFR_FIRST, CEFR_LAST } from "./store.js";
+// t импортируется как tr: в этом файле t уже занято — и переменной под Tutor, и параметром
+// в списке тембров голоса. Молчаливое затенение тега перевода нашлось бы не скоро.
+import { initI18n, translateLevels, setLang, lang, LANGS, t as tr } from "./i18n.js";
 
 let AI = false;
 let NEURAL = false;
@@ -28,12 +31,19 @@ const view = () => $("#view");
 
 /* ------------------------------------------------------------------ boot */
 async function boot() {
+  // Язык — самое первое: на нём и интерфейс, и все 36 уроков, и Мия. Словари грузятся до первой
+  // отрисовки, потому что переводить уже нарисованный экран пришлось бы по живому DOM.
+  await initI18n();
+  translateLevels(LEVELS);
   // Who is signed in has to be known BEFORE the progress is read — the save belongs to an account
   // when there is one, and to this browser when there is not. backend.init() also brings back what
   // this deployment has: Claude, the voice, and which Supabase project it talks to.
   await backend.init();
   await store.init();
-  AI = Boolean(backend.config.ai);
+  // Живая Мия — только для вошедших: каждая её реплика стоит владельцу денег, и функция на
+  // сервере всё равно откажет гостю. Показывать «умный режим» тому, кому он не достанется, —
+  // обещание, которого сайт не держит.
+  AI = Boolean(backend.config.ai) && (!backend.cloud || Boolean(backend.user));
   NEURAL = Boolean(backend.config.tts);
   speech.serverTts = NEURAL;
   document.body.dataset.ai = AI ? "1" : "0";
@@ -70,7 +80,10 @@ async function boot() {
   const loader = $("#loader");
   loader.classList.add("hide");
   setTimeout(() => loader.remove(), 700);
-  if (!store.state.introSeen) showWelcome();
+  // …но не поверх экранов, на которые человек пришёл осознанно: тест уровня, вход, новый пароль.
+  // Перезагрузка посреди теста прежде накрывала его этим оверлеем и ответы пропадали.
+  const askedElsewhere = /^#\/(test|login|password)/.test(location.hash);
+  if (!store.state.introSeen && !askedElsewhere) showWelcome();
   else if (store.dailyBonus) {
     const b = store.dailyBonus;
     setTimeout(() => toast(`+${b.coins} монет за ${b.streak}-й день подряд`, { icon: "🪙", title: "Ежедневный бонус" }), 900);
@@ -80,7 +93,7 @@ async function boot() {
 /* ---------------------------------------------------------------- router */
 /**
  * Navigate. `replace` swaps the current history entry instead of adding one — used when a session
- * is finished, so pressing Back does not drop Ali straight back into the exercise he just passed.
+ * is finished, so pressing Back does not drop Emil straight back into the exercise he just passed.
  */
 function go(hash, { replace = false } = {}) {
   if (replace) location.replace(location.pathname + location.search + hash);
@@ -92,7 +105,7 @@ function go(hash, { replace = false } = {}) {
 
 /**
  * Everything that is practice rather than a lesson, in one place and sorted by what it trains.
- * The games used to sit in a flat grid of five where nothing told Ali what any of them was for.
+ * The games used to sit in a flat grid of five where nothing told Emil what any of them was for.
  */
 const GAME_GROUPS = [
   { id: "words", title: "Слова", sub: "Узнавать и вспоминать", games: ["memory", "blitz"] },
@@ -288,8 +301,10 @@ function viewAdmin(v) {
         if (out.error) throw new Error(out.error);
         keyInput.value = "";
         keyMsg.className = "auth-msg ok";
-        keyMsg.textContent = "Ключ принят и сохранён. Мия уже отвечает на любые темы.";
-        setTimeout(load, 900);
+        keyMsg.textContent = "Ключ принят и сохранён. Обновляю страницу, чтобы Мия его подхватила…";
+        // AI вычисляется один раз при загрузке из /api/status — без перезагрузки панель говорила
+        // «Мия уже отвечает», а Мия продолжала отвечать офлайн.
+        setTimeout(() => location.reload(), 1200);
       } catch (e) {
         keyMsg.className = "auth-msg bad";
         keyMsg.textContent = e.message;
@@ -373,6 +388,7 @@ function viewAdmin(v) {
 
 function viewPlacement(v) {
   renderPlacement(v, {
+    onExit: () => go("#/", { replace: true }),
     onDone: () => {
       // прогресс уже записан внутри теста — остаётся отвести туда, где начинать
       const from = CEFR_FIRST[store.state.cefrClaim] || 1;
@@ -503,7 +519,7 @@ function currentLevel() {
  * Ask the server to synthesise a screen's lines ahead of time so playback is instant.
  *
  * Takes `{ text, rate, lang }` entries, not bare strings: the speed is part of the cache key, so a
- * line warmed at the wrong speed is simply a different file and Ali still waits for the
+ * line warmed at the wrong speed is simply a different file and Emil still waits for the
  * synthesiser. `rate` must be the very same RATES.* value the screen will play the line at.
  */
 /**
@@ -555,7 +571,7 @@ function prewarm(items) {
 
 /**
  * One-time microphone card: the browser can only grant the mic from a real click, so we ask once here.
- * Chrome and Edge remember the grant for localhost, and Ali is never prompted again.
+ * Chrome and Edge remember the grant for localhost, and Emil is never prompted again.
  */
 function micCard() {
   if (!speech.sttSupported || speech.micGranted || micState === "granted") return null;
@@ -589,13 +605,13 @@ function micCard() {
 
 
 /**
- * One-field setup for the smart Mia: Ali pastes the key here, the server checks it,
+ * One-field setup for the smart Mia: Emil pastes the key here, the server checks it,
  * saves it and switches on immediately — no files, no restart.
  */
 /**
  * Why the smart mode is off, and what to do about it.
  *
- * On the old local server Ali could paste a key and the server wrote it to .env. There is no file
+ * On the old local server Emil could paste a key and the server wrote it to .env. There is no file
  * to write to now — the key is an environment variable on Netlify — so pretending otherwise would
  * just be a form that never works. It says what is true instead.
  */
@@ -663,7 +679,8 @@ const KIND_SHORT = { choice: "выбор", fill: "пропуски", translate: 
 function showWelcome() {
   const overlay = el("div", { class: "prologue" });
   const choose = (band) => {
-    store.update((s) => { s.introSeen = true; s.cefrClaim = band; });
+    store.update((s) => { s.introSeen = true; });
+    store.claimCefr(band, { allowLower: true });
     overlay.classList.remove("show");
     setTimeout(() => overlay.remove(), 600);
     sfx.levelUp();
@@ -674,8 +691,12 @@ function showWelcome() {
   };
   append(overlay,
     el("div", { class: "prologue-inner" },
+      // Первое, что видит человек, впервые открывший сайт. Если он азербайджаноязычный, ему
+      // нужно суметь переключиться раньше, чем он прочтёт вопрос — поэтому выбор языка стоит
+      // над вопросом, а не в кабинете, до которого ещё надо дойти.
+      langSwitch({ compact: true }),
       el("div", { class: "prologue-emoji" }, "🎓"),
-      el("div", { class: "prologue-kicker" }, "Deutsch für Ali"),
+      el("div", { class: "prologue-kicker" }, "Lingua Mia"),
       el("h1", {}, "Сколько немецкого у тебя уже есть?"),
       el("p", { class: "welcome-text" }, "От этого зависит, с какого урока начать — и как Мия будет с тобой говорить. Поменять можно в любой момент в кабинете."),
       el("div", { class: "level-choice" },
@@ -714,7 +735,7 @@ async function typewriter(node, text, ms, isSkipped = () => false) {
  * The home screen.
  *
  * One question answered loudly — "what do I do now?" — and then everything else, quietly. It used
- * to show nine competing cards; Ali said his eyes scattered and he could not tell what mattered,
+ * to show nine competing cards; Emil said his eyes scattered and he could not tell what mattered,
  * and he was right. The rule here is: one big thing, three small ones, a thin line of numbers.
  */
 function renderHome(v) {
@@ -726,7 +747,7 @@ function renderHome(v) {
   const band = store.cefrProgress();
   const due = store.dueCount(LEVELS.filter((l) => store.isUnlocked(l.id)).flatMap((l) => l.vocab));
   const title = s.title ? TITLE_NAMES[s.title] : null;
-  const name = session.user?.name || s.name || "Ali";
+  const name = session.user?.name || s.name || "Emil";
 
   append(v,
     el("section", { class: "home-hero" },
@@ -845,7 +866,7 @@ function renderLevel(v, level) {
   // warm the voice cache for this level in the background
   prewarm([
     ...level.vocab.slice(0, 8).map((w) => ({ text: w.de, rate: RATES.word })),
-    ...level.dialogue.lines.map((l) => ({ text: l.de, rate: l.speaker === "Ali" ? RATES.dialogueAli : RATES.dialogueOther })),
+    ...level.dialogue.lines.map((l) => ({ text: l.de, rate: l.speaker === "Emil" ? RATES.dialogueAli : RATES.dialogueOther })),
   ]);
   const pct = store.levelProgress(level.id);
   const missions = missionsOf(level);
@@ -880,7 +901,7 @@ function renderLevel(v, level) {
       stage("📖", "Слова", `${level.vocab.length} ${plural(level.vocab.length, "новое слово", "новых слова", "новых слов")} с карточками и озвучкой`, `#/level/${level.id}/vocab`, { done: p.vocabDone, badge: p.vocabQuizBest ? `квиз ${p.vocabQuizBest}%` : null, reward: `+25 XP · +${COINS.vocab} 🪙` }),
       stage("🧠", "Грамматика", level.grammar.map((g) => g.title).join(" · "), `#/level/${level.id}/grammar`, { done: p.grammarDone, reward: `+15 XP · +${COINS.grammar} 🪙` }),
       ...missions.map((m, i) => stage("🎯", `Миссия ${i + 1}`, `${m.length} ${plural(m.length, "задание", "задания", "заданий")} · нужно 60% · ${[...new Set(m.map((x) => KIND_SHORT[x.type]))].join(", ")}`, `#/level/${level.id}/mission/${i + 1}`, { done: p.missions[i], reward: `+20 XP · +${COINS.mission} 🪙 + монеты за ответы` })),
-      stage("🎧", "Диалог", `${level.dialogue.title} — послушай и сыграй роль Али`, `#/level/${level.id}/dialogue`, { done: p.dialogueDone, reward: `+30 XP · +${COINS.dialogue} 🪙` }),
+      stage("🎧", "Диалог", `${level.dialogue.title} — послушай и сыграй роль Эмиля`, `#/level/${level.id}/dialogue`, { done: p.dialogueDone, reward: `+30 XP · +${COINS.dialogue} 🪙` }),
       stage("🗣️", "Разговор с Мией", level.speaking.title, `#/level/${level.id}/speak`, { done: p.speakingDone, badge: AI ? "AI" : "офлайн", reward: `+40 XP · +${COINS.speaking} 🪙` }),
       stage("🏆", "Экзамен", `10 заданий · нужно 70% · звёзды: 70 / 80 / 95% · ${p.examTries ? `попыток: ${p.examTries}, лучший: ${p.examBest}%` : "ещё не сдавал"}`, `#/level/${level.id}/exam`, { done: completed, locked: !examOpen, hint: "Сначала выучи слова и пройди все 3 миссии", reward: `+100 XP · +${COINS.examPass + COINS.levelComplete} 🪙` }),
       stage("🎓", "Устный экзамен с Мией", "Мия задаст 5–7 вопросов по теме голосом и объяснит ошибки по-русски", `#/level/${level.id}/oral`, { done: p.oralDone, locked: !completed, hint: "Откроется после письменного экзамена", badge: AI ? "AI" : null, reward: "+30 XP · +25 🪙" }),
@@ -891,7 +912,7 @@ function renderLevel(v, level) {
 
 /* -------------------------------------------------------------- sub-views */
 function viewVocab(v, level) {
-  // Only the first cards: each card also prefetches the next one while Ali is reading, so warming
+  // Only the first cards: each card also prefetches the next one while Emil is reading, so warming
   // all 32 words here would just fill the background lane and make the early cards wait.
   const head = level.vocab.slice(0, 8);
   prewarm([
@@ -998,7 +1019,7 @@ function viewMission(v, level, n) {
 }
 
 function viewDialogue(v, level) {
-  prewarm(level.dialogue.lines.map((l) => ({ text: l.de, rate: l.speaker === "Ali" ? RATES.dialogueAli : RATES.dialogueOther })));
+  prewarm(level.dialogue.lines.map((l) => ({ text: l.de, rate: l.speaker === "Emil" ? RATES.dialogueAli : RATES.dialogueOther })));
   const r = renderDialogue({ container: v, level, onExit: () => go(`#/level/${level.id}`), onDone: () => reward({ coins: COINS.dialogue, label: "Диалог сыгран", icon: "🎧" }) });
   cleanup = r.destroy;
 }
@@ -1152,7 +1173,7 @@ function renderShop(v) {
     if (it.kind === "theme") applyTheme(it.theme);
     toast(`${it.name} — куплено за ${price} 🪙`, { icon: it.icon, kind: "achievement", title: "Покупка" });
     // redraw first: the old balance node is discarded by redrawShop(), so counting on it animated
-    // an element that was no longer in the document and Ali just saw the number jump
+    // an element that was no longer in the document and Emil just saw the number jump
     redrawShop();
     const balanceNow = v.querySelector(".sb-val");
     if (balanceNow) countUp(balanceNow, before, store.state.coins, 600);
@@ -1295,11 +1316,34 @@ function cefrCard() {
       class: `board-tab ${claim === c ? "on" : ""}`, type: "button",
       onClick: () => {
         if (claim === c) return;
-        store.update((st) => { st.cefrClaim = c; });
-        toast(c === "A1" ? "Начинаем с самого начала." : `Открыл уроки с уровня ${c}.`, { icon: "🎓" });
+        store.claimCefr(c, { allowLower: true });
+        toast(CEFR.indexOf(c) < CEFR.indexOf(claim)
+          ? `Ведём с уровня ${c}. Всё, что ты уже открыл, осталось открытым.`
+          : `Открыл уроки с уровня ${c}.`, { icon: "🎓" });
         route();
       },
     }, `${c} · ${CEFR_TITLE[c]}`))),
+  );
+}
+
+/**
+ * Язык объяснения. Не язык курса — курс всегда немецкий, — а язык, на котором его объясняют.
+ *
+ * Переключение перезагружает страницу: переводится не только интерфейс, но и данные всех 36
+ * уроков, а половина экранов уже нарисована. Перезагрузка честнее и быстрее, чем перерисовка
+ * всего приложения, и человек видит понятный результат вместо мигания.
+ */
+function langSwitch({ compact = false } = {}) {
+  const now = lang();
+  return el("div", { class: `lang-switch ${compact ? "compact" : ""}` },
+    Object.values(LANGS).map((L) => el("button", {
+      class: `lang-btn ${L.code === now ? "on" : ""}`,
+      type: "button",
+      title: L.label,
+      onClick: () => setLang(L.code),
+    }, el("span", { class: "lang-flag" }, L.flag),
+       el("span", { class: "lang-name" }, L.label),
+       el("span", { class: "lang-short" }, L.short))),
   );
 }
 
@@ -1325,10 +1369,10 @@ function renderProfile(v) {
   );
   voiceSel.addEventListener("change", () => {
     store.update((st) => (st.settings.voice = voiceSel.value || null));
-    speech.speak("Hallo Ali! Ich bin Mia. Schön, dass du Deutsch lernst.", { voiceName: voiceSel.value || null, force: true });
+    speech.speak("Hallo Emil! Ich bin Mia. Schön, dass du Deutsch lernst.", { voiceName: voiceSel.value || null, force: true });
   });
   const rate = el("input", { type: "range", min: "0.6", max: "1.2", step: "0.05", value: String(settings.rate) });
-  rate.addEventListener("change", () => { store.update((st) => (st.settings.rate = Number(rate.value))); speech.speak("Guten Tag, Ali. Wie geht es dir?", { rate: Number(rate.value), force: true }); });
+  rate.addEventListener("change", () => { store.update((st) => (st.settings.rate = Number(rate.value))); speech.speak("Guten Tag, Emil. Wie geht es dir?", { rate: Number(rate.value), force: true }); });
   const goal = el("input", { type: "range", min: "20", max: "200", step: "10", value: String(s.dailyGoal) });
   const goalVal = el("span", { class: "muted" }, `${s.dailyGoal} XP`);
   goal.addEventListener("input", () => (goalVal.textContent = `${goal.value} XP`));
@@ -1351,7 +1395,7 @@ function renderProfile(v) {
   });
 
   const band = store.cefrProgress();
-  const who = session.user?.name || s.name || "Ali";
+  const who = session.user?.name || s.name || "Emil";
   append(v,
     el("section", { class: "cabinet-hero" },
       el("div", { class: "cabinet-glow" }),
@@ -1398,6 +1442,11 @@ function renderProfile(v) {
     el("section", { class: "card" },
       el("div", { class: "card-head" }, el("h2", {}, "Настройки")),
       el("div", { class: "settings" },
+        el("div", { class: "setting" },
+          el("div", {},
+            el("div", { class: "setting-label" }, "Язык сайта"),
+            el("div", { class: "muted small" }, "Интерфейс, все уроки, игры и Мия. Немецкий остаётся немецким.")),
+          langSwitch()),
         boardSetting(),
         setting("Звуковые эффекты", "sound"),
         setting("Озвучка немецкого (TTS)", "tts"),
@@ -1414,7 +1463,7 @@ function renderProfile(v) {
               store.update((st) => (st.settings.tone = t.id));
               $$(".tone-btn").forEach((b) => b.classList.remove("active"));
               e.currentTarget.classList.add("active");
-              await speech.speak("Hallo Ali! Schön, dass du da bist.", { force: true });
+              await speech.speak("Hallo Emil! Schön, dass du da bist.", { force: true });
               await speech.speak("А по-русски я звучу вот так. Если что-то непонятно — просто спроси.", { lang: "ru-RU", force: true });
             } }, el("span", { class: "tone-name" }, t.label), el("span", { class: "tone-desc muted" }, t.desc));
           })),
@@ -1450,7 +1499,7 @@ function renderProfile(v) {
     el("section", { class: "card danger" },
       el("div", { class: "card-head" }, el("h2", {}, "Сброс")),
       el("p", { class: "muted" }, "Удалит весь прогресс, XP, монеты и достижения. Отменить нельзя (но есть резервные копии в data/backups)."),
-      el("button", { class: "btn danger", type: "button", onClick: () => { if (confirm("Точно сбросить весь прогресс Али?")) { store.reset(); applyTheme("nacht"); toast("Прогресс сброшен", { icon: "🗑️" }); go("#/"); } } }, "Сбросить прогресс"),
+      el("button", { class: "btn danger", type: "button", onClick: () => { if (confirm("Точно сбросить весь прогресс Эмиль?")) { store.reset(); applyTheme("nacht"); toast("Прогресс сброшен", { icon: "🗑️" }); go("#/"); } } }, "Сбросить прогресс"),
     ),
   );
 }

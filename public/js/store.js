@@ -23,6 +23,22 @@ const BASE_KEY = "deutsch-ali-v1";
 // would hand them the previous account's save.
 const keyFor = () => (backend.user ? `${BASE_KEY}:${backend.user.id}` : BASE_KEY);
 
+// «Перенести прогресс из этого браузера» at sign-up. Written before the account exists and read
+// after the first sign-in, because with email confirmation switched on those are two different
+// visits — the tick used to be honoured only when Supabase handed back a session immediately.
+const CARRY_KEY = "lingua-carry-guest";
+export const markCarryOver = (email) => {
+  try { localStorage.setItem(CARRY_KEY, String(email || "").trim().toLowerCase()); } catch {}
+};
+function takeCarryOver(email) {
+  try {
+    const want = localStorage.getItem(CARRY_KEY);
+    if (!want || want !== String(email || "").trim().toLowerCase()) return false;
+    localStorage.removeItem(CARRY_KEY);
+    return true;
+  } catch { return false; }
+}
+
 // The three bands the course covers, and the last level of each. Levels 1–12 are A1, 13–24 A2,
 // 25–36 B1 — so finishing level 12 is what makes someone an A2 learner, not a claim about himself.
 export const CEFR = ["A1", "A2", "B1"];
@@ -55,8 +71,10 @@ export const ACHIEVEMENTS = [
   { id: "level-12", icon: "🥇", title: "A1 geschafft!", ru: "Уровень A1 пройден целиком", test: (s) => completedCount(s) >= 12 },
   { id: "level-24", icon: "🏵️", title: "A2 geschafft!", ru: "Уровень A2 пройден целиком", test: (s) => completedCount(s) >= 24 },
   { id: "level-36", icon: "👑", title: "B1 geschafft!", ru: "Весь курс пройден — от A1 до B1", test: (s) => completedCount(s) >= 36 },
-  { id: "cefr-a2", icon: "🎓", title: "A2", ru: "Ты дошёл до уровня A2", test: (s) => s.cefr === "A2" || s.cefr === "B1" },
-  { id: "cefr-b1", icon: "🎖️", title: "B1", ru: "Ты дошёл до уровня B1", test: (s) => s.cefr === "B1" },
+  // Заработанный уровень, а не заявленный: тест уровня и переключатель в кабинете поднимают
+  // cefr сразу, и медаль «Ты дошёл до B1» прилетала раньше первого урока.
+  { id: "cefr-a2", icon: "🎓", title: "A2", ru: "Ты дошёл до уровня A2", test: (s) => topDoneLevel(s) >= CEFR_LAST.A1 },
+  { id: "cefr-b1", icon: "🎖️", title: "B1", ru: "Ты дошёл до уровня B1", test: (s) => topDoneLevel(s) >= CEFR_LAST.A2 },
   { id: "perfect-exam", icon: "💯", title: "Perfekt!", ru: "Экзамен на 100%", test: (s) => Object.values(s.levels).some((l) => l.examBest === 100) },
   { id: "talk-1", icon: "🗣️", title: "Hallo, Mia!", ru: "Первый разговор с Мией", test: (s) => s.stats.tutorTurns >= 1 },
   { id: "talk-50", icon: "💬", title: "Plaudertasche", ru: "50 реплик в разговоре с Мией", test: (s) => s.stats.tutorTurns >= 50 },
@@ -72,8 +90,17 @@ export const ACHIEVEMENTS = [
   { id: "oral-5", icon: "🗣️", title: "Redner", ru: "5 устных экзаменов сдано", test: (s) => Object.values(s.levels).filter((l) => l.oralDone).length >= 5 },
 ];
 
+/** Какие медали вообще существуют — всё остальное в сейве осталось от прошлых версий. */
+const ACHIEVEMENT_IDS = new Set(ACHIEVEMENTS.map((a) => a.id));
+
 function completedCount(s) {
   return Object.values(s.levels).filter((l) => l.examBest >= 70).length;
+}
+
+/** Самый дальний СДАННЫЙ урок. Заявленный уровень сюда не входит — медаль даётся за работу. */
+function topDoneLevel(s) {
+  const done = Object.entries(s.levels).filter(([, l]) => (l.examBest || 0) >= 70).map(([id]) => Number(id));
+  return done.length ? Math.max(...done) : 0;
 }
 
 function freshLevel() {
@@ -95,7 +122,7 @@ function freshLevel() {
 function freshState() {
   return {
     v: 2,
-    name: "Ali",
+    name: "Emil",
     xp: 0,
     coins: 0,
     coinsEarned: 0,
@@ -114,7 +141,7 @@ function freshState() {
     stats: { answered: 0, correct: 0, tutorTurns: 0, speakCorrect: 0, wordsLearned: 0, bestCombo: 0, days: [], minutes: 0, hintsUsed: 0 },
     settings: { sound: true, tts: true, autoListen: true, showRu: true, voice: null, rate: 0.92, neural: true, tone: "sanft", micLang: "de-DE" },
     // What he told us about himself on the very first screen. Someone who already has school
-    // German should not have to grind through "Hallo, ich heiße Ali" to reach the level he is at.
+    // German should not have to grind through "Hallo, ich heiße Emil" to reach the level he is at.
     cefrClaim: "A1",
     cefr: "A1", // earned ∪ claimed — kept in the save so the leaderboard can read it
     dailyGoal: 60,
@@ -141,10 +168,29 @@ class Store {
       local = JSON.parse(localStorage.getItem(keyFor()) || "null");
     } catch {}
     let remote = null;
-    try {
-      remote = await backend.loadProgress();
-      this.serverOk = backend.cloud;
-    } catch {}
+    // Did the read actually happen? A failed read looks exactly like an empty account from here,
+    // and acting on the wrong one of those two wipes the save. When it failed we keep working
+    // from the local copy and refuse to write to the cloud until a read succeeds.
+    this.remoteUnknown = false;
+    if (backend.cloud && backend.user) {
+      try {
+        remote = await backend.loadProgress();
+        this.serverOk = true;
+      } catch (e) {
+        console.warn("[store] облако не прочиталось:", e?.message || e);
+        this.remoteUnknown = true;
+        this.serverOk = false;
+      }
+    }
+    // A brand-new account on the browser where the progress was earned as a guest. Only when he
+    // asked for it at sign-up — otherwise the next person to sign in on a shared computer would
+    // inherit somebody else's XP.
+    if (!remote && !local && !this.remoteUnknown && backend.user && takeCarryOver(backend.user.email)) {
+      try {
+        const guest = JSON.parse(localStorage.getItem(BASE_KEY) || "null");
+        if (guest && Number.isFinite(guest.xp) && guest.xp > 0) local = guest;
+      } catch {}
+    }
     // choose the most recently saved copy (falling back to the richer one for saves made before savedAt existed),
     // so a reset or an import is never resurrected by the other copy
     const cands = [local, remote].filter((x) => x && typeof x === "object" && Number.isFinite(x.xp));
@@ -156,6 +202,7 @@ class Store {
     if (best) this.adopt(best, false);
     this.touchStreak();
     this.save();
+    if (this.remoteUnknown) this.emit("save-offline");
     this.watchOtherTabs();
     return this;
   }
@@ -211,6 +258,12 @@ class Store {
       daily: { ...f.daily, ...(data.daily || {}) },
       games: { ...f.games, ...(data.games || {}) },
       words: (data.words && typeof data.words === "object") ? data.words : {},
+      // Сейвы, сделанные до того, как из игры убрали сюжет, тащат в себе его поля и его медали.
+      // Медали мало того что нельзя получить — их ещё и считали, и «собрано 41 из 38» выглядело
+      // поломкой. Ничего заработанного это не трогает: выкидываются только исчезнувшие id.
+      achievements: Array.isArray(data.achievements)
+        ? data.achievements.filter((id) => ACHIEVEMENT_IDS.has(id))
+        : [],
       levels, // the live container, reused so views holding store.level(id) keep writing to it
     };
     for (const k of ["owned", "achievements", "miaNotes"]) if (!Array.isArray(this.state[k])) this.state[k] = [];
@@ -294,8 +347,18 @@ class Store {
     try { localStorage.setItem(keyFor(), JSON.stringify(this.state)); } catch {}
     clearTimeout(this._saveTimer);
     this._saveTimer = setTimeout(async () => {
-      // Ali has nobody to tell him the save failed, so a repeated failure surfaces on screen.
+      // Emil has nobody to tell him the save failed, so a repeated failure surfaces on screen.
       try {
+        // The cloud copy was never read this session, so we do not know what we would be
+        // overwriting. Read it first; only a success unlocks writing.
+        if (this.remoteUnknown) {
+          const current = await backend.loadProgress();
+          this.remoteUnknown = false;
+          if (current && Number.isFinite(current.xp) && (Number(current.savedAt) || 0) > (Number(this.state.savedAt) || 0)) {
+            this.adopt(current, false);
+            this.emit();
+          }
+        }
         const r = await backend.saveProgress(this.state);
         // Nobody is signed in: the copy in this browser is the only one there is, and it is
         // already written. Not a failure, so the warning must not appear.
@@ -325,7 +388,7 @@ class Store {
   }
 
   /**
-   * Ali's CEFR level.
+   * Emil's CEFR level.
    *
    * Earned, not claimed: it moves up when he finishes the last level of a band. The level he
    * declared when he started can lift it before he has earned it, and the higher of the two wins.
@@ -355,7 +418,25 @@ class Store {
     // The first level of the band he declared is open from the start — otherwise someone who
     // already speaks some German has to replay a whole band before the course is any use to him.
     if (id === CEFR_FIRST[this.state.cefrClaim]) return true;
+    // Anything he has already opened stays open. Declaring a lower level used to lock the band's
+    // first lesson again — including one he had already passed — so «пройденное остаётся
+    // пройденным» was true of the XP and false of the door.
+    const l = this.level(id);
+    if ((l.examBest || 0) > 0 || this.levelProgress(id) > 0) return true;
     return this.level(id - 1).examBest >= 70;
+  }
+
+  /**
+   * Declare a level. Raising it opens the band; lowering it is allowed but never takes anything
+   * away — see isUnlocked(). Returns true when something actually changed.
+   */
+  claimCefr(band, { allowLower = false } = {}) {
+    if (!CEFR.includes(band)) return false;
+    const now = CEFR.includes(this.state.cefrClaim) ? this.state.cefrClaim : "A1";
+    if (band === now) return false;
+    if (!allowLower && CEFR.indexOf(band) < CEFR.indexOf(now)) return false;
+    this.update((s) => { s.cefrClaim = band; });
+    return true;
   }
 
   isCompleted(id) {
@@ -429,7 +510,7 @@ class Store {
    * Remember how a single word went, and when it should come back.
    *
    * Without this, «Повторение» drew 15 words at random out of everything unlocked: by level 12 a
-   * given word returned about once every 25 sessions, and one Ali kept failing was exactly as
+   * given word returned about once every 25 sessions, and one Emil kept failing was exactly as
    * likely to appear as one he knew cold. A Leitner ladder fixes that — a word he gets right moves
    * to a longer interval, a word he misses drops back to tomorrow.
    */

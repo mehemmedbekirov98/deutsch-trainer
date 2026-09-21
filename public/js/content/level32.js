@@ -19,7 +19,7 @@ export default {
     { de: "das Gefühl", ru: "чувство", plural: "die Gefühle", example: "Über Gefühle zu sprechen ist nicht immer leicht.", exampleRu: "Говорить о чувствах не всегда легко." },
     { de: "der Streit", ru: "ссора, спор", example: "Der Streit mit dem Nachbarn hat lange gedauert.", exampleRu: "Ссора с соседом длилась долго." },
     { de: "sich streiten", ru: "ссориться", example: "Wir streiten uns selten, aber diesmal war es laut.", exampleRu: "Мы ссоримся редко, но в этот раз было громко." },
-    { de: "sich ärgern über", ru: "злиться из-за (чего-то), на (кого-то)", example: "Ali ärgert sich über den neuen Dienstplan.", exampleRu: "Али злится из-за нового графика смен." },
+    { de: "sich ärgern über", ru: "злиться из-за (чего-то), на (кого-то)", example: "Emil ärgert sich über den neuen Dienstplan.", exampleRu: "Эмиль злится из-за нового графика смен." },
     { de: "wütend", ru: "очень злой, в ярости", example: "Ich war so wütend, dass ich nichts gesagt habe.", exampleRu: "Я был так зол, что ничего не сказал." },
     { de: "genervt", ru: "раздражённый", example: "Am Abend bin ich oft genervt und müde.", exampleRu: "Вечером я часто раздражён и устал." },
     { de: "enttäuscht", ru: "разочарованный", example: "Meine Frau war enttäuscht, weil ich den Termin vergessen habe.", exampleRu: "Моя жена была разочарована, потому что я забыл про встречу." },
@@ -131,7 +131,7 @@ export default {
     },
     {
       type: "choice",
-      q: "Ali hat drei Stunden auf den Anruf gewartet. Jetzt ist er richtig ___.",
+      q: "Emil hat drei Stunden auf den Anruf gewartet. Jetzt ist er richtig ___.",
       options: ["wütend", "geduldig", "ehrlich"],
       answer: 0,
       explain: "wütend — очень злой; geduldig — терпеливый, ehrlich — честный.",
@@ -200,7 +200,7 @@ export default {
       type: "listen",
       text: "Mein Nachbar wirft mir vor, dass meine Tochter zu laut spielt.",
       mode: "choice",
-      q: "В чём сосед упрекает Али?",
+      q: "В чём сосед упрекает Эмиль?",
       options: ["Его дочь слишком громко играет", "Он паркуется на чужом месте", "Он не выносит мусор"],
       answer: 0,
       ru: "Мой сосед упрекает меня в том, что моя дочь слишком громко играет.",
@@ -395,18 +395,18 @@ export default {
     title: "Ärger mit dem Nachbarn",
     titleRu: "Неприятности с соседом",
     lines: [
-      { speaker: "Mia", de: "Du siehst heute richtig genervt aus, Ali. Was ist los?", ru: "Ты сегодня выглядишь очень раздражённым, Али. Что случилось?" },
-      { speaker: "Ali", de: "Ich hatte gestern Streit mit meinem Nachbarn. Er ärgert sich über den Lärm.", ru: "Вчера я поссорился с соседом. Он злится из-за шума." },
+      { speaker: "Mia", de: "Du siehst heute richtig genervt aus, Emil. Was ist los?", ru: "Ты сегодня выглядишь очень раздражённым, Эмиль. Что случилось?" },
+      { speaker: "Emil", de: "Ich hatte gestern Streit mit meinem Nachbarn. Er ärgert sich über den Lärm.", ru: "Вчера я поссорился с соседом. Он злится из-за шума." },
       { speaker: "Mia", de: "Welchen Lärm denn? Ihr seid doch eine ruhige Familie.", ru: "Из-за какого шума? Вы же спокойная семья." },
-      { speaker: "Ali", de: "Meine Tochter spielt am Nachmittag. Er wirft mir vor, dass ich keine Rücksicht nehme.", ru: "Моя дочь играет во второй половине дня. Он упрекает меня в том, что я не считаюсь с другими." },
+      { speaker: "Emil", de: "Meine Tochter spielt am Nachmittag. Er wirft mir vor, dass ich keine Rücksicht nehme.", ru: "Моя дочь играет во второй половине дня. Он упрекает меня в том, что я не считаюсь с другими." },
       { speaker: "Mia", de: "Das ist wirklich ein harter Vorwurf. Wie hast du reagiert?", ru: "Это и правда жёсткий упрёк. Как ты отреагировал?" },
-      { speaker: "Ali", de: "Ehrlich gesagt war ich so wütend, dass ich laut geworden bin. Das ist mir jetzt peinlich.", ru: "Честно говоря, я был так зол, что повысил голос. Сейчас мне за это неловко." },
+      { speaker: "Emil", de: "Ehrlich gesagt war ich so wütend, dass ich laut geworden bin. Das ist mir jetzt peinlich.", ru: "Честно говоря, я был так зол, что повысил голос. Сейчас мне за это неловко." },
       { speaker: "Mia", de: "Das verstehe ich. An deiner Stelle würde ich trotzdem noch einmal mit ihm reden.", ru: "Я тебя понимаю. На твоём месте я бы всё-таки поговорила с ним ещё раз." },
-      { speaker: "Ali", de: "Und was soll ich sagen? Er ist beleidigt und grüßt mich nicht mehr.", ru: "И что мне сказать? Он обижен и больше со мной не здоровается." },
+      { speaker: "Emil", de: "Und was soll ich sagen? Er ist beleidigt und grüßt mich nicht mehr.", ru: "И что мне сказать? Он обижен и больше со мной не здоровается." },
       { speaker: "Mia", de: "Wenn ich du wäre, würde ich zugeben, dass ich zu laut geworden bin, und dann eine Lösung vorschlagen.", ru: "Если бы я была на твоём месте, я бы признала, что повысила голос, а потом предложила бы решение." },
-      { speaker: "Ali", de: "Ein Kompromiss wäre vielleicht: Meine Tochter spielt bis acht, danach ist Ruhe.", ru: "Компромисс мог бы быть таким: моя дочь играет до восьми, а потом тишина." },
+      { speaker: "Emil", de: "Ein Kompromiss wäre vielleicht: Meine Tochter spielt bis acht, danach ist Ruhe.", ru: "Компромисс мог бы быть таким: моя дочь играет до восьми, а потом тишина." },
       { speaker: "Mia", de: "Genau. Und wenn ihr beide ruhig bleibt, ist der Streit schnell vorbei.", ru: "Именно. И если вы оба останетесь спокойными, ссора быстро закончится." },
-      { speaker: "Ali", de: "Danke für den Ratschlag, Mia. Heute Abend gehe ich zu ihm.", ru: "Спасибо за совет, Мия. Сегодня вечером я к нему схожу." },
+      { speaker: "Emil", de: "Danke für den Ratschlag, Mia. Heute Abend gehe ich zu ihm.", ru: "Спасибо за совет, Мия. Сегодня вечером я к нему схожу." },
     ],
   },
 
@@ -415,7 +415,7 @@ export default {
     scenario:
       "Ты в перерыве на работе. Расскажи Мии, из-за чего ты злишься: начальник смены упрекает тебя в опозданиях, хотя виноваты пробки. Скажи, что ты почувствовал, объясни, что бы ты сделал, если бы у тебя было больше времени. Потом Мия попросит совета у тебя — дай его мягко: «An deiner Stelle würde ich …». В конце предложи компромисс и попрощайся.",
     tutorBrief:
-      "Mia and Ali are colleagues on a break at the depot where Ali works as a driver. Use du. Ali is upset because the shift supervisor blames him for being late, although the traffic was the reason. Ask what happened, what exactly he is blamed for, and how he felt. Then ask what he would do if he had more time, and ask him for advice about your own conflict with a colleague. Finish by asking what a fair compromise would be, then wish him luck and say goodbye. Target structures: Konjunktiv II (wenn ich mehr Zeit hätte, würde ich ...; wenn ich du wäre ...), advice with an deiner Stelle würde ich / du solltest, feelings with sich ärgern über, enttäuscht von, vorwerfen + Dativ. Keep to clear B1 vocabulary about feelings, work conflicts and solutions.",
+      "Mia and Emil are colleagues on a break at the depot where Emil works as a driver. Use du. Emil is upset because the shift supervisor blames him for being late, although the traffic was the reason. Ask what happened, what exactly he is blamed for, and how he felt. Then ask what he would do if he had more time, and ask him for advice about your own conflict with a colleague. Finish by asking what a fair compromise would be, then wish him luck and say goodbye. Target structures: Konjunktiv II (wenn ich mehr Zeit hätte, würde ich ...; wenn ich du wäre ...), advice with an deiner Stelle würde ich / du solltest, feelings with sich ärgern über, enttäuscht von, vorwerfen + Dativ. Keep to clear B1 vocabulary about feelings, work conflicts and solutions.",
     phrases: [
       { de: "Ich ärgere mich über den neuen Dienstplan.", ru: "Я злюсь из-за нового графика смен." },
       { de: "Er wirft mir vor, dass ich zu spät komme.", ru: "Он упрекает меня в том, что я прихожу слишком поздно." },
@@ -427,8 +427,8 @@ export default {
     ],
     script: [
       {
-        say: "Du siehst gestresst aus, Ali. Was ist denn passiert?",
-        sayRu: "Ты выглядишь вымотанным, Али. Что случилось?",
+        say: "Du siehst gestresst aus, Emil. Was ist denn passiert?",
+        sayRu: "Ты выглядишь вымотанным, Эмиль. Что случилось?",
         hint: "Ich ärgere mich über den neuen Dienstplan.",
         expect: ["ärgere", "aergere", "dienstplan", "streit", "chef", "stress", "schichtleiter"],
       },
@@ -463,8 +463,8 @@ export default {
         expect: ["kompromiss", "würde", "wuerde", "dienstplan", "vorschlagen", "lösung", "loesung"],
       },
       {
-        say: "Das klingt vernünftig. Viel Erfolg morgen, Ali! Bis später!",
-        sayRu: "Звучит разумно. Удачи завтра, Али! До скорого!",
+        say: "Das klingt vernünftig. Viel Erfolg morgen, Emil! Bis später!",
+        sayRu: "Звучит разумно. Удачи завтра, Эмиль! До скорого!",
         hint: "Danke dir! Bis später!",
         expect: ["danke", "bis", "später", "spaeter", "tschüss", "tschuss"],
       },

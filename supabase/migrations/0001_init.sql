@@ -1,4 +1,4 @@
--- Deutsch für Ali — database schema.
+-- Lingua Mia — database schema.
 --
 -- Two tables and one function. The save itself stays a single JSON blob, exactly as it was on
 -- disk: the app has always treated it as one object, every field is read by the client, and

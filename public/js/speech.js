@@ -2,6 +2,7 @@
 // TTS: Microsoft neural voices. Almost every line is already in the public bucket (put there by
 // tools/pregen-audio.mjs), so the usual path is a CDN file; anything new goes through /api/tts, and
 // the browser's own speechSynthesis is the last resort. STT: Web Speech API (Chrome/Edge).
+import { lang as uiLang } from "./i18n.js";
 import { store } from "./store.js";
 import { backend } from "./backend.js";
 
@@ -26,14 +27,25 @@ export const NEURAL_CHOICES = [
   { id: "de-CH-LeniNeural", label: "Leni · швейцарский акцент" },
 ];
 /**
- * Mia's Russian. Seraphina is a multilingual HD voice: told xml:lang="ru-RU" she reads Russian with
- * her own model, so it is literally the same person Ali hears in German — not a second, flatter voice.
- * Voices that are not multilingual fall back to a dedicated Russian one.
+ * Mia's other language — the learner's own.
+ *
+ * Seraphina is a multilingual HD voice: told xml:lang="ru-RU" she reads Russian with her own
+ * model, so the Russian is literally the same person heard in German, not a second, flatter voice.
+ * Azerbaijani she does not speak, so that falls back to a dedicated Azerbaijani voice; it is a
+ * different timbre, but a real Azerbaijani one, which matters more than matching.
  */
 const MULTILINGUAL = new Set(["de-DE-SeraphinaMultilingualNeural"]);
 export const FALLBACK_VOICE_RU = "ru-RU-SvetlanaNeural";
+export const FALLBACK_VOICE_AZ = "az-AZ-BanuNeural";
 
-/** Voice presets Ali can switch between by ear, softest first. */
+/**
+ * Локаль того языка, на котором человек читает сайт. Всё, что не немецкое, говорится на ней:
+ * переводы, объяснения Мии, микрофон в «родном» режиме.
+ */
+export const NATIVE_LOCALE = uiLang() === "az" ? "az-AZ" : "ru-RU";
+export const isNativeLocale = (l) => String(l || "").startsWith(NATIVE_LOCALE.slice(0, 2));
+
+/** Voice presets Emil can switch between by ear, softest first. */
 export const VOICE_PRESETS = [
   { id: "sanft", label: "Мягкий", desc: "по умолчанию — тихо и спокойно", rate: -12, pitch: -3, volume: -12 },
   { id: "warm", label: "Тёплый", desc: "чуть живее", rate: -8, pitch: -2, volume: -6 },
@@ -46,14 +58,14 @@ const isNeural = (id) => typeof id === "string" && id.includes("Neural");
 /**
  * How fast each kind of line is read. These live here and nowhere else on purpose: the speed is
  * part of the cache key, so if a screen plays a phrase at a speed the prewarm did not ask for,
- * every warmed file is thrown away and Ali waits for the synthesiser after all. Screens must use
+ * every warmed file is thrown away and Emil waits for the synthesiser after all. Screens must use
  * these constants and prewarm must warm the same ones.
  */
 export const RATES = {
   word: 0.8,          // flashcard headword — slow and very clear
   example: 0.85,      // example sentence, and the phrase of a speaking drill
   translation: 0.9,   // the Russian side of a flashcard
-  dialogueAli: 0.8,   // Ali's own lines, a touch slower than the other speaker
+  dialogueAli: 0.8,   // Emil's own lines, a touch slower than the other speaker
   dialogueOther: 0.88,
   listen: 0.9,        // listening exercise — never faster than this
 };
@@ -110,7 +122,7 @@ class Speech {
     if (!this.synth) return;
     this.allVoices = this.synth.getVoices() || [];
     const german = this.allVoices.filter((v) => /^de[-_]/i.test(v.lang) || v.lang === "de");
-    // Ali asked for a female voice only, no exceptions. If the system has no female German
+    // Emil asked for a female voice only, no exceptions. If the system has no female German
     // voice we keep the list empty and stay silent rather than switching Mia to a man's voice —
     // the server voice (Seraphina) is the normal path anyway, this is only the offline fallback.
     this.voices = german.filter((v) => !MALE_NAMES.test(v.name));
@@ -209,7 +221,7 @@ class Speech {
     return spoke;
   }
 
-  /** Tell Ali once per session that the voice is unavailable, and why. */
+  /** Tell Emil once per session that the voice is unavailable, and why. */
   warnNoVoice(lang) {
     if (this._warnedNoVoice) return;
     this._warnedNoVoice = true;
@@ -238,12 +250,15 @@ class Speech {
   /** Work out which voice, locale and prosody a line should use. */
   plan(text, { rate = null, voiceName = null, lang = "de-DE" } = {}) {
     const r = rate ?? this.settings.rate ?? 0.92;
-    const isRu = lang.startsWith("ru");
-    const chosen = voiceName ?? (isRu ? null : this.settings.voice);
+    const isDe = lang.startsWith("de");
+    const isAz = lang.startsWith("az");
+    const chosen = voiceName ?? (isDe ? this.settings.voice : null);
     const german = isNeural(chosen) ? chosen : MIA_VOICE;
-    // Russian keeps Mia's own voice when it is multilingual, otherwise a dedicated Russian one
-    const voice = !isRu ? german : (MULTILINGUAL.has(german) ? german : FALLBACK_VOICE_RU);
-    const locale = isRu ? "ru-RU" : "";
+    // The native language keeps Mia's own voice when it is multilingual; Azerbaijani never is.
+    const voice = isDe ? german
+      : isAz ? FALLBACK_VOICE_AZ
+      : (MULTILINGUAL.has(german) ? german : FALLBACK_VOICE_RU);
+    const locale = isDe ? "" : isAz ? "az-AZ" : "ru-RU";
     const p = presetById(this.settings.tone);
     const ratePct = Math.round(p.rate + (r - 0.92) * 100);
     const server = this.settings.neural !== false && this.serverTts !== false && Date.now() > this.serverFailUntil && (!chosen || isNeural(chosen));
@@ -334,7 +349,7 @@ class Speech {
           url = await this.fetchAudio(plan);
         } catch (e) {
           const aborted = e?.name === "AbortError" || String(e?.message).includes("abort");
-          // cancelled on purpose (Ali moved on, or the mic opened) → nothing more to do here
+          // cancelled on purpose (Emil moved on, or the mic opened) → nothing more to do here
           if (aborted && e?.cancelReason !== "timeout") return "stopped";
           if (attempt === 0) continue; // one quiet retry
           console.warn("[tts] neural voice unreachable, falling back:", e?.message || e);
@@ -370,7 +385,7 @@ class Speech {
         if (!v) { resolve(false); return; } // no female voice for this language: stay silent
         if (v) u.voice = v;
         u.lang = v?.lang || lang;
-        // The tone Ali picked has to reach this path too, otherwise all four presets sound
+        // The tone Emil picked has to reach this path too, otherwise all four presets sound
         // identical whenever the neural voice is unavailable. The preset is in SSML units
         // (rate %, pitch Hz, volume %); the Web Speech API wants plain multipliers.
         const p = presetById(this.settings.tone);
@@ -423,7 +438,7 @@ class Speech {
 
   /**
    * Ask the browser for the microphone once and release it immediately.
-   * On localhost Chrome/Edge remember the grant, so Ali is never asked again.
+   * On localhost Chrome/Edge remember the grant, so Emil is never asked again.
    * Must be called from a user gesture. Returns true when the mic is available.
    */
   async requestMic() {
@@ -449,17 +464,17 @@ class Speech {
    *
    * One recogniser, one language. The browser runs a single recognition session per page, so two
    * languages at once cannot work: the second start silently kills the first. Which language to
-   * listen for is therefore the caller's decision — the tutor lets Ali pick it with a DE/RU switch
+   * listen for is therefore the caller's decision — the tutor lets Emil pick it with a DE/RU switch
    * next to the microphone, while pronunciation drills always listen in German.
    */
   async listen({ lang = "de-DE", onInterim = null, timeoutMs = 12000 } = {}) {
     // make sure the browser permission is settled before the recogniser starts,
-    // so Ali sees one prompt at most and never a silent failure
+    // so Emil sees one prompt at most and never a silent failure
     if (!this.micGranted) {
       const ok = await this.requestMic();
       if (!ok && this.micError) throw { code: this.micError === "NotAllowedError" ? "not-allowed" : this.micError === "NotFoundError" ? "audio-capture" : "start-failed" };
     }
-    // Mia must fall silent before the microphone opens, or she transcribes herself as Ali.
+    // Mia must fall silent before the microphone opens, or she transcribes herself as Emil.
     this.stop();
     this.abortListening();
     this.lastLang = lang;
@@ -499,7 +514,7 @@ class Speech {
       };
       rec.onerror = (e) => {
         const code = e.error || "error";
-        // "aborted" means something cancelled us (Mia started speaking, Ali pressed stop, the view
+        // "aborted" means something cancelled us (Mia started speaking, Emil pressed stop, the view
         // changed) — that is NOT the same as hearing nothing, and callers must not treat it as an error
         if (code === "aborted") return settle(reject, { code: "aborted" });
         if (code === "no-speech") return settle(resolve, finalText.trim());

@@ -17,7 +17,7 @@ export default {
 
   vocab: [
     { de: "das Brot", ru: "хлеб", plural: "die Brote", example: "Ich esse Brot mit Butter.", exampleRu: "Я ем хлеб с маслом." },
-    { de: "das Brötchen", ru: "булочка", plural: "die Brötchen", example: "Ali nimmt ein Brötchen.", exampleRu: "Али берёт булочку." },
+    { de: "das Brötchen", ru: "булочка", plural: "die Brötchen", example: "Emil nimmt ein Brötchen.", exampleRu: "Эмиль берёт булочку." },
     { de: "der Käse", ru: "сыр", example: "Der Käse ist lecker.", exampleRu: "Сыр вкусный." },
     { de: "die Wurst", ru: "колбаса", plural: "die Würste", example: "Ich esse keine Wurst.", exampleRu: "Я не ем колбасу." },
     { de: "die Butter", ru: "масло (сливочное)", example: "Ein Brötchen mit Butter, bitte.", exampleRu: "Булочку с маслом, пожалуйста." },
@@ -37,17 +37,17 @@ export default {
     { de: "lecker", ru: "вкусный", example: "Das Brötchen ist lecker.", exampleRu: "Булочка вкусная." },
     { de: "das Frühstück", ru: "завтрак", example: "Ich esse Brot zum Frühstück.", exampleRu: "Я ем хлеб на завтрак." },
     { de: "das Mittagessen", ru: "обед", example: "Ich esse Suppe zum Mittagessen.", exampleRu: "На обед я ем суп." },
-    { de: "das Abendessen", ru: "ужин", example: "Ali isst Salat zum Abendessen.", exampleRu: "Али ест салат на ужин." },
+    { de: "das Abendessen", ru: "ужин", example: "Emil isst Salat zum Abendessen.", exampleRu: "Эмиль ест салат на ужин." },
     { de: "essen", ru: "есть, кушать", example: "Was isst du?", exampleRu: "Что ты ешь?" },
     { de: "trinken", ru: "пить", example: "Ich trinke Wasser.", exampleRu: "Я пью воду." },
-    { de: "nehmen", ru: "брать", example: "Ali nimmt einen Tee.", exampleRu: "Али берёт чай." },
+    { de: "nehmen", ru: "брать", example: "Emil nimmt einen Tee.", exampleRu: "Эмиль берёт чай." },
     { de: "möchten", ru: "хотеть (вежливо: хотел бы)", example: "Ich möchte einen Kaffee.", exampleRu: "Я хотел бы кофе." },
     { de: "gern", ru: "охотно, с удовольствием", example: "Ich esse gern Käse.", exampleRu: "Я люблю сыр." },
     { de: "lieber", ru: "охотнее, лучше (предпочитаю)", example: "Ich trinke lieber Tee.", exampleRu: "Я предпочитаю чай." },
     { de: "das Café", ru: "кафе", plural: "die Cafés", example: "Das Café ist neu.", exampleRu: "Кафе новое." },
     { de: "der Kellner", ru: "официант", plural: "die Kellner", example: "Der Kellner ist nett.", exampleRu: "Официант приятный." },
     { de: "bestellen", ru: "заказывать", example: "Ich bestelle einen Salat.", exampleRu: "Я заказываю салат." },
-    { de: "Guten Appetit", ru: "Приятного аппетита", example: "Guten Appetit, Ali!", exampleRu: "Приятного аппетита, Али!" },
+    { de: "Guten Appetit", ru: "Приятного аппетита", example: "Guten Appetit, Emil!", exampleRu: "Приятного аппетита, Эмиль!" },
   ],
 
   grammar: [
@@ -66,7 +66,7 @@ export default {
       examples: [
         { de: "Das ist ein Apfel.", ru: "Это яблоко." },
         { de: "Ich möchte einen Kaffee.", ru: "Я хотел бы кофе." },
-        { de: "Ali isst eine Suppe.", ru: "Али ест суп." },
+        { de: "Emil isst eine Suppe.", ru: "Эмиль ест суп." },
         { de: "Ich trinke keinen Saft.", ru: "Я не пью сок." },
       ],
     },
@@ -88,7 +88,7 @@ export default {
       examples: [
         { de: "Was möchten Sie?", ru: "Что вы будете заказывать?" },
         { de: "Ich möchte ein Brötchen mit Käse.", ru: "Я хотел бы булочку с сыром." },
-        { de: "Ali trinkt gern Saft.", ru: "Али с удовольствием пьёт сок." },
+        { de: "Emil trinkt gern Saft.", ru: "Эмиль с удовольствием пьёт сок." },
         { de: "Ich esse lieber Salat.", ru: "Я предпочитаю салат." },
       ],
     },
@@ -109,7 +109,7 @@ export default {
       },
       examples: [
         { de: "Was isst du zum Abendessen?", ru: "Что ты ешь на ужин?" },
-        { de: "Ali nimmt einen Salat.", ru: "Али берёт салат." },
+        { de: "Emil nimmt einen Salat.", ru: "Эмиль берёт салат." },
         { de: "Wir trinken Wasser.", ru: "Мы пьём воду." },
       ],
     },
@@ -205,10 +205,10 @@ export default {
     },
     {
       type: "fill",
-      sentence: "Ali ___ gern Brötchen mit Käse.",
+      sentence: "Emil ___ gern Brötchen mit Käse.",
       answers: ["isst"],
       options: ["esse", "isst", "esst"],
-      ru: "Али с удовольствием ест булочки с сыром.",
+      ru: "Эмиль с удовольствием ест булочки с сыром.",
       explain: "essen: er isst (гласная меняется).",
     },
     {
@@ -224,8 +224,8 @@ export default {
     },
     {
       type: "choice",
-      q: "Али не любит кофе. Как это сказать?",
-      options: ["Ali trinkt gern Kaffee.", "Ali trinkt nicht gern Kaffee.", "Ali trinkt lieber Kaffee."],
+      q: "Эмиль не любит кофе. Как это сказать?",
+      options: ["Emil trinkt gern Kaffee.", "Emil trinkt nicht gern Kaffee.", "Emil trinkt lieber Kaffee."],
       answer: 1,
       explain: "nicht gern = не любит; gern = любит; lieber = предпочитает.",
     },
@@ -238,9 +238,9 @@ export default {
     },
     {
       type: "order",
-      words: ["Kaffee", "trinkt", "Ali", "Milch", "mit"],
-      answer: "Ali trinkt Kaffee mit Milch.",
-      ru: "Али пьёт кофе с молоком.",
+      words: ["Kaffee", "trinkt", "Emil", "Milch", "mit"],
+      answer: "Emil trinkt Kaffee mit Milch.",
+      ru: "Эмиль пьёт кофе с молоком.",
     },
     { type: "speak", text: "Guten Appetit!", ru: "Приятного аппетита!" },
     {
@@ -260,16 +260,16 @@ export default {
     },
     {
       type: "listen",
-      text: "Ali isst gern Suppe.",
+      text: "Emil isst gern Suppe.",
       mode: "type",
-      answers: ["Ali isst gern Suppe.", "Ali isst gerne Suppe."],
-      ru: "Али с удовольствием ест суп.",
+      answers: ["Emil isst gern Suppe.", "Emil isst gerne Suppe."],
+      ru: "Эмиль с удовольствием ест суп.",
     },
     {
       type: "translate",
       dir: "ru-de",
-      text: "Али с удовольствием пьёт чай.",
-      answers: ["Ali trinkt gern Tee.", "Ali trinkt gerne Tee."],
+      text: "Эмиль с удовольствием пьёт чай.",
+      answers: ["Emil trinkt gern Tee.", "Emil trinkt gerne Tee."],
       hint: "gern стоит после глагола",
     },
     {
@@ -374,17 +374,17 @@ export default {
     titleRu: "В кафе",
     lines: [
       { speaker: "Kellner", de: "Guten Tag! Willkommen! Was möchten Sie?", ru: "Добрый день! Добро пожаловать! Что будете заказывать?" },
-      { speaker: "Ali", de: "Guten Tag. Die Speisekarte, bitte.", ru: "Добрый день. Меню, пожалуйста." },
+      { speaker: "Emil", de: "Guten Tag. Die Speisekarte, bitte.", ru: "Добрый день. Меню, пожалуйста." },
       { speaker: "Kellner", de: "Bitte sehr. Möchten Sie etwas trinken?", ru: "Пожалуйста. Хотите что-нибудь выпить?" },
-      { speaker: "Ali", de: "Ja, ich möchte einen Kaffee mit Milch.", ru: "Да, я хотел бы кофе с молоком." },
+      { speaker: "Emil", de: "Ja, ich möchte einen Kaffee mit Milch.", ru: "Да, я хотел бы кофе с молоком." },
       { speaker: "Kellner", de: "Und was möchten Sie essen? Wir haben Suppe, Salat und Reis mit Wurst.", ru: "А что вы хотели бы поесть? У нас есть суп, салат и рис с колбасой." },
-      { speaker: "Ali", de: "Hmm, ich esse nicht gern Suppe. Ich nehme lieber einen Salat.", ru: "Хм, я не люблю суп. Я лучше возьму салат." },
+      { speaker: "Emil", de: "Hmm, ich esse nicht gern Suppe. Ich nehme lieber einen Salat.", ru: "Хм, я не люблю суп. Я лучше возьму салат." },
       { speaker: "Kellner", de: "Möchten Sie auch ein Brötchen? Das Brot ist sehr lecker.", ru: "Хотите ещё булочку? Хлеб очень вкусный." },
-      { speaker: "Ali", de: "Ja, ein Brötchen mit Käse und Butter, bitte.", ru: "Да, булочку с сыром и маслом, пожалуйста." },
+      { speaker: "Emil", de: "Ja, ein Brötchen mit Käse und Butter, bitte.", ru: "Да, булочку с сыром и маслом, пожалуйста." },
       { speaker: "Kellner", de: "Gern. Guten Appetit!", ru: "Хорошо. Приятного аппетита!" },
-      { speaker: "Ali", de: "Danke!", ru: "Спасибо!" },
+      { speaker: "Emil", de: "Danke!", ru: "Спасибо!" },
       { speaker: "Kellner", de: "Ist alles gut?", ru: "Всё хорошо?" },
-      { speaker: "Ali", de: "Ja, alles ist sehr lecker. Die Rechnung, bitte.", ru: "Да, всё очень вкусно. Счёт, пожалуйста." },
+      { speaker: "Emil", de: "Ja, alles ist sehr lecker. Die Rechnung, bitte.", ru: "Да, всё очень вкусно. Счёт, пожалуйста." },
     ],
   },
 
@@ -393,7 +393,7 @@ export default {
     scenario:
       "Ты в кафе в Берлине. Мия работает официанткой. Закажи напиток и что-нибудь поесть, скажи, что ты любишь и не любишь, а в конце попроси счёт.",
     tutorBrief:
-      "Mia is a waitress in a café in Berlin, Ali is a guest. Greet him, ask what he would like to drink and eat, offer a few options (Kaffee, Tee, Wasser, Saft; Brötchen mit Käse, Suppe, Salat), ask whether he likes something (Isst du gern …?), wish him Guten Appetit, ask if everything is fine, and end with the bill and a goodbye. Target structures: Ich möchte einen/eine/ein …, Ich nehme …, Ich esse/trinke gern / nicht gern / lieber …, Die Rechnung, bitte. Use du with Ali. Keep to A1 vocab from the food topic; no past tense, no modal verbs except möchten.",
+      "Mia is a waitress in a café in Berlin, Emil is a guest. Greet him, ask what he would like to drink and eat, offer a few options (Kaffee, Tee, Wasser, Saft; Brötchen mit Käse, Suppe, Salat), ask whether he likes something (Isst du gern …?), wish him Guten Appetit, ask if everything is fine, and end with the bill and a goodbye. Target structures: Ich möchte einen/eine/ein …, Ich nehme …, Ich esse/trinke gern / nicht gern / lieber …, Die Rechnung, bitte. Use du with Emil. Keep to A1 vocab from the food topic; no past tense, no modal verbs except möchten.",
     phrases: [
       { de: "Ich möchte einen Kaffee, bitte.", ru: "Я хотел бы кофе, пожалуйста." },
       { de: "Die Speisekarte, bitte.", ru: "Меню, пожалуйста." },
@@ -405,8 +405,8 @@ export default {
     ],
     script: [
       {
-        say: "Hallo Ali! Willkommen! Was möchtest du trinken?",
-        sayRu: "Привет, Али! Добро пожаловать! Что ты хотел бы выпить?",
+        say: "Hallo Emil! Willkommen! Was möchtest du trinken?",
+        sayRu: "Привет, Эмиль! Добро пожаловать! Что ты хотел бы выпить?",
         hint: "Ich möchte einen Kaffee / einen Tee / ein Wasser, bitte.",
         expect: ["kaffee", "tee", "wasser", "saft", "milch", "möchte", "mochte", "nehme"],
       },
@@ -441,8 +441,8 @@ export default {
         expect: ["rechnung", "bezahlen", "nein", "danke"],
       },
       {
-        say: "Hier ist die Rechnung. Danke, Ali! Bis bald!",
-        sayRu: "Вот счёт. Спасибо, Али! До скорого!",
+        say: "Hier ist die Rechnung. Danke, Emil! Bis bald!",
+        sayRu: "Вот счёт. Спасибо, Эмиль! До скорого!",
         hint: "Danke, tschüss Mia!",
         expect: ["tschüss", "tschuss", "bis", "danke", "wiedersehen", "ciao"],
       },
@@ -459,10 +459,10 @@ export default {
     },
     {
       type: "fill",
-      sentence: "Ali ___ ein Brötchen mit Wurst.",
+      sentence: "Emil ___ ein Brötchen mit Wurst.",
       answers: ["nimmt"],
       options: ["nehme", "nimmst", "nimmt"],
-      ru: "Али берёт булочку с колбасой.",
+      ru: "Эмиль берёт булочку с колбасой.",
       explain: "nehmen: er nimmt.",
     },
     {

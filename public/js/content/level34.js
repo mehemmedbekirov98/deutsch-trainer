@@ -18,7 +18,7 @@ export default {
   vocab: [
     { de: "die Gesellschaft", ru: "общество", plural: "die Gesellschaften", example: "In unserer Gesellschaft darf jeder seine Meinung sagen.", exampleRu: "В нашем обществе каждый может высказать своё мнение." },
     { de: "die Integration", ru: "интеграция", example: "Integration braucht Zeit, Sprache und Kontakte.", exampleRu: "Интеграция требует времени, языка и контактов." },
-    { de: "der Integrationskurs", ru: "интеграционный курс", plural: "die Integrationskurse", example: "Ali hat den Integrationskurs vor zwei Jahren abgeschlossen.", exampleRu: "Али закончил интеграционный курс два года назад." },
+    { de: "der Integrationskurs", ru: "интеграционный курс", plural: "die Integrationskurse", example: "Emil hat den Integrationskurs vor zwei Jahren abgeschlossen.", exampleRu: "Эмиль закончил интеграционный курс два года назад." },
     { de: "die Behörde", ru: "ведомство, госучреждение", plural: "die Behörden", example: "Bei einer deutschen Behörde braucht man immer einen Termin.", exampleRu: "В немецком ведомстве всегда нужна предварительная запись." },
     { de: "der Antrag", ru: "заявление, ходатайство", plural: "die Anträge", example: "Den Antrag kann man auch online stellen.", exampleRu: "Заявление можно подать и онлайн." },
     { de: "die Unterlagen", ru: "документы, бумаги", example: "Bitte bringen Sie alle Unterlagen zum Termin mit.", exampleRu: "Пожалуйста, принесите все документы на приём." },
@@ -28,8 +28,8 @@ export default {
     { de: "die Krankenkasse", ru: "больничная касса, медстраховка", plural: "die Krankenkassen", example: "Die Krankenkasse hat mir die Bescheinigung geschickt.", exampleRu: "Больничная касса прислала мне справку." },
     { de: "das Ehrenamt", ru: "работа на общественных началах, волонтёрство", plural: "die Ehrenämter", example: "Ein Ehrenamt macht man freiwillig und ohne Bezahlung.", exampleRu: "Общественную работу делают добровольно и без оплаты." },
     { de: "der Verein", ru: "объединение, клуб", plural: "die Vereine", example: "Im Verein habe ich schnell neue Leute kennengelernt.", exampleRu: "В клубе я быстро познакомился с новыми людьми." },
-    { de: "sich engagieren", ru: "активно участвовать, заниматься общественными делами", example: "Aysel engagiert sich in der Schule unserer Tochter.", exampleRu: "Айсель активно участвует в жизни школы нашей дочери." },
-    { de: "teilnehmen an", ru: "участвовать в (чём-то)", example: "Ali nimmt am Elternabend teil.", exampleRu: "Али участвует в родительском собрании." },
+    { de: "sich engagieren", ru: "активно участвовать, заниматься общественными делами", example: "Sevil engagiert sich in der Schule unserer Tochter.", exampleRu: "Севиль активно участвует в жизни школы нашей дочери." },
+    { de: "teilnehmen an", ru: "участвовать в (чём-то)", example: "Emil nimmt am Elternabend teil.", exampleRu: "Эмиль участвует в родительском собрании." },
     { de: "die Meinung", ru: "мнение", plural: "die Meinungen", example: "Meiner Meinung nach ist das eine gute Regel.", exampleRu: "По-моему, это хорошее правило." },
     { de: "die Erfahrung", ru: "опыт", plural: "die Erfahrungen", example: "Mit den Kollegen habe ich nur gute Erfahrungen gemacht.", exampleRu: "С коллегами у меня только хороший опыт." },
     { de: "das Vorurteil", ru: "предрассудок", plural: "die Vorurteile", example: "Vorurteile verschwinden, wenn man sich kennenlernt.", exampleRu: "Предрассудки исчезают, когда люди узнают друг друга." },
@@ -42,7 +42,7 @@ export default {
     { de: "die Pflicht", ru: "обязанность", plural: "die Pflichten", example: "Jeder hat hier Rechte und Pflichten.", exampleRu: "У каждого здесь есть права и обязанности." },
     { de: "das Recht", ru: "право", plural: "die Rechte", example: "Jedes Kind hat das Recht auf Bildung.", exampleRu: "Каждый ребёнок имеет право на образование." },
     { de: "die Bildung", ru: "образование", example: "Bildung öffnet viele Türen.", exampleRu: "Образование открывает много дверей." },
-    { de: "die Gewohnheit", ru: "привычка", plural: "die Gewohnheiten", example: "Manche Gewohnheiten aus Aserbaidschan hat Ali behalten.", exampleRu: "Некоторые привычки из Азербайджана Али сохранил." },
+    { de: "die Gewohnheit", ru: "привычка", plural: "die Gewohnheiten", example: "Manche Gewohnheiten aus Aserbaidschan hat Emil behalten.", exampleRu: "Некоторые привычки из Азербайджана Эмиль сохранил." },
     { de: "sich gewöhnen an", ru: "привыкать к (чему-то)", example: "An das deutsche Wetter habe ich mich schnell gewöhnt.", exampleRu: "К немецкой погоде я быстро привык." },
     { de: "die Entscheidung", ru: "решение", plural: "die Entscheidungen", example: "Diese Entscheidung müssen wir gemeinsam treffen.", exampleRu: "Это решение мы должны принять вместе." },
     { de: "die Unterstützung", ru: "поддержка", example: "Die Unterstützung meiner Familie ist mir sehr wichtig.", exampleRu: "Поддержка моей семьи для меня очень важна." },
@@ -69,7 +69,7 @@ export default {
       },
       examples: [
         { de: "Am Montag treffe ich die Entscheidung.", ru: "В понедельник я приму решение." },
-        { de: "Ali hat bei der Behörde einen Antrag gestellt.", ru: "Али подал заявление в ведомство." },
+        { de: "Emil hat bei der Behörde einen Antrag gestellt.", ru: "Эмиль подал заявление в ведомство." },
         { de: "Der Lehrer stellt viele Fragen.", ru: "Учитель задаёт много вопросов." },
         { de: "Die Sprache spielt bei der Integration die größte Rolle.", ru: "Язык играет при интеграции самую большую роль." },
       ],
@@ -192,10 +192,10 @@ export default {
     },
     {
       type: "order",
-      words: ["Antrag", "hat", "Ali", "gestellt", "den", "heute"],
-      answer: "Ali hat heute den Antrag gestellt.",
-      ru: "Али сегодня подал заявление.",
-      alt: ["Heute hat Ali den Antrag gestellt."],
+      words: ["Antrag", "hat", "Emil", "gestellt", "den", "heute"],
+      answer: "Emil hat heute den Antrag gestellt.",
+      ru: "Эмиль сегодня подал заявление.",
+      alt: ["Heute hat Emil den Antrag gestellt."],
     },
     {
       type: "translate",
@@ -310,17 +310,17 @@ export default {
     },
     {
       type: "choice",
-      q: "Trotz ___ Probleme ist Ali zufrieden.",
+      q: "Trotz ___ Probleme ist Emil zufrieden.",
       options: ["der", "die", "den"],
       answer: 0,
       explain: "Во множественном числе Genitiv — der Probleme.",
     },
     {
       type: "fill",
-      sentence: "Trotz ___ Vorurteile hat Ali schnell Freunde gefunden.",
+      sentence: "Trotz ___ Vorurteile hat Emil schnell Freunde gefunden.",
       answers: ["der"],
       options: ["der", "die", "den"],
-      ru: "Несмотря на предрассудки, Али быстро нашёл друзей.",
+      ru: "Несмотря на предрассудки, Эмиль быстро нашёл друзей.",
       explain: "trotz + Genitiv, множественное число → der Vorurteile.",
     },
     {
@@ -387,17 +387,17 @@ export default {
     title: "Im Ausländeramt",
     titleRu: "В ведомстве по делам иностранцев",
     lines: [
-      { speaker: "Ali", de: "Guten Tag, ich habe einen Termin um zehn Uhr. Es geht um die Verlängerung meiner Aufenthaltserlaubnis.", ru: "Добрый день, у меня приём в десять часов. Речь о продлении моего вида на жительство." },
+      { speaker: "Emil", de: "Guten Tag, ich habe einen Termin um zehn Uhr. Es geht um die Verlängerung meiner Aufenthaltserlaubnis.", ru: "Добрый день, у меня приём в десять часов. Речь о продлении моего вида на жительство." },
       { speaker: "Frau Weber", de: "Guten Tag, kommen Sie bitte herein. Haben Sie alle Unterlagen dabei?", ru: "Добрый день, проходите, пожалуйста. У вас с собой все документы?" },
-      { speaker: "Ali", de: "Ich hoffe. Hier sind mein Pass, der Arbeitsvertrag und die Bescheinigung der Krankenkasse.", ru: "Надеюсь. Вот мой паспорт, трудовой договор и справка из больничной кассы." },
+      { speaker: "Emil", de: "Ich hoffe. Hier sind mein Pass, der Arbeitsvertrag und die Bescheinigung der Krankenkasse.", ru: "Надеюсь. Вот мой паспорт, трудовой договор и справка из больничной кассы." },
       { speaker: "Frau Weber", de: "Sehr gut. Den Antrag haben Sie online gestellt, richtig?", ru: "Очень хорошо. Заявление вы подали онлайн, верно?" },
-      { speaker: "Ali", de: "Ja, vor zwei Wochen. Beim Ausfüllen hat mir meine Frau geholfen.", ru: "Да, две недели назад. Заполнить мне помогла жена." },
+      { speaker: "Emil", de: "Ja, vor zwei Wochen. Beim Ausfüllen hat mir meine Frau geholfen.", ru: "Да, две недели назад. Заполнить мне помогла жена." },
       { speaker: "Frau Weber", de: "Wegen des Arbeitsvertrags habe ich noch eine Frage: Arbeiten Sie in Vollzeit?", ru: "По поводу трудового договора у меня ещё вопрос: вы работаете полный день?" },
-      { speaker: "Ali", de: "Ja, ich arbeite Vollzeit als Fahrer, seit drei Jahren in derselben Firma.", ru: "Да, я работаю водителем полный день, уже три года в одной и той же фирме." },
+      { speaker: "Emil", de: "Ja, ich arbeite Vollzeit als Fahrer, seit drei Jahren in derselben Firma.", ru: "Да, я работаю водителем полный день, уже три года в одной и той же фирме." },
       { speaker: "Frau Weber", de: "Das ist wichtig. Trotz der vielen Anträge geht es bei Ihnen schnell.", ru: "Это важно. Несмотря на большое количество заявлений, у вас всё идёт быстро." },
-      { speaker: "Ali", de: "Das freut mich. Wann bekomme ich eine Antwort?", ru: "Рад это слышать. Когда я получу ответ?" },
+      { speaker: "Emil", de: "Das freut mich. Wann bekomme ich eine Antwort?", ru: "Рад это слышать. Когда я получу ответ?" },
       { speaker: "Frau Weber", de: "Innerhalb von vier Wochen. Beim nächsten Termin bringen Sie bitte nur den Pass mit.", ru: "В течение четырёх недель. На следующий приём принесите, пожалуйста, только паспорт." },
-      { speaker: "Ali", de: "Alles klar. Vielen Dank für Ihre Hilfe. Auf Wiedersehen!", ru: "Всё понятно. Большое спасибо за вашу помощь. До свидания!" },
+      { speaker: "Emil", de: "Alles klar. Vielen Dank für Ihre Hilfe. Auf Wiedersehen!", ru: "Всё понятно. Большое спасибо за вашу помощь. До свидания!" },
     ],
   },
 
@@ -406,7 +406,7 @@ export default {
     scenario:
       "Ты на родительском собрании в школе дочери. Рядом сидит Мия — мама из того же класса. Классу нужны родители, которые помогут с летним праздником. Познакомься, скажи своё мнение об этой идее, объясни, когда ты можешь из-за работы, предложи конкретную помощь и задай свой вопрос. В конце договоритесь оставаться на связи и попрощайся.",
     tutorBrief:
-      "Mia is another parent at the parents' evening in the primary school of Ali's six-year-old daughter in Germany. They have seen each other in the schoolyard, so use du. The class is looking for parents to help organise the summer school festival. Greet him, ask what he thinks of the idea, ask whether his work schedule allows it, ask what exactly he could help with, invite his question for the teacher, and agree that the decision will be made together this evening. Finish by saying you will send him the details and say goodbye. Target structures: Nomen-Verb-Verbindungen (eine Entscheidung treffen, eine Frage stellen, in Kontakt bleiben, eine Rolle spielen); nominalised verbs (beim Aufräumen, beim Grillen, zum Helfen); Genitiv after wegen and trotz (wegen der Arbeit, trotz der Zeit). Keep to clear B1 vocabulary about school, family and volunteering; natural adult sentences, not too long.",
+      "Mia is another parent at the parents' evening in the primary school of Emil's six-year-old daughter in Germany. They have seen each other in the schoolyard, so use du. The class is looking for parents to help organise the summer school festival. Greet him, ask what he thinks of the idea, ask whether his work schedule allows it, ask what exactly he could help with, invite his question for the teacher, and agree that the decision will be made together this evening. Finish by saying you will send him the details and say goodbye. Target structures: Nomen-Verb-Verbindungen (eine Entscheidung treffen, eine Frage stellen, in Kontakt bleiben, eine Rolle spielen); nominalised verbs (beim Aufräumen, beim Grillen, zum Helfen); Genitiv after wegen and trotz (wegen der Arbeit, trotz der Zeit). Keep to clear B1 vocabulary about school, family and volunteering; natural adult sentences, not too long.",
     phrases: [
       { de: "Meine Tochter geht auch in diese Klasse.", ru: "Моя дочь тоже ходит в этот класс." },
       { de: "Meiner Meinung nach ist das eine gute Idee.", ru: "По-моему, это хорошая идея." },
@@ -420,7 +420,7 @@ export default {
       {
         say: "Hallo! Deine Tochter ist doch auch in der 1b? Ich bin Mia.",
         sayRu: "Привет! Твоя дочь ведь тоже в классе 1b? Я Мия.",
-        hint: "Ja, genau. Ich bin Ali.",
+        hint: "Ja, genau. Ich bin Emil.",
         expect: ["ali", "ja", "genau", "tochter", "bin"],
       },
       {
@@ -454,8 +454,8 @@ export default {
         expect: ["entscheidung", "gemeinsam", "zusammen", "treffen", "ja", "gut"],
       },
       {
-        say: "Perfekt. Ich schicke dir die Details per Nachricht. Tschüss, Ali!",
-        sayRu: "Отлично. Я пришлю тебе подробности сообщением. Пока, Али!",
+        say: "Perfekt. Ich schicke dir die Details per Nachricht. Tschüss, Emil!",
+        sayRu: "Отлично. Я пришлю тебе подробности сообщением. Пока, Эмиль!",
         hint: "Danke! Bleiben wir in Kontakt. Tschüss!",
         expect: ["danke", "kontakt", "tschüss", "tschuss", "bis", "wiedersehen"],
       },
@@ -479,7 +479,7 @@ export default {
     },
     {
       type: "choice",
-      q: "Ali nimmt ___ dem Elternabend teil.",
+      q: "Emil nimmt ___ dem Elternabend teil.",
       options: ["an", "in", "zu"],
       answer: 0,
       explain: "teilnehmen an + Dativ: an dem Elternabend, коротко am Elternabend.",

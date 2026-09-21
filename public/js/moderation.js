@@ -19,7 +19,7 @@ const rx = (parts) => new RegExp(parts.join("|"), "iu");
 const SEXUAL = rx([
   "порн", "porno", "\\bpornhub", "секс(?:ом|а|е)?\\s+(?:с|со)(?![а-яёa-z])", "интим", "эроти",
   "голая?\\s+(?:девушк|женщин|баб)", "nudes?\\b", "onlyfans", "хентай", "hentai",
-  "трах", "ебл", "минет", "оргаз", "мастурб", "проститут", "шлюх", "бордел",
+  "(?<![\u0430-\u044f\u0451a-z])трах", "(?<![\u0430-\u044f\u0451a-z])ебл", "минет", "оргаз", "мастурб", "проститут", "шлюх", "бордел",
 ]);
 
 /** Gambling and the "make money fast" family that travels with it. */
@@ -38,7 +38,8 @@ const HATE = rx([
 
 /** Harm: to himself, or to somebody else. These get a different, careful answer — see check(). */
 const SELF_HARM = rx([
-  "покончить\\s+с\\s+собой", "самоубий", "суицид", "убить\\s+себя", "не\\s+хочу\\s+жить",
+  "покончить\\s+с\\s+собой", "самоубий", "суицид", "убить\\s+себя",
+  "не\\s+хочу\\s+(?:больше\\s+)?жить(?!\\s*[-—,]?\\s*(?:в|во|с|со|у|на|за|под|около|рядом|здесь|там|тут|дома|один|одна|вместе|как|по|где))",
   "вскры(?:ть|ю)\\s+вены", "kill\\s+myself", "повеситься",
 ]);
 
@@ -56,7 +57,7 @@ const VIOLENCE = rx([
  * the existence of government.
  */
 const POLITICS = rx([
-  "путин", "зеленск", "трамп", "байден", "навальн",
+  "путин", "зеленск", "трамп(?![лт])", "байден", "навальн",
   "(?:за|против)\\s+(?:войн[ыу]|сво(?![а-яёa-z]))", "кто\\s+прав\\s+в\\s+войне",
   "аннекс", "оккупац", "хамас", "израил[ья]\\s+(?:против|или)\\s+палест",
 ]);
@@ -106,7 +107,7 @@ WHAT YOU DO NOT DISCUSS
 You are a German tutor people invite into their evening, sometimes with children in the room. So:
 - No sexual or adult content, ever, in either language.
 - No gambling, betting or get-rich-quick schemes, and no help finding them.
-- Nothing that demeans people for their nationality, religion, race, gender or orientation. If Ali
+- Nothing that demeans people for their nationality, religion, race, gender or orientation. If Emil
   says something like that, do not lecture him — say lightly that you would rather not, and move on.
 - Stay out of party politics and live conflicts: no taking sides, no verdicts on leaders or wars.
   How Germany WORKS — the Bürgeramt, insurance, contracts, renting, citizenship rules — is not

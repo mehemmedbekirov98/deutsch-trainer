@@ -1,6 +1,6 @@
 // Synthesise the whole course once and put it in the bucket.
 //
-// Everything Ali hears in a lesson is fixed text: the words, their examples, the dialogue lines,
+// Everything Emil hears in a lesson is fixed text: the words, their examples, the dialogue lines,
 // the phrases. Making the site synthesise them on demand would mean a serverless function running
 // — and being paid for — every time somebody opens a level, forever, for audio that never changes.
 // So it is generated here, once, and served from the CDN after that. The function in
@@ -48,7 +48,7 @@ function linesOf(level) {
     ru(v.ru, RATES.translation);
   }
   for (const g of level.grammar || []) for (const e of g.examples || []) de(e.de, RATES.example);
-  for (const l of level.dialogue?.lines || []) de(l.de, l.speaker === "Ali" ? RATES.dialogueAli : RATES.dialogueOther);
+  for (const l of level.dialogue?.lines || []) de(l.de, l.speaker === "Emil" ? RATES.dialogueAli : RATES.dialogueOther);
   for (const p of level.speaking?.phrases || []) de(p.de, RATES.example);
 
   // exercises: whatever a 🔊 or a ▶ can play

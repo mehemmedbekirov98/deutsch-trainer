@@ -33,6 +33,16 @@ export const backend = {
         this.sb = createClient(supabaseUrl, supabaseAnonKey, {
           auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true },
         });
+        // The link in the reset letter comes back with «#access_token=…&type=recovery» — which
+        // REPLACES whatever hash we asked to be sent to. Pointing redirectTo at «#/password» was
+        // therefore pointless: the person landed on the home screen, signed in, with no way to
+        // reach the screen that sets the new password. Supabase announces the recovery session
+        // instead, so that is what we listen to.
+        this.sb.auth.onAuthStateChange((event) => {
+          if (event === "PASSWORD_RECOVERY") location.hash = "#/password";
+        });
+        // …and the same again for the case where the event fired before this line ran.
+        if (/[#&]type=recovery/.test(location.hash)) location.hash = "#/password";
         await this.refreshUser();
       } catch (e) {
         console.warn("[backend] Supabase недоступен:", e?.message || e);
@@ -89,7 +99,7 @@ export const backend = {
   /** Supabase sends the letter; the link brings them back here with a recovery session. */
   async resetPassword(email) {
     if (!this.sb) throw new Error("Аккаунты пока не настроены на этом сайте.");
-    const { error } = await this.sb.auth.resetPasswordForEmail(email, { redirectTo: location.origin + "#/password" });
+    const { error } = await this.sb.auth.resetPasswordForEmail(email, { redirectTo: location.origin + location.pathname });
     if (error) throw new Error(ruAuthError(error));
   },
 
@@ -111,11 +121,17 @@ export const backend = {
 
   /* -------------------------------------------------------------- progress */
 
-  /** The signed-in person's save, or null when there is none (or nobody is signed in). */
+  /**
+   * The signed-in person's save, or null when there is none.
+   *
+   * Throws when the read FAILED, and that difference is the whole point: returning null for both
+   * told the store «this account is brand new», and the store then helpfully saved an empty state
+   * over a real one. One flaky moment used to cost everything the account had.
+   */
   async loadProgress() {
     if (!this.sb || !this.user) return null;
     const { data, error } = await this.sb.from("progress").select("data").eq("user_id", this.user.id).maybeSingle();
-    if (error) { console.warn("[backend] progress:", error.message); return null; }
+    if (error) throw new Error(error.message);
     return data?.data || null;
   },
 
@@ -135,6 +151,13 @@ export const backend = {
     return data ? { stale: true, current: data } : { ok: true };
   },
 
+  /** The access token Supabase already gave this browser, for the functions that check callers. */
+  async token() {
+    if (!this.sb) return null;
+    const { data } = await this.sb.auth.getSession();
+    return data?.session?.access_token || null;
+  },
+
   /* ----------------------------------------------------------------- admin */
 
   /**
@@ -143,8 +166,7 @@ export const backend = {
    */
   async admin(action, payload = {}) {
     if (!this.sb) throw new Error("База не подключена.");
-    const { data } = await this.sb.auth.getSession();
-    const token = data?.session?.access_token;
+    const token = await this.token();
     if (!token) throw new Error("Нужно войти.");
     const r = await fetch("/api/admin", {
       method: "POST",
@@ -171,7 +193,7 @@ export const backend = {
   },
 };
 
-/** Supabase speaks English; Ali does not. */
+/** Supabase speaks English; Emil does not. */
 function ruAuthError(error) {
   const m = String(error?.message || "").toLowerCase();
   if (m.includes("invalid login")) return "Почта или пароль не подходят.";

@@ -39,7 +39,7 @@ export default {
     { de: "die Jahreszeit", ru: "время года", plural: "die Jahreszeiten", example: "Es gibt vier Jahreszeiten.", exampleRu: "Есть четыре времени года." },
     { de: "der Monat", ru: "месяц", plural: "die Monate", example: "Ein Jahr hat zwölf Monate.", exampleRu: "В году двенадцать месяцев." },
     { de: "der Januar", ru: "январь", example: "Der Januar ist der erste Monat.", exampleRu: "Январь — первый месяц." },
-    { de: "der Mai", ru: "май", example: "Ali hat im Mai Geburtstag.", exampleRu: "У Али день рождения в мае." },
+    { de: "der Mai", ru: "май", example: "Emil hat im Mai Geburtstag.", exampleRu: "У Эмиль день рождения в мае." },
     { de: "der Juli", ru: "июль", example: "Im Juli sind es dreißig Grad.", exampleRu: "В июле тридцать градусов." },
     { de: "der Dezember", ru: "декабрь", example: "Der Dezember ist der letzte Monat.", exampleRu: "Декабрь — последний месяц." },
     { de: "das Datum", ru: "дата, число", example: "Welches Datum ist heute?", exampleRu: "Какое сегодня число?" },
@@ -81,7 +81,7 @@ export default {
         rows: [
           ["machen", "gemacht", "Was hast du gemacht?"],
           ["spielen", "gespielt", "Ich habe Fußball gespielt."],
-          ["kaufen", "gekauft", "Ali hat Brot gekauft."],
+          ["kaufen", "gekauft", "Emil hat Brot gekauft."],
           ["lernen", "gelernt", "Wir haben Deutsch gelernt."],
           ["arbeiten", "gearbeitet", "Er hat viel gearbeitet."],
           ["kochen", "gekocht", "Sie hat Suppe gekocht."],
@@ -94,7 +94,7 @@ export default {
       examples: [
         { de: "Was hast du gestern gemacht?", ru: "Что ты делал вчера?" },
         { de: "Ich habe gestern viel gearbeitet.", ru: "Вчера я много работал." },
-        { de: "Am Wochenende hat Ali einen Film gesehen.", ru: "На выходных Али смотрел фильм." },
+        { de: "Am Wochenende hat Emil einen Film gesehen.", ru: "На выходных Эмиль смотрел фильм." },
         { de: "Wir haben Kaffee getrunken.", ru: "Мы пили кофе." }
       ]
     },
@@ -115,7 +115,7 @@ export default {
       },
       examples: [
         { de: "Der Wievielte ist heute? — Heute ist der dritte Mai.", ru: "Какое сегодня число? — Сегодня третье мая." },
-        { de: "Ali hat am fünfzehnten Mai Geburtstag.", ru: "У Али день рождения пятнадцатого мая." },
+        { de: "Emil hat am fünfzehnten Mai Geburtstag.", ru: "У Эмиль день рождения пятнадцатого мая." },
         { de: "Letzte Woche habe ich viel gelernt.", ru: "На прошлой неделе я много занимался." }
       ]
     }
@@ -275,10 +275,10 @@ export default {
     },
     {
       type: "fill",
-      sentence: "Ali hat ___ 15. Mai Geburtstag.",
+      sentence: "Emil hat ___ 15. Mai Geburtstag.",
       answers: ["am"],
       options: ["am", "im", "um"],
-      ru: "У Али день рождения 15 мая.",
+      ru: "У Эмиль день рождения 15 мая.",
       explain: "Дата с предлогом am: am fünfzehnten Mai."
     },
     {
@@ -319,11 +319,11 @@ export default {
     },
     {
       type: "fill",
-      sentence: "Am Wochenende ___ Ali viel gelernt.",
+      sentence: "Am Wochenende ___ Emil viel gelernt.",
       answers: ["hat"],
       options: ["hat", "habe", "haben"],
-      ru: "На выходных Али много занимался.",
-      explain: "Ali = er → hat."
+      ru: "На выходных Эмиль много занимался.",
+      explain: "Emil = er → hat."
     },
     {
       type: "choice",
@@ -342,9 +342,9 @@ export default {
     },
     {
       type: "order",
-      words: ["hat", "Was", "gekauft", "Ali", "gestern"],
-      answer: "Was hat Ali gestern gekauft?",
-      ru: "Что Али вчера купил?"
+      words: ["hat", "Was", "gekauft", "Emil", "gestern"],
+      answer: "Was hat Emil gestern gekauft?",
+      ru: "Что Эмиль вчера купил?"
     },
     {
       type: "translate",
@@ -355,10 +355,10 @@ export default {
     },
     {
       type: "order",
-      words: ["Tee", "Ali", "getrunken", "hat", "gestern", "Abend"],
-      answer: "Ali hat gestern Abend Tee getrunken.",
-      alt: ["Gestern Abend hat Ali Tee getrunken."],
-      ru: "Али вчера вечером пил чай."
+      words: ["Tee", "Emil", "getrunken", "hat", "gestern", "Abend"],
+      answer: "Emil hat gestern Abend Tee getrunken.",
+      alt: ["Gestern Abend hat Emil Tee getrunken."],
+      ru: "Эмиль вчера вечером пил чай."
     },
     {
       type: "listen",
@@ -383,18 +383,18 @@ export default {
     title: "Montagmorgen im Büro",
     titleRu: "Утро понедельника в офисе",
     lines: [
-      { speaker: "Mia", de: "Hallo Ali! Was hast du am Wochenende gemacht?", ru: "Привет, Али! Что ты делал на выходных?" },
-      { speaker: "Ali", de: "Hallo Mia! Ich habe Fußball gespielt und viel gekocht.", ru: "Привет, Мия! Я играл в футбол и много готовил." },
+      { speaker: "Mia", de: "Hallo Emil! Was hast du am Wochenende gemacht?", ru: "Привет, Эмиль! Что ты делал на выходных?" },
+      { speaker: "Emil", de: "Hallo Mia! Ich habe Fußball gespielt und viel gekocht.", ru: "Привет, Мия! Я играл в футбол и много готовил." },
       { speaker: "Mia", de: "Schön! Und wie ist das Wetter heute?", ru: "Здорово! А какая сегодня погода?" },
-      { speaker: "Ali", de: "Es regnet und es ist kühl. Nur zwölf Grad.", ru: "Идёт дождь, и прохладно. Только двенадцать градусов." },
+      { speaker: "Emil", de: "Es regnet und es ist kühl. Nur zwölf Grad.", ru: "Идёт дождь, и прохладно. Только двенадцать градусов." },
       { speaker: "Mia", de: "Oh nein. Hast du einen Regenschirm?", ru: "О нет. У тебя есть зонт?" },
-      { speaker: "Ali", de: "Ja, hier. Gestern hat es nicht geregnet.", ru: "Да, вот. Вчера дождя не было." },
+      { speaker: "Emil", de: "Ja, hier. Gestern hat es nicht geregnet.", ru: "Да, вот. Вчера дождя не было." },
       { speaker: "Mia", de: "Der Herbst ist da. Welches Datum ist heute?", ru: "Осень пришла. Какое сегодня число?" },
-      { speaker: "Ali", de: "Heute ist der zwanzigste September.", ru: "Сегодня двадцатое сентября." },
+      { speaker: "Emil", de: "Heute ist der zwanzigste September.", ru: "Сегодня двадцатое сентября." },
       { speaker: "Mia", de: "Ach ja! Im Oktober ist es oft kalt und windig.", ru: "Ах да! В октябре часто холодно и ветрено." },
-      { speaker: "Ali", de: "Der Winter gefällt mir nicht. Der Sommer gefällt mir.", ru: "Зима мне не нравится. Мне нравится лето." },
-      { speaker: "Mia", de: "Mir auch! Im Juli ist es warm und sonnig. Bis morgen, Ali!", ru: "Мне тоже! В июле тепло и солнечно. До завтра, Али!" },
-      { speaker: "Ali", de: "Bis morgen, Mia!", ru: "До завтра, Мия!" }
+      { speaker: "Emil", de: "Der Winter gefällt mir nicht. Der Sommer gefällt mir.", ru: "Зима мне не нравится. Мне нравится лето." },
+      { speaker: "Mia", de: "Mir auch! Im Juli ist es warm und sonnig. Bis morgen, Emil!", ru: "Мне тоже! В июле тепло и солнечно. До завтра, Эмиль!" },
+      { speaker: "Emil", de: "Bis morgen, Mia!", ru: "До завтра, Мия!" }
     ]
   },
 
@@ -403,7 +403,7 @@ export default {
     scenario:
       "Ты встречаешь Мию в понедельник. Расскажи ей, какая сегодня погода и сколько градусов, какое время года тебе нравится и что ты делал вчера и на выходных. В конце назови сегодняшнюю дату.",
     tutorBrief:
-      "Mia meets Ali on Monday morning. Ask about today's weather and the temperature, which season he likes, what he did yesterday and at the weekend (what he ate), and today's date. Target structures: impersonal es (Es regnet, Es ist kalt, Es sind 15 Grad), Perfekt with haben for regular verbs (gemacht, gespielt, gearbeitet, gelernt, gekauft) and gegessen/getrunken/gesehen, time words gestern, letzte Woche, am Wochenende, dates (Heute ist der dritte Mai). Do NOT use war/hatte, Perfekt with sein, modal sollen/dürfen or subordinate clauses. Keep to A1 vocabulary about weather, seasons, months, hobbies and food.",
+      "Mia meets Emil on Monday morning. Ask about today's weather and the temperature, which season he likes, what he did yesterday and at the weekend (what he ate), and today's date. Target structures: impersonal es (Es regnet, Es ist kalt, Es sind 15 Grad), Perfekt with haben for regular verbs (gemacht, gespielt, gearbeitet, gelernt, gekauft) and gegessen/getrunken/gesehen, time words gestern, letzte Woche, am Wochenende, dates (Heute ist der dritte Mai). Do NOT use war/hatte, Perfekt with sein, modal sollen/dürfen or subordinate clauses. Keep to A1 vocabulary about weather, seasons, months, hobbies and food.",
     phrases: [
       { de: "Heute regnet es.", ru: "Сегодня идёт дождь." },
       { de: "Es ist kalt und windig.", ru: "Холодно и ветрено." },
@@ -415,8 +415,8 @@ export default {
     ],
     script: [
       {
-        say: "Hallo Ali! Wie ist das Wetter heute?",
-        sayRu: "Привет, Али! Какая сегодня погода?",
+        say: "Hallo Emil! Wie ist das Wetter heute?",
+        sayRu: "Привет, Эмиль! Какая сегодня погода?",
         hint: "Es regnet. / Es ist kalt. / Es ist sonnig.",
         expect: ["regnet", "schneit", "kalt", "warm", "heiß", "heiss", "kühl", "kuhl", "sonnig", "windig", "sonne", "wetter"]
       },
@@ -451,8 +451,8 @@ export default {
         expect: ["erste", "zweite", "dritte", "vierte", "fünfte", "zehnte", "zwanzigste", "januar", "februar", "märz", "marz", "april", "mai", "juni", "juli", "august", "september", "oktober", "november", "dezember"]
       },
       {
-        say: "Super, Ali! Das hast du sehr gut gemacht. Bis morgen!",
-        sayRu: "Отлично, Али! Ты очень хорошо справился. До завтра!",
+        say: "Super, Emil! Das hast du sehr gut gemacht. Bis morgen!",
+        sayRu: "Отлично, Эмиль! Ты очень хорошо справился. До завтра!",
         hint: "Bis morgen, Mia!",
         expect: ["bis", "tschüss", "tschuss", "ciao", "morgen"]
       }
@@ -499,16 +499,16 @@ export default {
     },
     {
       type: "fill",
-      sentence: "Ali hat am ___ Mai Geburtstag.",
+      sentence: "Emil hat am ___ Mai Geburtstag.",
       answers: ["dritten"],
       options: ["dritten", "dritte", "drei"],
-      ru: "У Али день рождения третьего мая.",
+      ru: "У Эмиль день рождения третьего мая.",
       explain: "После am окончание -en: am dritten Mai."
     },
     {
       type: "choice",
       q: "Выбери правильное предложение в Perfekt.",
-      options: ["Ali hat gestern Deutsch gelernt.", "Ali hat gestern Deutsch lernen.", "Ali gelernt gestern Deutsch hat."],
+      options: ["Emil hat gestern Deutsch gelernt.", "Emil hat gestern Deutsch lernen.", "Emil gelernt gestern Deutsch hat."],
       answer: 0,
       explain: "haben на втором месте, Partizip II (gelernt) в конце."
     },

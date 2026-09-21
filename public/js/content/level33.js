@@ -16,7 +16,7 @@ export default {
   ],
 
   vocab: [
-    { de: "die Kultur", ru: "культура", plural: "die Kulturen", example: "Ali interessiert sich für Sprachen und Kultur.", exampleRu: "Али интересуется языками и культурой." },
+    { de: "die Kultur", ru: "культура", plural: "die Kulturen", example: "Emil interessiert sich für Sprachen und Kultur.", exampleRu: "Эмиль интересуется языками и культурой." },
     { de: "die Geschichte", ru: "история", plural: "die Geschichten", example: "Die Geschichte dieser Stadt beginnt im 12. Jahrhundert.", exampleRu: "История этого города начинается в 12 веке." },
     { de: "das Museum", ru: "музей", plural: "die Museen", example: "Das Museum ist montags geschlossen.", exampleRu: "Музей закрыт по понедельникам." },
     { de: "die Ausstellung", ru: "выставка", plural: "die Ausstellungen", example: "Die Ausstellung läuft noch bis Ende Oktober.", exampleRu: "Выставка идёт ещё до конца октября." },
@@ -117,7 +117,7 @@ export default {
         ],
       },
       examples: [
-        { de: "Vor drei Jahren besuchte Ali zum ersten Mal ein Museum in Leipzig.", ru: "Три года назад Али впервые сходил в музей в Лейпциге." },
+        { de: "Vor drei Jahren besuchte Emil zum ersten Mal ein Museum in Leipzig.", ru: "Три года назад Эмиль впервые сходил в музей в Лейпциге." },
         { de: "Damals kostete der Eintritt nur fünf Euro.", ru: "Тогда вход стоил всего пять евро." },
         { de: "Als ich klein war, wohnten wir direkt an der Grenze.", ru: "Когда я был маленьким, мы жили прямо у границы." },
       ],
@@ -163,10 +163,10 @@ export default {
     },
     {
       type: "fill",
-      sentence: "Früher ___ Ali als Elektriker in Aserbaidschan.",
+      sentence: "Früher ___ Emil als Elektriker in Aserbaidschan.",
       answers: ["arbeitete"],
       options: ["arbeitete", "arbeitet", "gearbeitet"],
-      ru: "Раньше Али работал электриком в Азербайджане.",
+      ru: "Раньше Эмиль работал электриком в Азербайджане.",
       explain: "Основа на -t, поэтому вставляем -e-: arbeit + e + te.",
     },
     {
@@ -301,10 +301,10 @@ export default {
     },
     {
       type: "fill",
-      sentence: "___ zehn Jahren lebte Ali noch nicht in Deutschland.",
+      sentence: "___ zehn Jahren lebte Emil noch nicht in Deutschland.",
       answers: ["Vor"],
       options: ["Vor", "Seit", "Ab"],
-      ru: "Десять лет назад Али ещё не жил в Германии.",
+      ru: "Десять лет назад Эмиль ещё не жил в Германии.",
       explain: "vor zehn Jahren — десять лет назад.",
     },
     {
@@ -339,10 +339,10 @@ export default {
     },
     {
       type: "order",
-      words: ["wohnte", "Ali", "Baku", "in", "damals"],
-      answer: "Ali wohnte damals in Baku.",
-      alt: ["Damals wohnte Ali in Baku."],
-      ru: "Тогда Али жил в Баку.",
+      words: ["wohnte", "Emil", "Baku", "in", "damals"],
+      answer: "Emil wohnte damals in Baku.",
+      alt: ["Damals wohnte Emil in Baku."],
+      ru: "Тогда Эмиль жил в Баку.",
     },
     {
       type: "fill",
@@ -390,17 +390,17 @@ export default {
     title: "An der Museumskasse",
     titleRu: "В кассе музея",
     lines: [
-      { speaker: "Ali", de: "Guten Tag! Ich möchte mir die Ausstellung über die Stadtgeschichte ansehen. Was kostet der Eintritt?", ru: "Добрый день! Я хотел бы посмотреть выставку об истории города. Сколько стоит вход?" },
+      { speaker: "Emil", de: "Guten Tag! Ich möchte mir die Ausstellung über die Stadtgeschichte ansehen. Was kostet der Eintritt?", ru: "Добрый день! Я хотел бы посмотреть выставку об истории города. Сколько стоит вход?" },
       { speaker: "Mitarbeiterin", de: "Neun Euro für Erwachsene, ermäßigt fünf. Kinder unter sechs Jahren zahlen nichts.", ru: "Девять евро для взрослых, льготный — пять. Дети до шести лет не платят." },
-      { speaker: "Ali", de: "Meine Tochter ist sechs. Dann zwei Erwachsene und einmal ermäßigt, bitte.", ru: "Моей дочери шесть. Тогда два взрослых и один льготный, пожалуйста." },
+      { speaker: "Emil", de: "Meine Tochter ist sechs. Dann zwei Erwachsene und einmal ermäßigt, bitte.", ru: "Моей дочери шесть. Тогда два взрослых и один льготный, пожалуйста." },
       { speaker: "Mitarbeiterin", de: "Gern. Möchten Sie auch an einer Führung teilnehmen? Die nächste findet um 15 Uhr statt.", ru: "Пожалуйста. Хотите также пойти на экскурсию? Ближайшая состоится в 15 часов." },
-      { speaker: "Ali", de: "Wie lange dauert sie denn?", ru: "А сколько она длится?" },
+      { speaker: "Emil", de: "Wie lange dauert sie denn?", ru: "А сколько она длится?" },
       { speaker: "Mitarbeiterin", de: "Etwa eine Stunde. Mein Kollege erzählt, wie die Stadt im 12. Jahrhundert entstand.", ru: "Примерно час. Мой коллега рассказывает, как город возник в 12 веке." },
-      { speaker: "Ali", de: "Das klingt interessant. Und was war dieses Gebäude früher?", ru: "Звучит интересно. А чем раньше было это здание?" },
+      { speaker: "Emil", de: "Das klingt interessant. Und was war dieses Gebäude früher?", ru: "Звучит интересно. А чем раньше было это здание?" },
       { speaker: "Mitarbeiterin", de: "Ein Rathaus. Es wurde 1520 gebaut, und damals arbeitete hier der Bürgermeister.", ru: "Ратушей. Оно было построено в 1520 году, и тогда здесь работал бургомистр." },
-      { speaker: "Ali", de: "Und wann wurde daraus ein Museum?", ru: "А когда оно стало музеем?" },
+      { speaker: "Emil", de: "Und wann wurde daraus ein Museum?", ru: "А когда оно стало музеем?" },
       { speaker: "Mitarbeiterin", de: "In den 70er Jahren. Seitdem kommen jedes Jahr über hunderttausend Besucher.", ru: "В семидесятые годы. С тех пор каждый год приходит больше ста тысяч посетителей." },
-      { speaker: "Ali", de: "Dann nehmen wir die Führung um 15 Uhr. Vielen Dank für die Auskunft!", ru: "Тогда мы возьмём экскурсию в 15 часов. Большое спасибо за информацию!" },
+      { speaker: "Emil", de: "Dann nehmen wir die Führung um 15 Uhr. Vielen Dank für die Auskunft!", ru: "Тогда мы возьмём экскурсию в 15 часов. Большое спасибо за информацию!" },
       { speaker: "Mitarbeiterin", de: "Sehr gern. Der Treffpunkt ist hier am Eingang. Viel Spaß!", ru: "Пожалуйста. Место встречи здесь у входа. Приятного просмотра!" },
     ],
   },
@@ -410,7 +410,7 @@ export default {
     scenario:
       "В понедельник на работе Мия спрашивает, как прошли твои выходные. Расскажи ей: ты ездил к брату в Лейпциг, вы гуляли по старому городу, сходили в музей. Скажи, сколько стоил вход, сколько длилась экскурсия, что тебя больше всего впечатлило и что интересного рассказал брат об истории города. Рассказывай о прошлом в Präteritum и называй время точно: vor zwei Jahren, damals, im 16. Jahrhundert. В конце попрощайся.",
     tutorBrief:
-      "Mia is Ali's German colleague. It is Monday morning at work and she asks how his weekend was. Use du. Ali spent the weekend with his brother in Leipzig: old town, city museum, a guided tour. Ask short, natural follow-up questions: where he was, what they did, what the ticket cost, what impressed him most, how old the building is, what his brother told him about the city's past. React warmly and briefly to each answer. Target structures: Präteritum as narrative tense (war, hatte, wurde, ging, kam, gab, fand, besichtigten, kostete, dauerte), Passiv Präteritum (wurde gebaut / gegründet), and past time expressions (1989, im 16. Jahrhundert, in den 70er Jahren, vor drei Jahren, damals, früher, als ich Kind war). Keep to B1 vocabulary about culture, museums and city history; two to three sentences per turn, then hand the floor back.",
+      "Mia is Emil's German colleague. It is Monday morning at work and she asks how his weekend was. Use du. Emil spent the weekend with his brother in Leipzig: old town, city museum, a guided tour. Ask short, natural follow-up questions: where he was, what they did, what the ticket cost, what impressed him most, how old the building is, what his brother told him about the city's past. React warmly and briefly to each answer. Target structures: Präteritum as narrative tense (war, hatte, wurde, ging, kam, gab, fand, besichtigten, kostete, dauerte), Passiv Präteritum (wurde gebaut / gegründet), and past time expressions (1989, im 16. Jahrhundert, in den 70er Jahren, vor drei Jahren, damals, früher, als ich Kind war). Keep to B1 vocabulary about culture, museums and city history; two to three sentences per turn, then hand the floor back.",
     phrases: [
       { de: "Am Wochenende war ich bei meinem Bruder in Leipzig.", ru: "На выходных я был у брата в Лейпциге." },
       { de: "Wir besichtigten die Altstadt und das alte Rathaus.", ru: "Мы осмотрели старый город и старую ратушу." },
@@ -423,8 +423,8 @@ export default {
     ],
     script: [
       {
-        say: "Morgen, Ali! Du warst am Wochenende gar nicht da. Wo warst du denn?",
-        sayRu: "Доброе утро, Али! Тебя на выходных совсем не было. Где же ты был?",
+        say: "Morgen, Emil! Du warst am Wochenende gar nicht da. Wo warst du denn?",
+        sayRu: "Доброе утро, Эмиль! Тебя на выходных совсем не было. Где же ты был?",
         hint: "Ich war bei meinem Bruder in Leipzig.",
         expect: ["leipzig", "bruder", "war", "wochenende", "zu hause"],
       },
@@ -459,8 +459,8 @@ export default {
         expect: ["früher", "frueher", "damals", "gab", "grenze", "mauer", "geschichte", "erzählte", "erzaehlte"],
       },
       {
-        say: "Das wusste ich gar nicht. Im Sommer fahre ich auch mal hin. Danke fürs Erzählen, Ali – bis morgen!",
-        sayRu: "Я этого совсем не знала. Летом я тоже туда съезжу. Спасибо за рассказ, Али — до завтра!",
+        say: "Das wusste ich gar nicht. Im Sommer fahre ich auch mal hin. Danke fürs Erzählen, Emil – bis morgen!",
+        sayRu: "Я этого совсем не знала. Летом я тоже туда съезжу. Спасибо за рассказ, Эмиль — до завтра!",
         hint: "Tschüss, Mia! Bis morgen.",
         expect: ["tschüss", "tschuss", "bis", "morgen", "wiedersehen", "ciao", "danke"],
       },

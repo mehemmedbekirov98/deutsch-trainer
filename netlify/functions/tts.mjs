@@ -43,7 +43,7 @@ export default async (req) => {
     return json({ error: "Голос сейчас недоступен." }, 503);
   }
 
-  // Store it and move on — Ali should not wait for the upload to finish to hear the line.
+  // Store it and move on — Emil should not wait for the upload to finish to hear the line.
   if (url && serviceKey) {
     putClip(url, serviceKey, key, audio).catch((e) => console.error("[tts] store", e?.message || e));
   }

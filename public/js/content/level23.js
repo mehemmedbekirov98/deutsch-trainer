@@ -33,7 +33,7 @@ export default {
     { de: "die Temperatur", ru: "температура", plural: "die Temperaturen", example: "Die Temperatur fällt in der Nacht.", exampleRu: "Ночью температура падает." },
     { de: "der Grad", ru: "градус", example: "Heute sind es zwanzig Grad.", exampleRu: "Сегодня двадцать градусов." },
     { de: "der Regenschirm", ru: "зонт", plural: "die Regenschirme", example: "Mein Regenschirm ist kaputt.", exampleRu: "Мой зонт сломан." },
-    { de: "die Jacke", ru: "куртка", plural: "die Jacken", example: "Ali trägt eine warme Jacke.", exampleRu: "Али носит тёплую куртку." },
+    { de: "die Jacke", ru: "куртка", plural: "die Jacken", example: "Emil trägt eine warme Jacke.", exampleRu: "Эмиль носит тёплую куртку." },
     { de: "der Mantel", ru: "пальто", plural: "die Mäntel", example: "Im Winter brauche ich einen Mantel.", exampleRu: "Зимой мне нужно пальто." },
     { de: "der Schal", ru: "шарф", plural: "die Schals", example: "Der Schal ist blau und warm.", exampleRu: "Шарф синий и тёплый." },
     { de: "der Handschuh", ru: "перчатка", plural: "die Handschuhe", example: "Wo sind meine Handschuhe?", exampleRu: "Где мои перчатки?" },
@@ -75,12 +75,12 @@ export default {
     {
       title: "Порядок слов: сначала время, потом место",
       body:
-        "Глагол в немецком предложении стоит на втором месте — это ты уже знаешь. А что делать, если в предложении есть и «когда», и «где/куда»? Правило простое: сначала время, потом место.\nAli fährt am Samstag nach Hamburg. — Сначала am Samstag (когда), потом nach Hamburg (куда).\nВремя можно вынести и на первое место, чтобы его подчеркнуть. Тогда подлежащее уходит за глагол: Am Samstag fährt Ali nach Hamburg. Оба варианта правильные и звучат естественно.\nЕсли есть ещё и «как» (mit dem Auto, mit dem Zug), оно встаёт между временем и местом: Ali fährt am Samstag mit dem Zug nach Hamburg. Немцы называют это правило TeKaMoLo: время — причина — образ действия — место.",
+        "Глагол в немецком предложении стоит на втором месте — это ты уже знаешь. А что делать, если в предложении есть и «когда», и «где/куда»? Правило простое: сначала время, потом место.\nAli fährt am Samstag nach Hamburg. — Сначала am Samstag (когда), потом nach Hamburg (куда).\nВремя можно вынести и на первое место, чтобы его подчеркнуть. Тогда подлежащее уходит за глагол: Am Samstag fährt Emil nach Hamburg. Оба варианта правильные и звучат естественно.\nЕсли есть ещё и «как» (mit dem Auto, mit dem Zug), оно встаёт между временем и местом: Emil fährt am Samstag mit dem Zug nach Hamburg. Немцы называют это правило TeKaMoLo: время — причина — образ действия — место.",
       table: {
         headers: ["Место 1", "Глагол", "Дальше"],
         rows: [
-          ["Ali", "fährt", "am Samstag nach Hamburg."],
-          ["Am Samstag", "fährt", "Ali nach Hamburg."],
+          ["Emil", "fährt", "am Samstag nach Hamburg."],
+          ["Am Samstag", "fährt", "Emil nach Hamburg."],
           ["Es", "regnet", "heute in Leipzig."],
           ["Heute", "regnet", "es in Leipzig."],
           ["Wir", "bleiben", "bei Regen zu Hause."],
@@ -88,7 +88,7 @@ export default {
         ],
       },
       examples: [
-        { de: "Ali fährt am Samstag mit dem Zug nach Hamburg.", ru: "В субботу Али едет на поезде в Гамбург." },
+        { de: "Emil fährt am Samstag mit dem Zug nach Hamburg.", ru: "В субботу Эмиль едет на поезде в Гамбург." },
         { de: "Heute Abend gibt es ein Gewitter.", ru: "Сегодня вечером будет гроза." },
         { de: "Die Kinder spielen am Nachmittag im Park.", ru: "Дети играют после обеда в парке." },
         { de: "Im August waren wir zwei Wochen am Meer.", ru: "В августе мы были две недели на море." },
@@ -203,7 +203,7 @@ export default {
     },
     {
       type: "choice",
-      q: "Es regnet. Was nimmt Ali mit?",
+      q: "Es regnet. Was nimmt Emil mit?",
       options: ["den Regenschirm", "die Sonnenbrille", "den Schal"],
       answer: 0,
       explain: "В дождь берут зонт — den Regenschirm.",
@@ -239,7 +239,7 @@ export default {
     {
       type: "choice",
       q: "Какое предложение правильное?",
-      options: ["Ali fährt morgen nach Hamburg.", "Ali morgen fährt nach Hamburg.", "Ali fährt nach Hamburg morgen."],
+      options: ["Emil fährt morgen nach Hamburg.", "Emil morgen fährt nach Hamburg.", "Emil fährt nach Hamburg morgen."],
       answer: 0,
       explain: "Глагол на втором месте, время (morgen) перед местом (nach Hamburg).",
     },
@@ -290,10 +290,10 @@ export default {
     },
     {
       type: "order",
-      words: ["im", "Ali", "heute", "Garten", "arbeitet"],
-      answer: "Ali arbeitet heute im Garten.",
-      alt: ["Heute arbeitet Ali im Garten."],
-      ru: "Али сегодня работает в саду.",
+      words: ["im", "Emil", "heute", "Garten", "arbeitet"],
+      answer: "Emil arbeitet heute im Garten.",
+      alt: ["Heute arbeitet Emil im Garten."],
+      ru: "Эмиль сегодня работает в саду.",
     },
     {
       type: "choice",
@@ -377,17 +377,17 @@ export default {
     titleRu: "Какая погода будет на выходных?",
     lines: [
       { speaker: "Mia", de: "Brrr, heute ist es wirklich kalt! Nur drei Grad und es regnet.", ru: "Бр-р, сегодня действительно холодно! Всего три градуса, и идёт дождь." },
-      { speaker: "Ali", de: "Ja, ich friere den ganzen Tag. Im November ist das Wetter hier immer so.", ru: "Да, я мёрзну весь день. В ноябре погода здесь всегда такая." },
+      { speaker: "Emil", de: "Ja, ich friere den ganzen Tag. Im November ist das Wetter hier immer so.", ru: "Да, я мёрзну весь день. В ноябре погода здесь всегда такая." },
       { speaker: "Mia", de: "Hast du keine Jacke? Du brauchst auch einen Schal.", ru: "У тебя нет куртки? Тебе нужен ещё и шарф." },
-      { speaker: "Ali", de: "Doch, meine Jacke hängt im Büro. Heute Morgen hat es noch nicht geregnet.", ru: "Есть, моя куртка висит в офисе. Сегодня утром дождя ещё не было." },
+      { speaker: "Emil", de: "Doch, meine Jacke hängt im Büro. Heute Morgen hat es noch nicht geregnet.", ru: "Есть, моя куртка висит в офисе. Сегодня утром дождя ещё не было." },
       { speaker: "Mia", de: "Am Abend kommt noch ein Gewitter, sagt die Wettervorhersage.", ru: "Вечером будет ещё и гроза, говорит прогноз погоды." },
-      { speaker: "Ali", de: "Wirklich? Und wie wird das Wetter am Wochenende?", ru: "Правда? А какая погода будет на выходных?" },
+      { speaker: "Emil", de: "Wirklich? Und wie wird das Wetter am Wochenende?", ru: "Правда? А какая погода будет на выходных?" },
       { speaker: "Mia", de: "Am Samstag ist es sonnig und warm, bis fünfzehn Grad.", ru: "В субботу солнечно и тепло, до пятнадцати градусов." },
-      { speaker: "Ali", de: "Super! Dann gehen wir am Samstag mit den Kindern in den Park.", ru: "Отлично! Тогда в субботу мы пойдём с детьми в парк." },
+      { speaker: "Emil", de: "Super! Dann gehen wir am Samstag mit den Kindern in den Park.", ru: "Отлично! Тогда в субботу мы пойдём с детьми в парк." },
       { speaker: "Mia", de: "Und am Sonntag? Da schneit es vielleicht.", ru: "А в воскресенье? В этот день, возможно, пойдёт снег." },
-      { speaker: "Ali", de: "Schon im November? Dann bleiben wir zu Hause.", ru: "Уже в ноябре? Тогда мы останемся дома." },
+      { speaker: "Emil", de: "Schon im November? Dann bleiben wir zu Hause.", ru: "Уже в ноябре? Тогда мы останемся дома." },
       { speaker: "Mia", de: "Fahr am Montag vorsichtig, am Morgen gibt es oft Glatteis.", ru: "В понедельник езжай осторожно, по утрам часто бывает гололёд." },
-      { speaker: "Ali", de: "Danke für den Tipp, Mia! Bis morgen.", ru: "Спасибо за совет, Мия! До завтра." },
+      { speaker: "Emil", de: "Danke für den Tipp, Mia! Bis morgen.", ru: "Спасибо за совет, Мия! До завтра." },
     ],
   },
 
@@ -396,7 +396,7 @@ export default {
     scenario:
       "Обеденный перерыв на работе. Мия садится рядом и начинает разговор о погоде — самая обычная ситуация в Германии. Скажи, какая сегодня погода и сколько градусов, назови своё любимое время года, расскажи, что ты делаешь в дождь и какая погода бывает в Баку. В конце расскажи о планах на выходные.",
     tutorBrief:
-      "Mia and Ali chat about the weather during the lunch break at work. Mia is relaxed and friendly and uses du. Start with today's weather, then ask which season Ali likes best, what he does when it rains, what the weather is like in Baku compared to Germany, and what his plans for the weekend are. Target structures: impersonal es (es regnet, es schneit, es ist kalt / windig / sonnig, es sind zehn Grad); time before place word order (Am Samstag fahre ich nach Hamburg); time expressions im Winter, im Juli, am Montag, am Wochenende, in der Nacht. Keep to A2 weather vocabulary and short sentences, always wait for Ali's answer and react to it before the next question.",
+      "Mia and Emil chat about the weather during the lunch break at work. Mia is relaxed and friendly and uses du. Start with today's weather, then ask which season Emil likes best, what he does when it rains, what the weather is like in Baku compared to Germany, and what his plans for the weekend are. Target structures: impersonal es (es regnet, es schneit, es ist kalt / windig / sonnig, es sind zehn Grad); time before place word order (Am Samstag fahre ich nach Hamburg); time expressions im Winter, im Juli, am Montag, am Wochenende, in der Nacht. Keep to A2 weather vocabulary and short sentences, always wait for Emil's answer and react to it before the next question.",
     phrases: [
       { de: "Heute ist es kalt und es regnet.", ru: "Сегодня холодно и идёт дождь." },
       { de: "Es sind nur drei Grad.", ru: "Всего три градуса." },
@@ -445,8 +445,8 @@ export default {
         expect: ["sonnig", "sonne", "regen", "grad", "schön", "schon", "warm", "weiß", "weiss"],
       },
       {
-        say: "Dann viel Spaß am Wochenende, Ali! Bis morgen!",
-        sayRu: "Тогда хороших выходных, Али! До завтра!",
+        say: "Dann viel Spaß am Wochenende, Emil! Bis morgen!",
+        sayRu: "Тогда хороших выходных, Эмиль! До завтра!",
         hint: "Danke, tschüss Mia!",
         expect: ["danke", "tschüss", "tschuss", "bis", "wiedersehen", "morgen"],
       },
@@ -477,10 +477,10 @@ export default {
     },
     {
       type: "order",
-      words: ["Freitag", "Ali", "nach", "fährt", "Hamburg", "am"],
-      answer: "Ali fährt am Freitag nach Hamburg.",
-      alt: ["Am Freitag fährt Ali nach Hamburg."],
-      ru: "В пятницу Али едет в Гамбург.",
+      words: ["Freitag", "Emil", "nach", "fährt", "Hamburg", "am"],
+      answer: "Emil fährt am Freitag nach Hamburg.",
+      alt: ["Am Freitag fährt Emil nach Hamburg."],
+      ru: "В пятницу Эмиль едет в Гамбург.",
     },
     {
       type: "translate",

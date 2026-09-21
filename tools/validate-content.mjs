@@ -97,7 +97,7 @@ function checkExercise(ex, i, errs, where, isExam) {
         if (a !== w) errs.push(`${at}: words ${JSON.stringify(ex.words)} do not match answer "${ex.answer}"`);
         if (ex.words.join(" ").replace(/[.!?]$/, "") === ex.answer.replace(/[.!?]$/, "")) errs.push(`${at}: words are not scrambled`);
         // `alt` lists equally correct word orders. Each one has to be buildable from exactly the
-        // same chips, otherwise Ali could never produce it and the entry would silently do nothing.
+        // same chips, otherwise Emil could never produce it and the entry would silently do nothing.
         if (ex.alt !== undefined) {
           if (!Array.isArray(ex.alt) || !ex.alt.length) errs.push(`${at}: alt must be a non-empty array`);
           else ex.alt.forEach((v, i) => {
@@ -217,7 +217,7 @@ for (const f of files) {
         });
         const speakers = new Set(d.lines.map((l) => l?.speaker));
         if (speakers.size !== 2) errs.push(`dialogue must have exactly 2 speakers (has ${[...speakers].join(", ")})`);
-        if (!speakers.has("Ali")) errs.push('dialogue must include speaker "Ali"');
+        if (!speakers.has("Emil")) errs.push('dialogue must include speaker "Emil"');
       }
     }
     // speaking

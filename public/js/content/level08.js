@@ -18,7 +18,7 @@ export default {
   vocab: [
     { de: "der Bahnhof", ru: "вокзал", plural: "die Bahnhöfe", example: "Wo ist der Bahnhof?", exampleRu: "Где вокзал?" },
     { de: "die Haltestelle", ru: "остановка", plural: "die Haltestellen", example: "Die Haltestelle ist da vorne.", exampleRu: "Остановка вон там впереди." },
-    { de: "der Bus", ru: "автобус", plural: "die Busse", example: "Ali fährt mit dem Bus.", exampleRu: "Али едет на автобусе." },
+    { de: "der Bus", ru: "автобус", plural: "die Busse", example: "Emil fährt mit dem Bus.", exampleRu: "Эмиль едет на автобусе." },
     { de: "die U-Bahn", ru: "метро", plural: "die U-Bahnen", example: "Ich nehme die U-Bahn.", exampleRu: "Я поеду на метро." },
     { de: "die Straßenbahn", ru: "трамвай", plural: "die Straßenbahnen", example: "Die Straßenbahn kommt in fünf Minuten.", exampleRu: "Трамвай придёт через пять минут." },
     { de: "das Taxi", ru: "такси", plural: "die Taxis", example: "Wir nehmen ein Taxi.", exampleRu: "Мы возьмём такси." },
@@ -38,13 +38,13 @@ export default {
     { de: "der Park", ru: "парк", plural: "die Parks", example: "Der Park ist hinter dem Bahnhof.", exampleRu: "Парк за вокзалом." },
     { de: "das Zentrum", ru: "центр (города)", plural: "die Zentren", example: "Das Museum ist im Zentrum.", exampleRu: "Музей в центре." },
     { de: "die Linie", ru: "линия, маршрут", plural: "die Linien", example: "Die Linie 5 fährt zum Bahnhof.", exampleRu: "Линия 5 идёт к вокзалу." },
-    { de: "der Weg", ru: "путь, дорога", plural: "die Wege", example: "Ali fragt nach dem Weg.", exampleRu: "Али спрашивает дорогу." },
+    { de: "der Weg", ru: "путь, дорога", plural: "die Wege", example: "Emil fragt nach dem Weg.", exampleRu: "Эмиль спрашивает дорогу." },
     { de: "links", ru: "налево, слева", example: "Die Post ist links.", exampleRu: "Почта слева." },
     { de: "rechts", ru: "направо, справа", example: "Gehen Sie hier rechts.", exampleRu: "Идите здесь направо." },
     { de: "geradeaus", ru: "прямо", example: "Geh immer geradeaus.", exampleRu: "Иди всё время прямо." },
     { de: "weit", ru: "далеко", example: "Der Bahnhof ist nicht weit.", exampleRu: "Вокзал недалеко." },
     { de: "nah", ru: "близко", example: "Die Haltestelle ist ganz nah.", exampleRu: "Остановка совсем близко." },
-    { de: "zu Fuß", ru: "пешком", example: "Ali geht zu Fuß zur Arbeit.", exampleRu: "Али ходит на работу пешком." },
+    { de: "zu Fuß", ru: "пешком", example: "Emil geht zu Fuß zur Arbeit.", exampleRu: "Эмиль ходит на работу пешком." },
     { de: "umsteigen", ru: "пересаживаться (делать пересадку)", example: "Am Bahnhof steige ich um.", exampleRu: "На вокзале я пересаживаюсь." },
     { de: "aussteigen", ru: "выходить (из транспорта)", example: "Wir steigen hier aus.", exampleRu: "Мы выходим здесь." },
   ],
@@ -67,7 +67,7 @@ export default {
       },
       examples: [
         { de: "Gehen Sie geradeaus und dann links.", ru: "Идите прямо, а потом налево." },
-        { de: "Nimm den Bus, Ali!", ru: "Садись на автобус, Али!" },
+        { de: "Nimm den Bus, Emil!", ru: "Садись на автобус, Эмиль!" },
         { de: "Steigen Sie am Bahnhof um.", ru: "Пересядьте на вокзале." },
       ],
     },
@@ -105,7 +105,7 @@ export default {
       },
       examples: [
         { de: "Entschuldigung, wie komme ich zum Bahnhof?", ru: "Извините, как мне добраться до вокзала?" },
-        { de: "Ali fährt mit der Straßenbahn zur Arbeit.", ru: "Али едет на работу на трамвае." },
+        { de: "Emil fährt mit der Straßenbahn zur Arbeit.", ru: "Эмиль едет на работу на трамвае." },
         { de: "Gibt es hier eine Bank?", ru: "Здесь есть банк?" },
       ],
     },
@@ -131,7 +131,7 @@ export default {
     },
     {
       type: "choice",
-      q: "Али идёт пешком. Как это по-немецки?",
+      q: "Эмиль идёт пешком. Как это по-немецки?",
       options: ["mit dem Bus", "zu Fuß", "mit dem Taxi"],
       answer: 1,
       explain: "zu Fuß — пешком.",
@@ -182,10 +182,10 @@ export default {
     },
     {
       type: "fill",
-      sentence: "Ali fährt ___ dem Bus zur Arbeit.",
+      sentence: "Emil fährt ___ dem Bus zur Arbeit.",
       answers: ["mit"],
       options: ["mit", "zu", "an"],
-      ru: "Али едет на автобусе на работу.",
+      ru: "Эмиль едет на автобусе на работу.",
       explain: "mit + Dativ: mit dem Bus.",
     },
     {
@@ -301,8 +301,8 @@ export default {
     {
       type: "translate",
       dir: "ru-de",
-      text: "Али едет на метро.",
-      answers: ["Ali fährt mit der U-Bahn.", "Ali nimmt die U-Bahn."],
+      text: "Эмиль едет на метро.",
+      answers: ["Emil fährt mit der U-Bahn.", "Emil nimmt die U-Bahn."],
       hint: "mit der U-Bahn",
     },
     {
@@ -362,15 +362,15 @@ export default {
     title: "Auf der Straße",
     titleRu: "На улице",
     lines: [
-      { speaker: "Ali", de: "Entschuldigung, wie komme ich zum Bahnhof?", ru: "Извините, как мне добраться до вокзала?" },
+      { speaker: "Emil", de: "Entschuldigung, wie komme ich zum Bahnhof?", ru: "Извините, как мне добраться до вокзала?" },
       { speaker: "Frau Berg", de: "Zum Bahnhof? Das ist nicht weit. Gehen Sie hier geradeaus bis zur Ampel.", ru: "До вокзала? Это недалеко. Идите здесь прямо до светофора." },
-      { speaker: "Ali", de: "Bis zur Ampel. Und dann?", ru: "До светофора. А потом?" },
+      { speaker: "Emil", de: "Bis zur Ampel. Und dann?", ru: "До светофора. А потом?" },
       { speaker: "Frau Berg", de: "Dann links, an der Post vorbei. Der Bahnhof ist rechts.", ru: "Потом налево, мимо почты. Вокзал справа." },
-      { speaker: "Ali", de: "Ist das weit zu Fuß?", ru: "Это далеко пешком?" },
+      { speaker: "Emil", de: "Ist das weit zu Fuß?", ru: "Это далеко пешком?" },
       { speaker: "Frau Berg", de: "Zu Fuß sind es zehn Minuten. Oder Sie nehmen den Bus, Linie 5.", ru: "Пешком — десять минут. Или садитесь на автобус, линия 5." },
-      { speaker: "Ali", de: "Und wo ist die Haltestelle?", ru: "А где остановка?" },
+      { speaker: "Emil", de: "Und wo ist die Haltestelle?", ru: "А где остановка?" },
       { speaker: "Frau Berg", de: "Da vorne, an der Kreuzung. Die Fahrkarte kaufen Sie im Bus.", ru: "Вон там впереди, на перекрёстке. Билет купите в автобусе." },
-      { speaker: "Ali", de: "Super, ich gehe zu Fuß. Vielen Dank!", ru: "Отлично, я пойду пешком. Большое спасибо!" },
+      { speaker: "Emil", de: "Super, ich gehe zu Fuß. Vielen Dank!", ru: "Отлично, я пойду пешком. Большое спасибо!" },
       { speaker: "Frau Berg", de: "Gern geschehen. Auf Wiedersehen!", ru: "Не за что. До свидания!" },
     ],
   },
@@ -380,7 +380,7 @@ export default {
     scenario:
       "Ты в Берлине и ищешь музей. Мия — местная, она объяснит тебе дорогу. Спроси, где музей, переспроси дорогу (bis zur Ampel? links?), скажи, идёшь ли ты пешком или едешь на транспорте, и попрощайся.",
     tutorBrief:
-      "Mia is a local in Berlin; Ali asks her the way to the museum. Give simple directions (geradeaus, links, rechts, bis zur Ampel, an der Kirche vorbei, über die Straße), ask whether he walks or takes the bus/U-Bahn, mention the stop and buying a ticket. Target structures: Wo ist…?, Wie komme ich zum/zur…?, Ist das weit?, Ich gehe zu Fuß, Ich fahre mit dem Bus / mit der U-Bahn, Imperativ (Gehen Sie… / Geh…). Keep to A1 vocabulary of the city/directions topic; no modal verbs, no past tense.",
+      "Mia is a local in Berlin; Emil asks her the way to the museum. Give simple directions (geradeaus, links, rechts, bis zur Ampel, an der Kirche vorbei, über die Straße), ask whether he walks or takes the bus/U-Bahn, mention the stop and buying a ticket. Target structures: Wo ist…?, Wie komme ich zum/zur…?, Ist das weit?, Ich gehe zu Fuß, Ich fahre mit dem Bus / mit der U-Bahn, Imperativ (Gehen Sie… / Geh…). Keep to A1 vocabulary of the city/directions topic; no modal verbs, no past tense.",
     phrases: [
       { de: "Entschuldigung, wie komme ich zum Museum?", ru: "Извините, как мне пройти к музею?" },
       { de: "Wo ist die Haltestelle?", ru: "Где остановка?" },
@@ -393,8 +393,8 @@ export default {
     ],
     script: [
       {
-        say: "Hallo Ali! Was suchst du?",
-        sayRu: "Привет, Али! Что ты ищешь?",
+        say: "Hallo Emil! Was suchst du?",
+        sayRu: "Привет, Эмиль! Что ты ищешь?",
         hint: "Entschuldigung, wo ist das Museum? / Wie komme ich zum Museum?",
         expect: ["museum", "wo", "komme"],
       },
@@ -429,8 +429,8 @@ export default {
         expect: ["fahrkarte", "bahnhof", "haltestelle", "kaufe", "bus"],
       },
       {
-        say: "Super, Ali! Das war sehr gut. Bis bald!",
-        sayRu: "Отлично, Али! Это было очень хорошо. До скорого!",
+        say: "Super, Emil! Das war sehr gut. Bis bald!",
+        sayRu: "Отлично, Эмиль! Это было очень хорошо. До скорого!",
         hint: "Danke, Mia! Tschüss!",
         expect: ["tschüss", "tschuss", "danke", "bald", "wiedersehen"],
       },
@@ -447,10 +447,10 @@ export default {
     },
     {
       type: "fill",
-      sentence: "Ali fährt ___ der Straßenbahn zum Bahnhof.",
+      sentence: "Emil fährt ___ der Straßenbahn zum Bahnhof.",
       answers: ["mit"],
       options: ["mit", "zu", "bis"],
-      ru: "Али едет на трамвае к вокзалу.",
+      ru: "Эмиль едет на трамвае к вокзалу.",
       explain: "mit + Dativ: mit der Straßenbahn.",
     },
     {
@@ -468,7 +468,7 @@ export default {
     },
     {
       type: "choice",
-      q: "Ali, ___ das Taxi, es ist schon spät!",
+      q: "Emil, ___ das Taxi, es ist schon spät!",
       options: ["nehm", "nimm", "nimmst"],
       answer: 1,
       explain: "du-форма императива от nehmen: nimm.",

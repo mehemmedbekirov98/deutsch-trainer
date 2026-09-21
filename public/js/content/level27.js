@@ -18,7 +18,7 @@ export default {
   vocab: [
     { de: "die Krankenkasse", ru: "больничная касса (медстраховая)", plural: "die Krankenkassen", example: "Meine Krankenkasse bezahlt die Behandlung.", exampleRu: "Моя больничная касса оплачивает лечение." },
     { de: "die Krankenversicherung", ru: "медицинская страховка", plural: "die Krankenversicherungen", example: "In Deutschland ist die Krankenversicherung Pflicht.", exampleRu: "В Германии медицинская страховка обязательна." },
-    { de: "gesetzlich versichert", ru: "застрахован в государственной кассе", example: "Ali ist gesetzlich versichert.", exampleRu: "Али застрахован в государственной кассе." },
+    { de: "gesetzlich versichert", ru: "застрахован в государственной кассе", example: "Emil ist gesetzlich versichert.", exampleRu: "Эмиль застрахован в государственной кассе." },
     { de: "privat versichert", ru: "застрахован в частной страховой", example: "Mein Chef ist privat versichert.", exampleRu: "Мой начальник застрахован в частной страховой." },
     { de: "die Gesundheitskarte", ru: "карта медицинского страхования", plural: "die Gesundheitskarten", example: "Zeigen Sie mir bitte Ihre Gesundheitskarte.", exampleRu: "Покажите мне, пожалуйста, вашу карту медицинского страхования." },
     { de: "der Beitrag", ru: "взнос", plural: "die Beiträge", example: "Der Beitrag wird jeden Monat vom Gehalt abgezogen.", exampleRu: "Взнос каждый месяц вычитается из зарплаты." },
@@ -175,7 +175,7 @@ export default {
     },
     {
       type: "choice",
-      q: "Ali ___ gern einen Termin am Nachmittag.",
+      q: "Emil ___ gern einen Termin am Nachmittag.",
       options: ["hätte", "hatte", "hat"],
       answer: 0,
       explain: "hätte gern — вежливое «хотел бы». Hatte — прошедшее время «имел».",
@@ -227,7 +227,7 @@ export default {
     },
     {
       type: "choice",
-      q: "Der Arzt rät Ali: «Sie ___ weniger Kaffee trinken.»",
+      q: "Der Arzt rät Emil: «Sie ___ weniger Kaffee trinken.»",
       options: ["sollten", "sollt", "solltest"],
       answer: 0,
       explain: "Sie → sollten. Это мягкий совет: «вам следует».",
@@ -380,17 +380,17 @@ export default {
     title: "Einen Termin beim Hausarzt vereinbaren",
     titleRu: "Записаться на приём к терапевту",
     lines: [
-      { speaker: "Ali", de: "Guten Tag, ich hätte gern einen Termin bei Doktor Weber.", ru: "Добрый день, я хотел бы записаться на приём к доктору Веберу." },
+      { speaker: "Emil", de: "Guten Tag, ich hätte gern einen Termin bei Doktor Weber.", ru: "Добрый день, я хотел бы записаться на приём к доктору Веберу." },
       { speaker: "Frau Berger", de: "Guten Tag. Waren Sie schon einmal bei uns? Dann bräuchte ich Ihre Gesundheitskarte.", ru: "Добрый день. Вы у нас уже были? Тогда мне нужна ваша карта медицинского страхования." },
-      { speaker: "Ali", de: "Ja, hier ist sie. Ich bin gesetzlich versichert.", ru: "Да, вот она. Я застрахован в государственной кассе." },
+      { speaker: "Emil", de: "Ja, hier ist sie. Ich bin gesetzlich versichert.", ru: "Да, вот она. Я застрахован в государственной кассе." },
       { speaker: "Frau Berger", de: "Danke. Was für Beschwerden haben Sie denn?", ru: "Спасибо. А что вас беспокоит?" },
-      { speaker: "Ali", de: "Seit einer Woche tut mir der Rücken weh. Als Fahrer sitze ich den ganzen Tag.", ru: "Уже неделю у меня болит спина. Я работаю водителем и целый день сижу." },
+      { speaker: "Emil", de: "Seit einer Woche tut mir der Rücken weh. Als Fahrer sitze ich den ganzen Tag.", ru: "Уже неделю у меня болит спина. Я работаю водителем и целый день сижу." },
       { speaker: "Frau Berger", de: "Das klingt unangenehm. Morgen um halb neun wäre noch etwas frei.", ru: "Звучит неприятно. Завтра в половине девятого ещё есть свободное время." },
-      { speaker: "Ali", de: "Könnten Sie mir auch einen Termin am Nachmittag geben? Vormittags arbeite ich.", ru: "Не могли бы вы записать меня на вторую половину дня? По утрам я работаю." },
+      { speaker: "Emil", de: "Könnten Sie mir auch einen Termin am Nachmittag geben? Vormittags arbeite ich.", ru: "Не могли бы вы записать меня на вторую половину дня? По утрам я работаю." },
       { speaker: "Frau Berger", de: "Einen Moment … Um Viertel nach vier hätte der Arzt noch Zeit.", ru: "Минутку… В четверть пятого у врача ещё есть время." },
-      { speaker: "Ali", de: "Das wäre perfekt. Und bekomme ich eine Krankmeldung für meinen Arbeitgeber?", ru: "Это было бы идеально. А я получу больничный для работодателя?" },
+      { speaker: "Emil", de: "Das wäre perfekt. Und bekomme ich eine Krankmeldung für meinen Arbeitgeber?", ru: "Это было бы идеально. А я получу больничный для работодателя?" },
       { speaker: "Frau Berger", de: "Wenn der Arzt es für nötig hält, ja. Bringen Sie bitte auch Ihre Medikamente mit.", ru: "Если врач сочтёт нужным, да. Принесите, пожалуйста, и ваши лекарства." },
-      { speaker: "Ali", de: "Mache ich. Vielen Dank und bis morgen!", ru: "Так и сделаю. Большое спасибо, до завтра!" },
+      { speaker: "Emil", de: "Mache ich. Vielen Dank und bis morgen!", ru: "Так и сделаю. Большое спасибо, до завтра!" },
     ],
   },
 
@@ -399,7 +399,7 @@ export default {
     scenario:
       "Ты звонишь в свою больничную кассу. Скажи, что у тебя вопрос: ты идёшь к стоматологу и хочешь узнать, возместит ли касса расходы. Спроси вежливо, через Konjunktiv II: Könnten Sie …?, Ich hätte gern …, Wäre es möglich …? Попроси прислать ответ письменно и закажи новую карту медицинского страхования. В конце поблагодари и попрощайся.",
     tutorBrief:
-      "Mia works at a German health insurance company (Krankenkasse) and takes Ali's phone call. Address him with Sie throughout, like a real call centre employee: polite, efficient, friendly. Guide the call: ask what it is about, which treatment, whether he already has an appointment, then explain that the Kasse pays the normal dental treatment completely and that only for Zahnersatz it pays a Festzuschuss of about sixty percent, so the rest is an Eigenanteil he pays himself. React when he asks for written information and for a new Gesundheitskarte. Target structures: Konjunktiv II for politeness and wishes — Könnten Sie …?, Würden Sie …?, Ich hätte gern …, Ich würde gern …, Wäre es möglich …?, Sie sollten …, and wenn-clauses with hätte/wäre/würde. Vocabulary: Krankenkasse, Zahnarzt, Behandlung, Kosten, erstatten, Zuzahlung, Antrag, Gesundheitskarte, Bescheinigung. Keep sentences B1: clear, adult, not literary.",
+      "Mia works at a German health insurance company (Krankenkasse) and takes Emil's phone call. Address him with Sie throughout, like a real call centre employee: polite, efficient, friendly. Guide the call: ask what it is about, which treatment, whether he already has an appointment, then explain that the Kasse pays the normal dental treatment completely and that only for Zahnersatz it pays a Festzuschuss of about sixty percent, so the rest is an Eigenanteil he pays himself. React when he asks for written information and for a new Gesundheitskarte. Target structures: Konjunktiv II for politeness and wishes — Könnten Sie …?, Würden Sie …?, Ich hätte gern …, Ich würde gern …, Wäre es möglich …?, Sie sollten …, and wenn-clauses with hätte/wäre/würde. Vocabulary: Krankenkasse, Zahnarzt, Behandlung, Kosten, erstatten, Zuzahlung, Antrag, Gesundheitskarte, Bescheinigung. Keep sentences B1: clear, adult, not literary.",
     phrases: [
       { de: "Guten Tag, ich hätte eine Frage.", ru: "Добрый день, у меня вопрос." },
       { de: "Es geht um eine Behandlung beim Zahnarzt.", ru: "Речь идёт о лечении у стоматолога." },

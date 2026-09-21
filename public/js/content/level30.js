@@ -376,16 +376,16 @@ export default {
     title: "Die Stromrechnung",
     titleRu: "Счёт за электричество",
     lines: [
-      { speaker: "Aysel", de: "Ali, die Stromrechnung ist gekommen. Wir müssen nachzahlen.", ru: "Али, пришёл счёт за электричество. Нам придётся доплатить." },
-      { speaker: "Ali", de: "Wie viel denn?", ru: "И сколько же?" },
-      { speaker: "Aysel", de: "Zweihundertvierzig Euro. Der Verbrauch ist im Winter stark gestiegen.", ru: "Двести сорок евро. Зимой расход сильно вырос." },
-      { speaker: "Ali", de: "Kein Wunder. Der alte Kühlschrank ist nie ausgetauscht worden.", ru: "Неудивительно. Старый холодильник так и не заменили." },
-      { speaker: "Aysel", de: "Und die Fenster sind seit zwanzig Jahren nicht ausgetauscht worden.", ru: "И окна не меняли уже двадцать лет." },
-      { speaker: "Ali", de: "Ich rede morgen mit der Hausverwaltung. Vielleicht wird endlich etwas gemacht.", ru: "Завтра поговорю с домоуправлением. Может быть, наконец что-то сделают." },
-      { speaker: "Aysel", de: "Bis dahin sparen wir selbst. Man kann abends weniger heizen.", ru: "А пока будем экономить сами. По вечерам можно меньше топить." },
-      { speaker: "Ali", de: "Und richtig lüften: dreimal kurz statt den ganzen Tag.", ru: "И правильно проветривать: три раза коротко, а не целый день." },
-      { speaker: "Aysel", de: "Genau. Und gebrauchte Geräte kaufen wir nicht mehr.", ru: "Точно. И подержанную технику мы больше покупать не будем." },
-      { speaker: "Ali", de: "Einverstanden. Nächstes Jahr wird die Rechnung hoffentlich kleiner.", ru: "Согласен. В следующем году счёт, надеюсь, будет меньше." },
+      { speaker: "Sevil", de: "Emil, die Stromrechnung ist gekommen. Wir müssen nachzahlen.", ru: "Эмиль, пришёл счёт за электричество. Нам придётся доплатить." },
+      { speaker: "Emil", de: "Wie viel denn?", ru: "И сколько же?" },
+      { speaker: "Sevil", de: "Zweihundertvierzig Euro. Der Verbrauch ist im Winter stark gestiegen.", ru: "Двести сорок евро. Зимой расход сильно вырос." },
+      { speaker: "Emil", de: "Kein Wunder. Der alte Kühlschrank ist nie ausgetauscht worden.", ru: "Неудивительно. Старый холодильник так и не заменили." },
+      { speaker: "Sevil", de: "Und die Fenster sind seit zwanzig Jahren nicht ausgetauscht worden.", ru: "И окна не меняли уже двадцать лет." },
+      { speaker: "Emil", de: "Ich rede morgen mit der Hausverwaltung. Vielleicht wird endlich etwas gemacht.", ru: "Завтра поговорю с домоуправлением. Может быть, наконец что-то сделают." },
+      { speaker: "Sevil", de: "Bis dahin sparen wir selbst. Man kann abends weniger heizen.", ru: "А пока будем экономить сами. По вечерам можно меньше топить." },
+      { speaker: "Emil", de: "Und richtig lüften: dreimal kurz statt den ganzen Tag.", ru: "И правильно проветривать: три раза коротко, а не целый день." },
+      { speaker: "Sevil", de: "Genau. Und gebrauchte Geräte kaufen wir nicht mehr.", ru: "Точно. И подержанную технику мы больше покупать не будем." },
+      { speaker: "Emil", de: "Einverstanden. Nächstes Jahr wird die Rechnung hoffentlich kleiner.", ru: "Согласен. В следующем году счёт, надеюсь, будет меньше." },
     ],
   },
 
@@ -394,7 +394,7 @@ export default {
     scenario:
       "Ты только что въехал с семьёй в новую квартиру. Мия из домоуправления показывает тебе двор. Спроси, куда идёт какой мусор, где сдавать бутылки с пфандом и когда вывозят макулатуру. Скажи, что отопление в ванной было холодным, и узнай, чинили ли его. В конце поблагодари и попрощайся.",
     tutorBrief:
-      "Mia works for the Hausverwaltung of the building Ali has just moved into in Germany. Use Sie with him; stay polite, practical and friendly. Welcome him, show him the bins in the yard and explain what goes where (Altpapier, Biomüll, Restmüll, Verpackungen), tell him the Pfandautomat is in the supermarket, and say which day the Restmüll is collected. When he mentions the cold heating in the bathroom, tell him it was repaired last week and ask him to call if the problem comes back. Target structures: Passiv Präteritum (wurde abgeholt / repariert), Passiv Perfekt (ist ... repariert worden), man + Verb instead of Passiv. Keep to B1 vocabulary about waste, recycling, heating and saving energy; short, clear sentences.",
+      "Mia works for the Hausverwaltung of the building Emil has just moved into in Germany. Use Sie with him; stay polite, practical and friendly. Welcome him, show him the bins in the yard and explain what goes where (Altpapier, Biomüll, Restmüll, Verpackungen), tell him the Pfandautomat is in the supermarket, and say which day the Restmüll is collected. When he mentions the cold heating in the bathroom, tell him it was repaired last week and ask him to call if the problem comes back. Target structures: Passiv Präteritum (wurde abgeholt / repariert), Passiv Perfekt (ist ... repariert worden), man + Verb instead of Passiv. Keep to B1 vocabulary about waste, recycling, heating and saving energy; short, clear sentences.",
     phrases: [
       { de: "Wohin kommt der Biomüll?", ru: "Куда выбрасывают органические отходы?" },
       { de: "Wo kann ich die Flaschen zurückgeben?", ru: "Где я могу сдать бутылки?" },

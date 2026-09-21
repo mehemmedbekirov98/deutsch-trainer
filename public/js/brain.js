@@ -1,4 +1,4 @@
-// Mia's offline brain: understands what Ali said (Russian or German) and decides what she answers,
+// Mia's offline brain: understands what Emil said (Russian or German) and decides what she answers,
 // entirely from local data. Used whenever the AI backend is off, so the app is fully usable without a key.
 import { normalize, pick, shuffle, stripArticle } from "./utils.js";
 import { LEVELS } from "./levels.js";
@@ -11,7 +11,7 @@ import SITEHELP from "./brain-data/sitehelp.js";
 // (kommen aus — быть из)" must not register its German half as a Russian key.
 const NO_GLOSS = /[(][^)]*[)]/g;
 
-// Every German word Ali has met, indexed both ways, so Mia can answer "что значит X" for ~380 words.
+// Every German word Emil has met, indexed both ways, so Mia can answer "что значит X" for ~380 words.
 const VOCAB_DE = new Map();
 const VOCAB_RU = new Map();
 for (const level of LEVELS) {
@@ -36,7 +36,7 @@ const has = (text, fragments) => fragments.some((f) => text.includes(normalize(f
 /**
  * Find the entry whose `match` fragments fit best.
  *
- * Plain substring matching was far too literal: Ali writes "а ты что любишь есть?" and the stored
+ * Plain substring matching was far too literal: Emil writes "а ты что любишь есть?" and the stored
  * fragment is "что ты любишь есть" — one word out of order and she had nothing to say. So a
  * fragment also counts when its content words all appear somewhere in what he wrote, and half of
  * them still counts for less. An exact phrase always outscores a scattered one, so the best answer
@@ -161,7 +161,7 @@ const BYE_FILLER = new Set(["мия", "ну", "ок", "окей", "ладно", 
 const THANKS = ["спасибо", "благодарю", "danke", "vielen dank", "спс"];
 const CONFUSED = ["не понимаю", "не понял", "непонятно", "что это значит", "не знаю", "verstehe nicht", "ich verstehe nicht", "was ist das", "wie bitte", "не поняла", "хз"];
 const REPEAT = ["повтори", "ещё раз", "еще раз", "медленнее", "помедленнее", "noch einmal", "langsamer", "wiederhole"];
-// "трудно/сложно/тяжело" deliberately live in FEELING_BAD, not here: «мне тяжело» is Ali telling
+// "трудно/сложно/тяжело" deliberately live in FEELING_BAD, not here: «мне тяжело» is Emil telling
 // you how he feels, and answering it with a grammar tip instead of comfort is exactly the coldness
 // this is meant to avoid. HELP_ME is for an actual request.
 const HELP_ME = ["помоги", "подскажи", "как сказать", "как будет", "wie sagt man", "не могу"];
@@ -169,7 +169,7 @@ const FEELING_BAD = ["устал", "устала", "тяжело", "трудно
 // "неплохо" is praise, not a complaint — never let FEELING_BAD swallow it
 const FEELING_BAD_NOT = /(^|[\s,])не ?(плохо|трудно|сложно|тяжело)/;
 const FEELING_GOOD = ["хорошо", "отлично", "супер", "классно", "рад", "здорово", "нормально", "прекрасно", "gut", "super", "prima", "toll", "schön"];
-// "Ich komme aus Baku" is Ali talking about himself, not a question about Mia's life.
+// "Ich komme aus Baku" is Emil talking about himself, not a question about Mia's life.
 const SELF_STATEMENT = /^(ich|mein|meine|mir|mich)\b/;
 const QUESTIONY = /\?|^(wie|was|wo|wer|wann|warum|woher|wohin)\b|как|что|где|кто|когда|почему|зачем|откуда|сколько|какой|какая|можно|расскажи|объясни|скажи/;
 // German yes/no questions put the verb first: "Bist du müde?", "Hast du Kinder?", "Magst du Fußball?"
@@ -178,7 +178,7 @@ const GERMAN_YESNO = /^(bist|hast|magst|kannst|willst|moechtest|machst|spielst|w
 const ABOUT_SITE = ["сайт", "приложение", "программа", "уровень", "уровни", "монет", "магазин", "экзамен", "миссия", "достижен", "профиль", "прогресс", "xp", "опыт", "серия", "история", "подсказк", "микрофон", "голос"];
 
 /**
- * Work out what Ali meant.
+ * Work out what Emil meant.
  * @returns {{intent: string, payload?: any, lang: "ru"|"de", raw: string}}
  */
 export function understand(raw) {
@@ -194,7 +194,7 @@ export function understand(raw) {
 
   // The phrasebook answers "как сказать «не знаю»" — but ONLY on an explicit lead-in. It used to be
   // consulted for every message, so "Мне не нравится грамматика" matched the «мне не нравится»
-  // entry and Mia recited Ali's own sentence back at him as though it were her opinion. It sits
+  // entry and Mia recited Emil's own sentence back at him as though it were her opinion. It sits
   // here, above the confused/help gates, because those would otherwise swallow the lead-in first.
   if (/как сказать|как будет|как ответить|как спросить|по немецки|wie sagt man/.test(text)) {
     const small = bestMatch(text, QUESTIONS.smallAnswers);
@@ -209,11 +209,11 @@ export function understand(raw) {
   if (hasWord(text, REPEAT)) return out("repeat");
   if (hasWord(text, THANKS) && text.split(" ").length <= 3) return out("thanks");
 
-  // Knowledge lookups only when Ali is actually asking, never when he states something about himself.
+  // Knowledge lookups only when Emil is actually asking, never when he states something about himself.
   // normalize() strips the question mark, so it has to be read off the raw input; and a German
   // yes/no question starts with the verb ("Bist du ein Roboter?"), which no W-word test catches.
   const asking = (/\?/.test(String(raw)) || QUESTIONY.test(text) || GERMAN_YESNO.test(text)) && !SELF_STATEMENT.test(text);
-  // A question mark is a luxury Ali does not have: speech recognition never produces one, and he
+  // A question mark is a luxury Emil does not have: speech recognition never produces one, and he
   // rarely types one either. So her knowledge is reachable without it too — «кем ты работаешь»,
   // «нужна ли виза», «страховка» — but then only on a near-verbatim phrase match, never on a loose
   // word overlap, and never when he is talking about himself.
@@ -266,7 +266,7 @@ export function understand(raw) {
   // normalize() strips punctuation, so the question mark has to be read off the raw input
   if (lang === "ru" && (/\?\s*$/.test(String(raw)) || QUESTIONY.test(text))) return out("openQuestion");
   // A Russian statement deserves a Russian answer. Carry the content words so respond() can look
-  // them up in the vocabulary Ali has already met and turn what he said into a German phrase.
+  // them up in the vocabulary Emil has already met and turn what he said into a German phrase.
   if (lang === "ru") {
     const words = text.split(" ").filter((w) => w.length >= 4 && !RU_STOPWORDS.has(w));
     if (words.length) return out("ruStatement", { words });
@@ -274,7 +274,7 @@ export function understand(raw) {
   return out("statement");
 }
 
-// Endings: the part of a word that changes when it is used in a sentence. Ali types "я работаю",
+// Endings: the part of a word that changes when it is used in a sentence. Emil types "я работаю",
 // "у меня новая квартира" — the course stores "arbeiten"/"работать" and "квартира", so a lookup
 // that only matches whole words finds nothing. Comparing a shared stem plus a known ending keeps
 // «врач» → «врачом» while «стол» no longer swallows «столько».
@@ -338,7 +338,7 @@ function findGrammarQuestion(text) {
 }
 
 
-/* --------------------------------------------------- checking Ali's German */
+/* --------------------------------------------------- checking Emil's German */
 // A small set of A1 mistakes Mia can spot locally, so even offline she reacts to what he actually said.
 const CONJUGATION = {
   ich: { sein: "bin", haben: "habe", heissen: "heiße", kommen: "komme", wohnen: "wohne", sprechen: "spreche", arbeiten: "arbeite", machen: "mache", gehen: "gehe", trinken: "trinke", essen: "esse", lernen: "lerne", spielen: "spiele" },
@@ -359,7 +359,7 @@ const SUBJECTS = { ich: "ich", du: "du", er: "er" };
 const LETTERS = /[a-zA-ZäöüÄÖÜß]+/;
 
 /**
- * Look for one obvious A1 mistake in Ali's German sentence.
+ * Look for one obvious A1 mistake in Emil's German sentence.
  * Only flags a wrong ending after an unambiguous subject; stays silent when unsure.
  * @returns {{original, corrected, explanationRu} | null}
  */
@@ -383,7 +383,7 @@ export function checkGerman(raw) {
       break;
     }
     const corrected = parts.join(" ");
-    // nothing visibly changed — showing "Ich heißt Ali → Ich heißt Ali" is worse than saying nothing
+    // nothing visibly changed — showing "Ich heißt Emil → Ich heißt Emil" is worse than saying nothing
     if (!done || normalize(corrected) === normalize(raw)) return null;
     return {
       original: raw,
@@ -420,14 +420,14 @@ export function respond(u, ctx = {}) {
       };
     }
     case "thanks": {
-      // One pick for BOTH languages: Ali reads the Russian line as the translation of the German
-      // one, and two independent picks paired «Immer gern, Ali!» with a «Пожалуйста.» that had
+      // One pick for BOTH languages: Emil reads the Russian line as the translation of the German
+      // one, and two independent picks paired «Immer gern, Emil!» with a «Пожалуйста.» that had
       // lost his name. And a simple thank-you does not deserve a brand-new topic every single
       // time — askOrReceive puts that decision back through shouldAsk, like every other branch.
       const t = R([
         { de: "Gern geschehen!", ru: "Пожалуйста!" },
         { de: "Bitte, bitte!", ru: "Да не за что!" },
-        { de: "Immer gern, Ali.", ru: "Всегда пожалуйста, Али." },
+        { de: "Immer gern, Emil.", ru: "Всегда пожалуйста, Эмиль." },
       ]);
       return askOrReceive({ de: t.de, ru: t.ru }, ctx);
     }
@@ -572,7 +572,7 @@ export function respond(u, ctx = {}) {
 }
 
 /**
- * Say back what Ali just told her, so he can hear that he was understood.
+ * Say back what Emil just told her, so he can hear that he was understood.
  * Returns null when the sentence is not one of the things a beginner says about himself —
  * the caller then falls back to a general reaction.
  */
@@ -627,10 +627,10 @@ const SELF_PATTERNS = [
 /**
  * The Russian half of a reply must not carry German words ("Из Baku!", "Значит, ты говоришь на
  * Russisch"). Places and languages are spelled out here; everything else is looked up in the
- * vocabulary Ali has already met, and only falls through unchanged when nothing is known.
+ * vocabulary Emil has already met, and only falls through unchanged when nothing is known.
  */
 const RU_NAMES = {
-  ali: "Али", baku: "Баку", govsan: "Говсан", berlin: "Берлин", leipzig: "Лейпциг", hamburg: "Гамбург",
+  ali: "Эмиль", baku: "Баку", govsan: "Баку", berlin: "Берлин", leipzig: "Лейпциг", hamburg: "Гамбург",
   muenchen: "Мюнхен", wien: "Вена", moskau: "Москва", potsdam: "Потсдам",
   // the cities he is most likely to name once he is there, plus the ones near home
   koeln: "Кёльн", frankfurt: "Франкфурт", stuttgart: "Штутгарт", duesseldorf: "Дюссельдорф",
@@ -701,7 +701,7 @@ function acknowledge(raw) {
  * Should this turn carry a question at all?
  *
  * Asking every time is an interrogation, not a conversation. She asks when the talk needs a nudge
- * and holds back when Ali has just answered one — and never right after he has said he is tired or
+ * and holds back when Emil has just answered one — and never right after he has said he is tired or
  * struggling, where a question is the last thing that helps.
  */
 function shouldAsk(ctx = {}) {
@@ -713,7 +713,7 @@ function shouldAsk(ctx = {}) {
 }
 
 /**
- * A turn that closes warmly without asking anything, so the floor stays with Ali.
+ * A turn that closes warmly without asking anything, so the floor stays with Emil.
  * Exactly ONE thing is added — three stacked fragments ("Очень здорово! Ага. Я тебя слушаю. У нас
  * есть время.") read like a machine emptying its buffer, not like a person talking.
  */
@@ -775,13 +775,13 @@ function pickQuestion(ctx = {}) {
   const o = fresh.length ? pick(fresh) : pick(SMALLTALK.openers);
   used.add(o.de);
   // The openers begin with a greeting because they are written to start a conversation. Used again
-  // as the next question they make Mia say "Hallo Ali!" every single turn, as if she keeps
+  // as the next question they make Mia say "Hallo Emil!" every single turn, as if she keeps
   // forgetting they have been talking — so drop the greeting once the conversation is under way.
   const started = Boolean(ctx.turns);
   return { de: started ? dropGreeting(o.de) : o.de, ru: started ? dropGreeting(o.ru) : o.ru, topic: o.topic, tip: o.hint || "" };
 }
 
-/** Strip a leading "Hallo Ali!" / "Guten Morgen," / "Привет, Али!" from a line. */
+/** Strip a leading "Hallo Emil!" / "Guten Morgen," / "Привет, Эмиль!" from a line. */
 function dropGreeting(line) {
   const s = String(line || "")
     .replace(/^\s*(hallo|hi|guten morgen|guten tag|guten abend|привет|здравствуй|доброе утро|добрый день|добрый вечер)[\s,!]*(ali|али)?[\s,!]*/iu, "")
@@ -791,7 +791,7 @@ function dropGreeting(line) {
 }
 
 /** Mia's opening line for a fresh offline conversation. */
-export function opening(name = "Ali") {
+export function opening(name = "Emil") {
   const o = pick(SMALLTALK.openers);
   return { de: o.de, ru: o.ru, topic: o.topic, tip: o.hint || "" };
 }
