@@ -2,6 +2,7 @@
 // or three minutes each — so they work as a warm-up before a level or as something to do when he
 // does not feel like a full lesson. All of them pay a little XP and a few coins, far less than a
 // real lesson, so playing is a break and never a shortcut past the levels.
+import { t as tr } from "./i18n.js";
 import { el, shuffle, pick, normalize, stripArticle, sleep, plural } from "./utils.js";
 import { sfx, confetti, toast, xpFloat } from "./fx.js";
 import { store } from "./store.js";
@@ -204,9 +205,9 @@ function playMemory({ container, onExit, onAgain }) {
     payout({ xp: 12, coins: score >= 60 ? 8 : 4, anchor: ui.root, label: "Память" });
     ui.finish({
       icon: "🧩",
-      headline: `Все пары найдены за ${moves} ${plural(moves, "ход", "хода", "ходов")}`,
+      headline: tr`Все пары найдены за ${moves} ${plural(moves, "ход", "хода", "ходов")}`,
       isRecord: record,
-      lines: [`Точность: ${score}%`, `Время: ${seconds} сек.`, `Лучший результат: ${bestOf("memory")}%`],
+      lines: [tr`Точность: ${score}%`, tr`Время: ${seconds} сек.`, tr`Лучший результат: ${bestOf("memory")}%`],
       onAgain,
     });
   }
@@ -239,7 +240,7 @@ function playArticles({ container, onExit, onAgain }) {
 
   function show() {
     const it = items[i];
-    ui.setScore(`${i + 1} / ${items.length} · серия ${streak}`);
+    ui.setScore(tr`${i + 1} / ${items.length} · серия ${streak}`);
     wordEl.textContent = it.noun;
     ruEl.textContent = it.ru;
     hintEl.textContent = "";
@@ -262,7 +263,7 @@ function playArticles({ container, onExit, onAgain }) {
       streak = 0;
       chosen.classList.add("wrong");
       buttons[ARTICLES.indexOf(it.article)].classList.add("right");
-      hintEl.textContent = `Правильно: ${it.article} ${it.noun} — ${it.ru}`;
+      hintEl.textContent = tr`Правильно: ${it.article} ${it.noun} — ${it.ru}`;
       hintEl.className = "art-hint bad";
       sfx.wrong();
     }
@@ -282,9 +283,9 @@ function playArticles({ container, onExit, onAgain }) {
     payout({ xp: Math.round(correct * 1.5), coins: Math.max(2, Math.round(correct / 2)), anchor: ui.root, label: "Артикли" });
     ui.finish({
       icon: pct >= 80 ? "🏆" : "🎯",
-      headline: `${correct} из ${items.length} — ${pct}%`,
+      headline: tr`${correct} из ${items.length} — ${pct}%`,
       isRecord: record,
-      lines: [`Лучшая серия: ${bestStreak}`, `Рекорд: ${bestOf("articles")}%`,
+      lines: [tr`Лучшая серия: ${bestStreak}`, tr`Рекорд: ${bestOf("articles")}%`,
         pct >= 80 ? "Артикли ты чувствуешь уже хорошо." : "Артикли просто нужно встретить много раз — это нормально."],
       onAgain,
     });
@@ -390,7 +391,7 @@ function playScramble({ container, onExit, onAgain }) {
     hintBtn.disabled = true;
     skipBtn.disabled = true;
     line.classList.add(ok ? "correct" : "wrong");
-    note.textContent = ok ? `✅ ${it.de} — ${it.ru}` : `Это было: ${it.de} — ${it.ru}`;
+    note.textContent = ok ? `✅ ${it.de} — ${it.ru}` : tr`Это было: ${it.de} — ${it.ru}`;
     note.className = `art-hint ${ok ? "ok" : "bad"}`;
     if (ok) sfx.correct(); else sfx.wrong();
     say(it.de);
@@ -410,13 +411,13 @@ function playScramble({ container, onExit, onAgain }) {
     payout({ xp: solved * 3, coins: Math.max(2, solved), anchor: ui.root, label: "Анаграмма" });
     ui.finish({
       icon: "🔤",
-      headline: `Собрано ${solved} из ${items.length}`,
+      headline: tr`Собрано ${solved} из ${items.length}`,
       isRecord: record,
       lines: [
-        usedHint ? `Подсказок использовано: ${usedHint}`
+        usedHint ? tr`Подсказок использовано: ${usedHint}`
           : solved ? "Без подсказок — отлично!"
             : "Эти слова пока новые — вернись к ним позже, это нормально.",
-        `Рекорд: ${bestOf("scramble")}%`,
+        tr`Рекорд: ${bestOf("scramble")}%`,
       ],
       onAgain,
     });
@@ -467,7 +468,7 @@ function playBlitz({ container, onExit, onAgain }) {
     const right = pick(pool);
     const wrong = shuffle(pool.filter((w) => w.ru !== right.ru)).slice(0, 3);
     wordEl.textContent = stripArticle(right.de);
-    ui.setScore(`${score} · серия ${streak}`);
+    ui.setScore(tr`${score} · серия ${streak}`);
     opts.innerHTML = "";
     shuffle([right, ...wrong]).forEach((w) => {
       const b = el("button", { class: "btn blitz-opt", type: "button" }, w.ru);
@@ -493,7 +494,7 @@ function playBlitz({ container, onExit, onAgain }) {
       drawTime();                    // …and the clock must show it now, not a second later
       if (left <= 0) return done();  // …and end the game at zero, not on the next tick
     }
-    ui.setScore(`${score} · серия ${streak}`); // show it now, not when the next word appears
+    ui.setScore(tr`${score} · серия ${streak}`); // show it now, not when the next word appears
     setTimeout(show, ok ? 180 : 500);
   }
 
@@ -509,7 +510,7 @@ function playBlitz({ container, onExit, onAgain }) {
       icon: "⚡",
       headline: `${score} ${plural(score, "очко", "очка", "очков")}`,
       isRecord: record,
-      lines: [`Ответов: ${answered}`, `Лучшая серия: ${bestStreak}`, `Рекорд: ${bestOf("blitz")}`],
+      lines: [tr`Ответов: ${answered}`, tr`Лучшая серия: ${bestStreak}`, tr`Рекорд: ${bestOf("blitz")}`],
       onAgain,
     });
   }
@@ -569,7 +570,7 @@ function playHangman({ container, onExit, onAgain }) {
   function draw() {
     hearts.textContent = "❤️".repeat(lives) + "🖤".repeat(LIVES - lives);
     wordEl.textContent = target.split("").map((c) => (guessed.has(c) ? c : "•")).join(" ");
-    ui.setScore(`${lives} / ${LIVES} жизней`);
+    ui.setScore(tr`${lives} / ${LIVES} жизней`);
   }
 
   function guess(ch, btn) {
@@ -603,10 +604,10 @@ function playHangman({ container, onExit, onAgain }) {
     }
     ui.finish({
       icon: won ? "🎉" : "😔",
-      headline: won ? `Угадал: ${item.de}` : `Это было: ${item.de}`,
+      headline: won ? tr`Угадал: ${item.de}` : tr`Это было: ${item.de}`,
       isRecord: false,
       lines: [item.ru, item.example ? `${item.example} — ${item.exampleRu}` : null,
-        `Угадано всего: ${bestOf("hangman")} ${plural(bestOf("hangman"), "слово", "слова", "слов")}`].filter(Boolean),
+        tr`Угадано всего: ${bestOf("hangman")} ${plural(bestOf("hangman"), "слово", "слова", "слов")}`].filter(Boolean),
       onAgain,
     });
   }
@@ -620,7 +621,7 @@ function notEnough(container, onExit, what) {
   container.innerHTML = "";
   container.append(el("div", { class: "empty-state" },
     el("div", { class: "empty-icon" }, "🔒"),
-    el("div", {}, `Для этой игры пока мало ${what}. Пройди ещё немного слов — и она откроется.`),
+    el("div", {}, tr`Для этой игры пока мало ${what}. Пройди ещё немного слов — и она откроется.`),
     el("button", { class: "btn primary", type: "button", onClick: () => onExit?.() }, "Назад"),
   ));
 }
@@ -670,7 +671,7 @@ export function renderGames({ container, onExit, startId = null }) {
     container.append(
       el("div", { class: "page-head" },
         el("h1", {}, "🎮 Игры"),
-        el("p", { class: "muted" }, `Короткие тренировки на словах, которые ты уже открыл — сейчас их ${words}. Пара минут, немного XP и монет.`),
+        el("p", { class: "muted" }, tr`Короткие тренировки на словах, которые ты уже открыл — сейчас их ${words}. Пара минут, немного XP и монет.`),
       ),
       el("div", { class: "game-grid" }, GAMES.map((g) => {
         const best = bestOf(g.id);

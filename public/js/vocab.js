@@ -1,4 +1,5 @@
 // Flashcards for a level's vocabulary + automatic vocab quiz generation
+import { t as tr } from "./i18n.js";
 import { el, shuffle, stripArticle, articleOf } from "./utils.js";
 import { speech, RATES } from "./speech.js";
 import { sfx } from "./fx.js";
@@ -18,7 +19,7 @@ export function renderFlashcards({ container, level, onDone, onExit }) {
   const root = el("div", { class: "session flash" },
     el("header", { class: "session-head" },
       el("button", { class: "icon-btn", title: "Выйти", onClick: () => { speech.stop(); onExit?.(); } }, "✕"),
-      el("div", { class: "session-title" }, `${level.emoji} Слова · ${level.titleRu}`),
+      el("div", { class: "session-title" }, tr`${level.emoji} Слова · ${level.titleRu}`),
       el("div", { class: "progress-track" }, bar),
       counter,
     ),
@@ -80,7 +81,7 @@ export function renderFlashcards({ container, level, onDone, onExit }) {
         el("div", { class: "fc-face fc-front" },
           art ? el("span", { class: `article art-${art}` }, art) : null,
           el("div", { class: "fc-word", lang: "de" }, art ? stripArticle(v.de) : v.de),
-          v.plural ? el("div", { class: "fc-plural muted" }, `мн. ч.: ${v.plural}`) : null,
+          v.plural ? el("div", { class: "fc-plural muted" }, tr`мн. ч.: ${v.plural}`) : null,
           el("div", { class: "fc-tap muted" }, "перевернуть ↻"),
         ),
         el("div", { class: "fc-face fc-back" },
@@ -158,10 +159,10 @@ export function buildVocabQuiz(level, count = 10) {
     const distractors = distractorsFor(v, all);
     if (toRu) {
       const options = shuffle([v.ru, ...distractors.map((d) => d.ru)]);
-      return { type: "choice", word: v.de, q: `Что значит «${v.de}»?`, options, answer: options.indexOf(v.ru), explain: `${v.de} — ${v.ru}. ${v.example}` };
+      return { type: "choice", word: v.de, q: tr`Что значит «${v.de}»?`, options, answer: options.indexOf(v.ru), explain: `${v.de} — ${v.ru}. ${v.example}` };
     }
     const options = shuffle([v.de, ...distractors.map((d) => d.de)]);
-    return { type: "choice", word: v.de, q: `Как по-немецки «${v.ru}»?`, options, answer: options.indexOf(v.de), explain: `${v.example} — ${v.exampleRu}` };
+    return { type: "choice", word: v.de, q: tr`Как по-немецки «${v.ru}»?`, options, answer: options.indexOf(v.de), explain: `${v.example} — ${v.exampleRu}` };
   });
 }
 
@@ -179,9 +180,9 @@ export function buildReviewQuiz(levels, count = 12) {
     const distractors = distractorsFor(v, pool);
     if (toRu) {
       const options = shuffle([v.ru, ...distractors.map((d) => d.ru)]);
-      return { type: "choice", word: v.de, q: `Что значит «${v.de}»?`, options, answer: options.indexOf(v.ru), explain: `${v.example} — ${v.exampleRu}` };
+      return { type: "choice", word: v.de, q: tr`Что значит «${v.de}»?`, options, answer: options.indexOf(v.ru), explain: `${v.example} — ${v.exampleRu}` };
     }
     const options = shuffle([v.de, ...distractors.map((d) => d.de)]);
-    return { type: "choice", word: v.de, q: `Как по-немецки «${v.ru}»?`, options, answer: options.indexOf(v.de), explain: `${v.example} — ${v.exampleRu}` };
+    return { type: "choice", word: v.de, q: tr`Как по-немецки «${v.ru}»?`, options, answer: options.indexOf(v.de), explain: `${v.example} — ${v.exampleRu}` };
   });
 }

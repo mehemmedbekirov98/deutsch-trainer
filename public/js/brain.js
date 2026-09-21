@@ -1,5 +1,6 @@
 // Mia's offline brain: understands what Emil said (Russian or German) and decides what she answers,
 // entirely from local data. Used whenever the AI backend is off, so the app is fully usable without a key.
+import { t as tr } from "./i18n.js";
 import { normalize, pick, shuffle, stripArticle } from "./utils.js";
 import { LEVELS } from "./levels.js";
 import SMALLTALK from "./brain-data/smalltalk.js";
@@ -388,7 +389,7 @@ export function checkGerman(raw) {
     return {
       original: raw,
       corrected,
-      explanationRu: `После «${words[i]}» глагол будет «${right}»: ${words[i]} ${right}.`,
+      explanationRu: tr`После «${words[i]}» глагол будет «${right}»: ${words[i]} ${right}.`,
     };
   }
   return null;
@@ -434,15 +435,15 @@ export function respond(u, ctx = {}) {
     case "word": {
       const { dir, entry } = u.payload;
       const ru = dir === "de-ru"
-        ? `«${entry.de}» — это «${entry.ru}». Например: ${entry.example} — ${entry.exampleRu}`
-        : `«${entry.ru}» по-немецки — «${entry.de}». Например: ${entry.example} — ${entry.exampleRu}`;
+        ? tr`«${entry.de}» — это «${entry.ru}». Например: ${entry.example} — ${entry.exampleRu}`
+        : tr`«${entry.ru}» по-немецки — «${entry.de}». Например: ${entry.example} — ${entry.exampleRu}`;
       // Mia says a line of her own, then explains; the example belongs in the explanation,
       // not in her mouth as if it were her thought.
       return {
         de: `Das Wort kennst du gleich: ${stripArticle(entry.de)}.`,
-        ru: `Это слово ты сейчас запомнишь: ${entry.ru}.`,
+        ru: tr`Это слово ты сейчас запомнишь: ${entry.ru}.`,
         explainRu: ru,
-        tip: `Попробуй сказать: ${entry.example}`,
+        tip: tr`Попробуй сказать: ${entry.example}`,
       };
     }
     case "grammar": {
@@ -450,9 +451,9 @@ export function respond(u, ctx = {}) {
       const ex = g.examples[0];
       return {
         de: `Gute Frage! Schau: ${ex.de}`,
-        ru: `Хороший вопрос! Смотри: ${ex.ru}`,
-        explainRu: `${g.title}. ${String(g.body).split("\n").join(" ")} Например: ${ex.de} — ${ex.ru}`,
-        tip: `Это из уровня ${g.level.id}: «${g.level.titleRu}» — там есть вся таблица.`,
+        ru: tr`Хороший вопрос! Смотри: ${ex.ru}`,
+        explainRu: tr`${g.title}. ${String(g.body).split("\n").join(" ")} Например: ${ex.de} — ${ex.ru}`,
+        tip: tr`Это из уровня ${g.level.id}: «${g.level.titleRu}» — там есть вся таблица.`,
       };
     }
     case "site":
@@ -470,7 +471,7 @@ export function respond(u, ctx = {}) {
         explainRu: u.payload.ru,
       }, maybeQuestion(ctx));
     case "confused": {
-      const hint = ctx.lastHint ? `Можешь ответить так: «${ctx.lastHint}»` : "Скажи своими словами, как получится — я пойму.";
+      const hint = ctx.lastHint ? tr`Можешь ответить так: «${ctx.lastHint}»` : "Скажи своими словами, как получится — я пойму.";
       return {
         de: ctx.lastDe || "Kein Problem. Ich frage anders.",
         ru: ctx.lastRu || "Ничего страшного. Спрошу по-другому.",
@@ -478,7 +479,7 @@ export function respond(u, ctx = {}) {
       };
     }
     case "help": {
-      const hint = ctx.lastHint ? `Скажи так: «${ctx.lastHint}»` : "Начни с «Ich …» — дальше само пойдёт.";
+      const hint = ctx.lastHint ? tr`Скажи так: «${ctx.lastHint}»` : "Начни с «Ich …» — дальше само пойдёт.";
       return { de: "Ich helfe dir gern.", ru: "Конечно помогу.", explainRu: `${R(SMALLTALK.encouragement)} ${hint}` };
     }
     case "feelingBad": {
@@ -516,7 +517,7 @@ export function respond(u, ctx = {}) {
       return {
         ...askOrReceive({ de: r.de, ru: r.ru }, ctx),
         correction: mistake,
-        explainRu: mistake ? `Совсем чуть-чуть не хватило. ${mistake.explanationRu}` : (echo ? echo.explainRu || "" : ""),
+        explainRu: mistake ? tr`Совсем чуть-чуть не хватило. ${mistake.explanationRu}` : (echo ? echo.explainRu || "" : ""),
       };
     }
     case "openQuestion":
@@ -553,8 +554,8 @@ export function respond(u, ctx = {}) {
         return withQuestion({
           de: react.de,
           ru: react.ru,
-          explainRu: `Ты сказал про «${hitRu}». По-немецки это «${entry.de}» — например: ${entry.example} — ${entry.exampleRu}`,
-          tip: `Попробуй сказать: ${entry.example}`,
+          explainRu: tr`Ты сказал про «${hitRu}». По-немецки это «${entry.de}» — например: ${entry.example} — ${entry.exampleRu}`,
+          tip: tr`Попробуй сказать: ${entry.example}`,
         }, nextQuestion());
       }
       // nothing she has taught — say so plainly instead of silently changing the subject
@@ -579,39 +580,39 @@ export function respond(u, ctx = {}) {
 const SELF_PATTERNS = [
   {
     re: /\bich\s+hei(?:ß|ss)e\s+([\p{Lu}][\p{L}-]*)/iu,
-    say: (v) => ({ de: `Freut mich, ${v}! Schön, dich kennenzulernen.`, ru: `Очень приятно, ${ruWord(v)}! Рада познакомиться.` }),
+    say: (v) => ({ de: `Freut mich, ${v}! Schön, dich kennenzulernen.`, ru: tr`Очень приятно, ${ruWord(v)}! Рада познакомиться.` }),
   },
   {
     re: /\bmein\s+name\s+ist\s+([\p{Lu}][\p{L}-]*)/iu,
-    say: (v) => ({ de: `Freut mich, ${v}!`, ru: `Очень приятно, ${ruWord(v)}!` }),
+    say: (v) => ({ de: `Freut mich, ${v}!`, ru: tr`Очень приятно, ${ruWord(v)}!` }),
   },
   {
     re: /\bich\s+komme\s+aus\s+([\p{Lu}][\p{L}-]*)/iu,
-    say: (v) => ({ de: `Aus ${v}! Das ist weit weg von hier.`, ru: `Из ${ruCase(ruWord(v), "gen")}! Это далеко отсюда.`, explainRu: `Ты сказал, откуда ты — «Ich komme aus ${v}». Это одна из самых важных фраз: её спросят в первый же день.` }),
+    say: (v) => ({ de: `Aus ${v}! Das ist weit weg von hier.`, ru: tr`Из ${ruCase(ruWord(v), "gen")}! Это далеко отсюда.`, explainRu: tr`Ты сказал, откуда ты — «Ich komme aus ${v}». Это одна из самых важных фраз: её спросят в первый же день.` }),
   },
   {
     re: /\bich\s+wohne\s+(?:in|bei)\s+([\p{Lu}][\p{L}-]*)/iu,
-    say: (v) => ({ de: `In ${v} also. Wohnst du gern dort?`, ru: `Значит, ${ruIn(ruCase(ruWord(v), "prep"))}. Тебе там нравится?` }),
+    say: (v) => ({ de: `In ${v} also. Wohnst du gern dort?`, ru: tr`Значит, ${ruIn(ruCase(ruWord(v), "prep"))}. Тебе там нравится?` }),
   },
   {
     re: /\bich\s+spreche\s+([\p{Lu}][\p{L}]*)/iu,
-    say: (v) => ({ de: `${v} sprichst du also. Und jetzt auch Deutsch!`, ru: `Значит, ты говоришь на ${ruWord(v)}. А теперь ещё и по-немецки!` }),
+    say: (v) => ({ de: `${v} sprichst du also. Und jetzt auch Deutsch!`, ru: tr`Значит, ты говоришь на ${ruWord(v)}. А теперь ещё и по-немецки!` }),
   },
   {
     re: /\bich\s+bin\s+(\d{1,2})\s*(?:jahre)?/iu,
-    say: (v) => ({ de: `${v} Jahre — ein sehr gutes Alter zum Lernen.`, ru: `${v} — отличный возраст, чтобы учиться.` }),
+    say: (v) => ({ de: `${v} Jahre — ein sehr gutes Alter zum Lernen.`, ru: tr`${v} — отличный возраст, чтобы учиться.` }),
   },
   {
     re: /\bich\s+(?:arbeite\s+als|bin)\s+(Programmierer|Ingenieur|Lehrer|Arzt|Student|Kellner|Fahrer|Koch)\b/iu,
-    say: (v) => ({ de: `${v}! Das ist ein guter Beruf.`, ru: `${ruWord(v)} — хорошая профессия.` }),
+    say: (v) => ({ de: `${v}! Das ist ein guter Beruf.`, ru: tr`${ruWord(v)} — хорошая профессия.` }),
   },
   {
     re: /\bich\s+habe\s+(?:einen|eine|zwei|drei)?\s*(Bruder|Schwester|Kinder|Sohn|Tochter|Familie)\b/iu,
-    say: (v) => ({ de: `Schön, dass du von deiner Familie erzählst.`, ru: `Здорово, что ты рассказываешь про семью — «${ruWord(v)}» я запомнила.` }),
+    say: (v) => ({ de: `Schön, dass du von deiner Familie erzählst.`, ru: tr`Здорово, что ты рассказываешь про семью — «${ruWord(v)}» я запомнила.` }),
   },
   {
     re: /\bich\s+habe\s+(?:einen|eine|zwei|drei)?\s*(Hund|Katze|Vogel|Fisch)\b/iu,
-    say: (v) => ({ de: `Ein Haustier! Wie heißt er?`, ru: `У тебя есть питомец — «${ruWord(v)}». Как его зовут?` }),
+    say: (v) => ({ de: `Ein Haustier! Wie heißt er?`, ru: tr`У тебя есть питомец — «${ruWord(v)}». Как его зовут?` }),
   },
   {
     re: /\bich\s+(?:mag|trinke|esse|spiele|lerne|lese|höre)\s+(?:gern\s+)?([\p{L}]{3,})/iu,
@@ -619,7 +620,7 @@ const SELF_PATTERNS = [
     // "Fleisch — мне это тоже нравится" is half a language he cannot read yet.
     say: (v) => {
       const ru = ruWord(v);
-      return { de: `${v} — das mag ich auch.`, ru: ru === v ? "Мне это тоже нравится." : `${ru} — мне это тоже нравится.` };
+      return { de: `${v} — das mag ich auch.`, ru: ru === v ? "Мне это тоже нравится." : tr`${ru} — мне это тоже нравится.` };
     },
   },
 ];

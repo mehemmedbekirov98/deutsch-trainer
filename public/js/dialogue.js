@@ -1,4 +1,5 @@
 // Dialogue player: listen to the level dialogue, then play Emil's role with the microphone
+import { t as tr } from "./i18n.js";
 import { el, normalize, similarity, spokenSimilarity, digitsToWords, sleep } from "./utils.js";
 import { speech, STT_ERRORS, RATES } from "./speech.js";
 import { sfx, confetti, xpFloat } from "./fx.js";
@@ -45,7 +46,7 @@ export function renderDialogue({ container, level, onDone, onExit }) {
     confetti(); sfx.levelUp();
     store.update(() => { store.level(level.id).dialogueDone = true; });
     store.grantXp(30);
-    root_msg.textContent = `🎉 Диалог отмечен как пройденный! +${Math.round(30 * store.xpMultiplier())} XP`;
+    root_msg.textContent = tr`🎉 Диалог отмечен как пройденный! +${Math.round(30 * store.xpMultiplier())} XP`;
     onDone?.();
   } }, "✓ Я прочитал реплики Эмиля вслух");
   const showRu = el("label", { class: "toggle" }, (() => { const c = el("input", { type: "checkbox" }); c.checked = store.state.settings.showRu; c.addEventListener("change", () => { store.update((st) => { st.settings.showRu = c.checked; }); root.classList.toggle("hide-ru", !c.checked); }); return c; })(), el("span", { class: "toggle-track" }, el("span", { class: "toggle-thumb" })), el("span", { class: "toggle-label" }, "Перевод"));
@@ -70,7 +71,7 @@ export function renderDialogue({ container, level, onDone, onExit }) {
     mode = m;
     root.classList.toggle("play-mode", m === "play");
     if (m === "play") {
-      root_msg.textContent = `Нажимай 🎤 у реплик Эмиля и произноси их. Произнесено: ${heroDone}/${heroLines}`;
+      root_msg.textContent = tr`Нажимай 🎤 у реплик Эмиля и произноси их. Произнесено: ${heroDone}/${heroLines}`;
       roleBtn.textContent = "🎧 Режим прослушивания";
       roleBtn.onclick = () => setMode("listen");
       playBtn.textContent = "▶ Диалог с моими репликами";
@@ -162,11 +163,11 @@ export function renderDialogue({ container, level, onDone, onExit }) {
         confetti(); sfx.levelUp();
         store.update(() => { store.level(level.id).dialogueDone = true; });
         store.grantXp(30);
-        root_msg.textContent = `🎉 Ты сыграл весь диалог! +${Math.round(30 * store.xpMultiplier())} XP`;
+        root_msg.textContent = tr`🎉 Ты сыграл весь диалог! +${Math.round(30 * store.xpMultiplier())} XP`;
         onDone?.();
-      } else if (mode === "play") root_msg.textContent = `Произнесено: ${heroDone}/${heroLines}`;
+      } else if (mode === "play") root_msg.textContent = tr`Произнесено: ${heroDone}/${heroLines}`;
     } else {
-      status.textContent = heard ? `❌ Я услышала: «${heard}». Попробуй ещё раз.` : "Ничего не услышала. Попробуй ещё раз.";
+      status.textContent = heard ? tr`❌ Я услышала: «${heard}». Попробуй ещё раз.` : "Ничего не услышала. Попробуй ещё раз.";
       sfx.wrong();
     }
     return ok;

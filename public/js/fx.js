@@ -1,4 +1,5 @@
 // Visual + audio effects: confetti, synth sounds, toasts, XP count-up, background particles
+import { t as tr } from "./i18n.js";
 import { el, nextTick } from "./utils.js";
 
 let audioCtx = null;
@@ -115,7 +116,7 @@ export function toast(text, { icon = "✨", kind = "info", ms = 3200, title = nu
 
 export function achievementToast(a) {
   sfx.achievement();
-  toast(a.ru, { icon: a.icon, kind: "achievement", title: `Достижение: ${a.title}`, ms: 4200 });
+  toast(a.ru, { icon: a.icon, kind: "achievement", title: tr`Достижение: ${a.title}`, ms: 4200 });
 }
 
 /* ---------- XP fly + count-up ---------- */

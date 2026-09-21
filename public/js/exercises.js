@@ -1,4 +1,5 @@
 // Exercise session engine: renders one exercise at a time, checks answers, tracks XP/combo.
+import { t as tr } from "./i18n.js";
 import { el, $, append, nextTick, normalize, matchAnswer, similarity, spokenSimilarity, digitsToWords, shuffle, pick, sleep } from "./utils.js";
 import { speech, STT_ERRORS, RATES } from "./speech.js";
 import { sfx, confetti, xpFloat, countUp, toast } from "./fx.js";
@@ -132,7 +133,7 @@ export class ExerciseSession {
     this.xp = 0; this.coins = 0;
     const gainedCoins = store.addCoins(coins);
     if (xp) store.addXp(xp); else store.save(); // addXp bails on 0, so persist the answer stats anyway
-    if (xp || gainedCoins) toast(`Прогресс сохранён: +${xp} XP · +${gainedCoins} 🪙`, { icon: "💾" });
+    if (xp || gainedCoins) toast(tr`Прогресс сохранён: +${xp} XP · +${gainedCoins} 🪙`, { icon: "💾" });
   }
 
   exit() {
@@ -292,7 +293,7 @@ export class ExerciseSession {
       const row = el("div", { class: "fb-actions" });
       // Also in the exam: the exam can be retaken as often as he likes anyway, so a token he paid
       // for gives him nothing extra — while hiding it with no explanation just looks broken.
-      if (store.hasItem("retry")) row.append(el("button", { class: "btn ghost small", type: "button", onClick: () => this.retryCurrent() }, `🔁 Вторая попытка (${store.state.inventory.retry})`));
+      if (store.hasItem("retry")) row.append(el("button", { class: "btn ghost small", type: "button", onClick: () => this.retryCurrent() }, tr`🔁 Вторая попытка (${store.state.inventory.retry})`));
       if (document.body.dataset.ai === "1") {
         const ask = el("button", { class: "btn ghost small", type: "button", onClick: () => this.askLena(ex, res, ask) }, "🧑‍🏫 Спросить Мию, почему");
         row.append(ask);
@@ -318,9 +319,9 @@ export class ExerciseSession {
     btn.textContent = "Мия думает…";
     const question = [
       "Объясни коротко мою ошибку в упражнении.",
-      `Задание: ${ex.q || ex.text || ex.de || ""}`,
-      res.given ? `Я написал: ${res.given}` : null,
-      res.expected ? `Правильно: ${res.expected}` : null,
+      tr`Задание: ${ex.q || ex.text || ex.de || ""}`,
+      res.given ? tr`Я написал: ${res.given}` : null,
+      res.expected ? tr`Правильно: ${res.expected}` : null,
       "Ответь одним-двумя предложениями: в чём правило и как запомнить.",
     ].filter(Boolean).join("\n");
     try {
@@ -401,10 +402,10 @@ export class ExerciseSession {
         el("div", { class: "stat" }, el("div", { class: "stat-val coins" }, `+${coinsTotal} 🪙`), el("div", { class: "stat-label" }, "монет")),
         el("div", { class: "stat" }, el("div", { class: "stat-val" }, `x${this.bestCombo || 0}`), el("div", { class: "stat-label" }, "комбо в этой сессии")),
       ),
-      bonus ? el("div", { class: "result-bonus" }, `🎯 Бонус за точность: +${bonus} XP · +10 🪙`) : null,
-      this.isRetry ? el("div", { class: "muted small" }, `Зачтён первый результат: ${this.firstResult.correct}/${this.firstResult.total} (${this.firstResult.accuracy}%)`) : null,
+      bonus ? el("div", { class: "result-bonus" }, tr`🎯 Бонус за точность: +${bonus} XP · +10 🪙`) : null,
+      this.isRetry ? el("div", { class: "muted small" }, tr`Зачтён первый результат: ${this.firstResult.correct}/${this.firstResult.total} (${this.firstResult.accuracy}%)`) : null,
       el("div", { class: "result-actions" },
-        this.wrong.length && !this.exam ? el("button", { class: "btn ghost", type: "button", onClick: () => this.retryWrong() }, `Повторить ошибки (${this.wrong.length})`) : null,
+        this.wrong.length && !this.exam ? el("button", { class: "btn ghost", type: "button", onClick: () => this.retryWrong() }, tr`Повторить ошибки (${this.wrong.length})`) : null,
         el("button", { class: "btn primary big", type: "button", onClick: () => this.done() }, "Продолжить"),
       ),
     );
@@ -521,7 +522,7 @@ function playBox(text, api, { auto = true } = {}) {
 function listenChoice(ex, api) {
   const r = choiceRenderer(ex, api, ex.q, playBox(ex.text, api));
   const check = r.check;
-  r.check = () => { const res = check(); if (res) { res.expected = res.ok ? res.expected : `${res.expected} — «${ex.text}»`; res.speakable = ex.text; res.note = `Текст: «${ex.text}» — ${ex.ru}`; } return res; };
+  r.check = () => { const res = check(); if (res) { res.expected = res.ok ? res.expected : `${res.expected} — «${ex.text}»`; res.speakable = ex.text; res.note = tr`Текст: «${ex.text}» — ${ex.ru}`; } return res; };
   return r;
 }
 
@@ -549,7 +550,7 @@ function listenType(ex, api) {
       const m = matchAnswer(v, ex.answers || [ex.text], 0.85);
       input.disabled = true;
       input.classList.add(m.ok ? "correct" : "wrong");
-      return { ok: m.ok, expected: ex.text, explain: ex.explain, note: m.ok && !m.exact ? `Почти точно. Правильно: ${ex.text}` : `Перевод: ${ex.ru}`, given: v, speakable: ex.text };
+      return { ok: m.ok, expected: ex.text, explain: ex.explain, note: m.ok && !m.exact ? tr`Почти точно. Правильно: ${ex.text}` : tr`Перевод: ${ex.ru}`, given: v, speakable: ex.text };
     },
   };
 }
@@ -597,7 +598,7 @@ function fillRenderer(ex, api) {
       } else {
         const n = Math.max(1, Math.ceil(a.length / 2));
         input.placeholder = a.slice(0, n) + "…";
-        node.append(el("div", { class: "hint-box" }, `💡 Начинается на «${a.slice(0, n)}…», всего букв: ${a.length}`));
+        node.append(el("div", { class: "hint-box" }, tr`💡 Начинается на «${a.slice(0, n)}…», всего букв: ${a.length}`));
       }
     },
     check() {
@@ -617,7 +618,7 @@ function fillRenderer(ex, api) {
           else if (c.classList.contains("selected")) c.classList.add("wrong");
         });
       }
-      const close = !m.ok && m.score >= 0.7 ? `Ты написал «${v}» — почти, но окончание другое.` : null;
+      const close = !m.ok && m.score >= 0.7 ? tr`Ты написал «${v}» — почти, но окончание другое.` : null;
       return { ok: m.ok, expected: full, explain: ex.explain, note: close, given: v, speakable: full };
     },
   };
@@ -641,7 +642,7 @@ function translateRenderer(ex, api) {
     focus: () => input.focus(),
     hint() {
       const words = ex.answers[0].split(" ");
-      node.append(el("div", { class: "hint-box" }, "💡 ", ex.hint ? `${ex.hint} · ` : "", `Первое слово: «${words[0]}», всего слов: ${words.length}`));
+      node.append(el("div", { class: "hint-box" }, "💡 ", ex.hint ? `${ex.hint} · ` : "", tr`Первое слово: «${words[0]}», всего слов: ${words.length}`));
     },
     check() {
       const v = input.value.trim();
@@ -651,8 +652,8 @@ function translateRenderer(ex, api) {
       const m = matchAnswer(v, ex.answers, toDe ? 0.85 : 0.8);
       input.disabled = true;
       input.classList.add(m.ok ? "correct" : "wrong");
-      const alt = ex.answers.length > 1 ? `Также верно: ${ex.answers.slice(1, 3).join(" / ")}` : null;
-      return { ok: m.ok, expected: ex.answers[0], explain: ex.explain || alt, note: m.ok && !m.exact ? `Есть небольшая опечатка. Точно: ${m.best}` : null, given: v, speakable: toDe ? ex.answers[0] : ex.text };
+      const alt = ex.answers.length > 1 ? tr`Также верно: ${ex.answers.slice(1, 3).join(" / ")}` : null;
+      return { ok: m.ok, expected: ex.answers[0], explain: ex.explain || alt, note: m.ok && !m.exact ? tr`Есть небольшая опечатка. Точно: ${m.best}` : null, given: v, speakable: toDe ? ex.answers[0] : ex.text };
     },
   };
 }
@@ -679,7 +680,7 @@ function orderRenderer(ex, api) {
     node,
     hint() {
       const first = ex.answer.replace(/[.!?]$/, "").split(" ").slice(0, 2).join(" ");
-      node.append(el("div", { class: "hint-box" }, `💡 Начало: «${first} …»`));
+      node.append(el("div", { class: "hint-box" }, tr`💡 Начало: «${first} …»`));
     },
     check() {
       const words = Array.from(line.querySelectorAll(".chip")).map((c) => c.textContent);
@@ -752,7 +753,7 @@ function matchRenderer(ex, api) {
     check() {
       if (done !== ex.pairs.length) return null;
       const ok = errors <= 1;
-      return { ok, expected: ok ? null : ex.pairs.map((p) => `${p.de} — ${p.ru}`).join(", "), explain: errors ? `Ошибок: ${errors}` : "Без единой ошибки!", speakable: false };
+      return { ok, expected: ok ? null : ex.pairs.map((p) => `${p.de} — ${p.ru}`).join(", "), explain: errors ? tr`Ошибок: ${errors}` : "Без единой ошибки!", speakable: false };
     },
   };
 }
@@ -802,7 +803,7 @@ function speakRenderer(ex, api) {
       api.setReady(true);
       api.later(() => api.autoCheck(), 300);
     } else {
-      status.textContent = tries >= 3 ? "Не получилось распознать. Можно проверить или пропустить." : `Похоже на ${Math.round(best * 100)}%. Попробуй ещё раз, чётче и ближе к микрофону.`;
+      status.textContent = tries >= 3 ? "Не получилось распознать. Можно проверить или пропустить." : tr`Похоже на ${Math.round(best * 100)}%. Попробуй ещё раз, чётче и ближе к микрофону.`;
       api.setReady(true);
     }
   }
@@ -825,7 +826,7 @@ function speakRenderer(ex, api) {
     check() {
       const ok = best >= 0.72;
       mic.disabled = true;
-      return { ok, expected: ex.text, explain: ok ? null : `Я услышала: «${heard || "…"}». Прослушай ещё раз и повтори чётче.`, note: ok ? `Совпадение ${Math.round(best * 100)}%` : null, given: heard, speakable: ex.text };
+      return { ok, expected: ex.text, explain: ok ? null : tr`Я услышала: «${heard || "…"}». Прослушай ещё раз и повтори чётче.`, note: ok ? tr`Совпадение ${Math.round(best * 100)}%` : null, given: heard, speakable: ex.text };
     },
   };
 }

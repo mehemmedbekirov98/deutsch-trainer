@@ -3,6 +3,7 @@
 // The work is done by Supabase (see backend.js). This file is the part Emil sees — and the part
 // that speaks Russian. Registering stays optional: without an account the app keeps a local save
 // in this browser, exactly as it always did. Nobody is stopped at a login wall.
+import { t as tr } from "./i18n.js";
 import { el, nextTick } from "./utils.js";
 import { toast, sfx, confetti } from "./fx.js";
 import { backend } from "./backend.js";
@@ -60,7 +61,7 @@ function field({ label, type = "text", placeholder = "", autocomplete, icon, hin
 function strengthOf(value) {
   const v = String(value);
   if (!v) return null;
-  if (v.length < 8) return { level: "weak", text: `Ещё ${8 - v.length} ${plural(8 - v.length)}` };
+  if (v.length < 8) return { level: "weak", text: tr`Ещё ${8 - v.length} ${plural(8 - v.length)}` };
   let score = 0;
   if (v.length >= 12) score++;
   if (/[a-zа-я]/.test(v) && /[A-ZА-Я]/.test(v)) score++;
@@ -148,9 +149,9 @@ export function renderAuth(container, { onDone, localXp = 0, adoptLocal = null }
             formHost.append(el("div", { class: "auth-done" },
               el("div", { class: "auth-done-icon" }, "📬"),
               el("h2", {}, "Проверь почту"),
-              el("p", { class: "muted" }, `Отправил письмо на ${email.input.value.trim()}. Нажми ссылку в нём, чтобы подтвердить адрес — и возвращайся сюда.`),
+              el("p", { class: "muted" }, tr`Отправил письмо на ${email.input.value.trim()}. Нажми ссылку в нём, чтобы подтвердить адрес — и возвращайся сюда.`),
               keep.checked && localXp > 0
-                ? el("p", { class: "muted small" }, `Прогресс из этого браузера — ${localXp} XP — перенесётся, как только ты первый раз войдёшь.`)
+                ? el("p", { class: "muted small" }, tr`Прогресс из этого браузера — ${localXp} XP — перенесётся, как только ты первый раз войдёшь.`)
                 : null,
               el("button", { class: "btn ghost", type: "button", onClick: () => { tab = "login"; draw(); } }, "← Ко входу"),
             ));
@@ -159,12 +160,12 @@ export function renderAuth(container, { onDone, localXp = 0, adoptLocal = null }
           if (keep.checked && localXp > 0) await adoptLocal?.();
           sfx.levelUp();
           confetti({ count: 140, duration: 2000 });
-          toast(`Аккаунт создан. Рад знакомству, ${backend.user.name}!`, { icon: "👤", kind: "achievement" });
+          toast(tr`Аккаунт создан. Рад знакомству, ${backend.user.name}!`, { icon: "👤", kind: "achievement" });
         } else {
           busy(true, "Проверяю…");
           await backend.signIn({ email: email.input.value.trim(), password: pass.input.value });
           sfx.levelUp();
-          toast(`С возвращением, ${backend.user.name}!`, { icon: "👤", kind: "achievement" });
+          toast(tr`С возвращением, ${backend.user.name}!`, { icon: "👤", kind: "achievement" });
         }
         onDone?.(backend.user);
       } catch (err) {
@@ -181,7 +182,7 @@ export function renderAuth(container, { onDone, localXp = 0, adoptLocal = null }
       isReg && localXp > 0 ? el("label", { class: "auth-keep" },
         keep,
         el("span", { class: "auth-keep-box" }),
-        el("span", {}, `Перенести прогресс из этого браузера — ${localXp} XP`)) : null,
+        el("span", {}, tr`Перенести прогресс из этого браузера — ${localXp} XP`)) : null,
       submit,
       msg,
     );

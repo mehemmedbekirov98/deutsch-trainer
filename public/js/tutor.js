@@ -1,4 +1,5 @@
 // Mia — the voice tutor. AI mode talks to /api/tutor (Claude); offline mode runs the level's script.
+import { t as tr } from "./i18n.js";
 import { el, normalize, sleep, nextTick, todayKey } from "./utils.js";
 import { speech, STT_ERRORS } from "./speech.js";
 import { sfx, confetti, toast, xpFloat } from "./fx.js";
@@ -33,11 +34,11 @@ function buildLevelScript(level, talkMode) {
     ? `Hallo Emil! Schön, dass du da bist. Wir üben jetzt zusammen: ${level.title}. Keine Sorge, das ist nur Übung.`
     : `Hallo Emil! Lass uns ein bisschen über ${level.title} plaudern.`;
   const greetRu = talkMode === "exam"
-    ? `Привет, Эмиль! Рада тебя видеть. Сейчас потренируемся вместе по теме «${level.titleRu}». Не волнуйся, это просто практика.`
-    : `Привет, Эмиль! Давай немного поболтаем на тему «${level.titleRu}».`;
+    ? tr`Привет, Эмиль! Рада тебя видеть. Сейчас потренируемся вместе по теме «${level.titleRu}». Не волнуйся, это просто практика.`
+    : tr`Привет, Эмиль! Давай немного поболтаем на тему «${level.titleRu}».`;
   turns.push({
     say: `${greetDe} Sag einfach "ja", wenn du magst.`,
-    sayRu: `${greetRu} Просто скажи «ja», когда будешь готов.`,
+    sayRu: tr`${greetRu} Просто скажи «ja», когда будешь готов.`,
     hint: "Ja, ich bin bereit.",
     expect: ["ja", "bereit", "ok", "klar", "naturlich", "natürlich", "los", "da", "davai"],
   });
@@ -82,7 +83,7 @@ function buildLevelScript(level, talkMode) {
       const w = level.vocab[i % level.vocab.length];
       turns.push({
         say: `Bilde bitte einen Satz mit "${w.de}".`,
-        sayRu: `Составь, пожалуйста, предложение со словом «${w.de}» (${w.ru}).`,
+        sayRu: tr`Составь, пожалуйста, предложение со словом «${w.de}» (${w.ru}).`,
         hint: w.example,
         expect: [stripArticleLower(w.de), "ich", "ist", "habe"],
       });
@@ -165,13 +166,13 @@ export class Tutor {
     const isExam = this.talkMode === "exam";
     const isTopic = this.talkMode === "topic";
     const subtitle = !this.level ? "Свободный разговор"
-      : isExam ? `${this.level.emoji} Устный экзамен · ${this.level.titleRu}`
-      : isTopic ? `${this.level.emoji} Разговор по теме · ${this.level.titleRu}`
+      : isExam ? tr`${this.level.emoji} Устный экзамен · ${this.level.titleRu}`
+      : isTopic ? tr`${this.level.emoji} Разговор по теме · ${this.level.titleRu}`
       : `${this.level.emoji} ${scenario.title}`;
     const intro = isExam
-      ? { title: "🎓 Устный экзамен", text: `Мия задаст 5–7 вопросов по теме «${this.level.titleRu}». Отвечай по-немецки как можешь — она поправит и объяснит по-русски. Это тренировка, а не оценка.` }
+      ? { title: "🎓 Устный экзамен", text: tr`Мия задаст 5–7 вопросов по теме «${this.level.titleRu}». Отвечай по-немецки как можешь — она поправит и объяснит по-русски. Это тренировка, а не оценка.` }
       : isTopic
-        ? { title: "💬 Разговор по теме", text: `Свободная беседа вокруг темы «${this.level.titleRu}». Мия расспросит тебя, расскажет, как это устроено в Германии, и объяснит всё непонятное по-русски.` }
+        ? { title: "💬 Разговор по теме", text: tr`Свободная беседа вокруг темы «${this.level.titleRu}». Мия расспросит тебя, расскажет, как это устроено в Германии, и объяснит всё непонятное по-русски.` }
         : scenario ? { title: "🎬 Ситуация", text: scenario.scenario } : null;
     // Layout: a compact header, a small orb, then the CHAT as the main area, then the controls.
     // Anything optional (scenario text, phrases, the key offer) lives in a side column on wide
@@ -645,7 +646,7 @@ export class Tutor {
     if (leadRu) {
       return this.miaSays({
         say: reply.explainRu, lang: "ru", translation: "",
-        tip: reply.de ? `По-немецки это звучит так: ${reply.de}` : reply.tip || "",
+        tip: reply.de ? tr`По-немецки это звучит так: ${reply.de}` : reply.tip || "",
         correction: reply.correction, done: reply.done,
       }, gen, seq);
     }
@@ -670,8 +671,8 @@ export class Tutor {
       if (!t) return this.finishScenario();
       return this.miaSays({
         de: `Gut. Machen wir weiter: ${t.say}`,
-        ru: `Хорошо. Продолжаем: ${t.sayRu}`,
-        explainRu: `Можно ответить так: «${t.hint}»`,
+        ru: tr`Хорошо. Продолжаем: ${t.sayRu}`,
+        explainRu: tr`Можно ответить так: «${t.hint}»`,
       }, gen, seq);
     }
     const turn = this.script[this.scriptIndex];
@@ -719,13 +720,13 @@ export class Tutor {
       const next = this.script[this.scriptIndex];
       if (!next || wasLast) return this.miaSays({ de: "Bis bald, Emil!", ru: "До скорого, Эмиль!", done: true }, gen, seq);
       const i = Math.floor(Math.random() * PRAISE.length);
-      return this.miaSays({ de: `${passed ? PRAISE[i] : "Okay, weiter!"} ${next.say}`, ru: `${passed ? PRAISE_RU[i] : "Хорошо, идём дальше!"} ${next.sayRu}`, tip: !passed ? `Можно было сказать так: ${turn.hint}` : "" }, gen, seq);
+      return this.miaSays({ de: `${passed ? PRAISE[i] : "Okay, weiter!"} ${next.say}`, ru: `${passed ? PRAISE_RU[i] : "Хорошо, идём дальше!"} ${next.sayRu}`, tip: !passed ? tr`Можно было сказать так: ${turn.hint}` : "" }, gen, seq);
     }
     if (meaningful) this.scriptFails++;
     return this.miaSays({
       de: `Kein Problem. Noch einmal: ${turn.say}`,
-      ru: `Ничего страшного. Ещё разок: ${turn.sayRu}`,
-      explainRu: `Не переживай, Эмиль — с первого раза редко получается. Можешь ответить так: «${turn.hint}»`,
+      ru: tr`Ничего страшного. Ещё разок: ${turn.sayRu}`,
+      explainRu: tr`Не переживай, Эмиль — с первого раза редко получается. Можешь ответить так: «${turn.hint}»`,
     }, gen, seq);
   }
 
@@ -799,7 +800,7 @@ export class Tutor {
     // Say WHY there is no bonus. "уже получен раньше" was shown even the very first time, when the
     // real reason was simply that the conversation had been too short to count.
     const noBonusWhy = !longEnough
-      ? ` · поговори подольше (от ${this.level ? 4 : 6} реплик) — тогда зачтётся`
+      ? tr` · поговори подольше (от ${this.level ? 4 : 6} реплик) — тогда зачтётся`
       : this.level
         ? " · бонус за это уже получен раньше"
         : " · бонус за сегодня уже получен";
@@ -813,7 +814,7 @@ export class Tutor {
     if (bonus) store.grantXp(bonus);
     const card = el("div", { class: "bubble done-card" },
       el("div", { class: "done-title" }, "🎉 Отличный разговор!"),
-      el("div", {}, `Реплик: ${this.turns}${bonus ? ` · бонус +${bonus} XP` : paidOutside ? " · зачтено ✓" : noBonusWhy}`),
+      el("div", {}, tr`Реплик: ${this.turns}${bonus ? ` · бонус +${bonus} XP` : paidOutside ? " · зачтено ✓" : noBonusWhy}`),
       el("div", { class: "done-actions" },
         el("button", { class: "btn ghost small", type: "button", onClick: () => this.restart() }, "↺ Ещё раз"),
         el("button", { class: "btn primary small", type: "button", onClick: () => this.exit() }, "Готово"),

@@ -86,7 +86,7 @@ async function boot() {
   if (!store.state.introSeen && !askedElsewhere) showWelcome();
   else if (store.dailyBonus) {
     const b = store.dailyBonus;
-    setTimeout(() => toast(`+${b.coins} монет за ${b.streak}-й день подряд`, { icon: "🪙", title: "Ежедневный бонус" }), 900);
+    setTimeout(() => toast(tr`+${b.coins} монет за ${b.streak}-й день подряд`, { icon: "🪙", title: "Ежедневный бонус" }), 900);
   }
 }
 
@@ -475,7 +475,7 @@ function renderSidebarStats() {
       el("div", { class: "ss-rank-title" }, `${cur.icon} ${cur.title}`, next ? el("span", { class: "muted" }, ` → ${next.title}`) : null),
       el("div", { class: "progress-track slim" }, el("div", { class: "progress-bar", style: { width: pct + "%" } })),
     ),
-    store.boostActive() ? el("div", { class: "ss-boost" }, `⚡ XP ×2 ещё ${Math.ceil((s.boostUntil - Date.now()) / 60000)} мин`) : null,
+    store.boostActive() ? el("div", { class: "ss-boost" }, tr`⚡ XP ×2 ещё ${Math.ceil((s.boostUntil - Date.now()) / 60000)} мин`) : null,
     el("div", { class: `ss-ai ${AI ? "on" : ""}` }, AI ? "● Мия: умный режим" : "○ Мия: обычный режим"),
   ].filter(Boolean));
 }
@@ -488,7 +488,7 @@ function nextAction() {
     if (!p.vocabDone) return { level: L, icon: "📖", label: "Выучить новые слова", route: `#/level/${L.id}/vocab` };
     if (!p.grammarDone) return { level: L, icon: "🧠", label: "Разобрать грамматику", route: `#/level/${L.id}/grammar` };
     const m = p.missions.findIndex((x) => !x);
-    if (m >= 0) return { level: L, icon: "🎯", label: `Миссия ${m + 1}`, route: `#/level/${L.id}/mission/${m + 1}` };
+    if (m >= 0) return { level: L, icon: "🎯", label: tr`Миссия ${m + 1}`, route: `#/level/${L.id}/mission/${m + 1}` };
     if (!p.dialogueDone) return { level: L, icon: "🎧", label: "Диалог", route: `#/level/${L.id}/dialogue` };
     if (!p.speakingDone) return { level: L, icon: "🗣️", label: "Поговорить с Мией", route: `#/level/${L.id}/speak` };
     if (p.examBest < 70) return { level: L, icon: "🏆", label: "Сдать экзамен уровня", route: `#/level/${L.id}/exam` };
@@ -687,7 +687,7 @@ function showWelcome() {
     route();
     toast(band === "A1"
       ? "Начинаем с самого начала. Первый урок открыт!"
-      : `Открыл уроки с уровня ${band}. Передумаешь — поменяешь в кабинете.`, { icon: "🎓", ms: 5000 });
+      : tr`Открыл уроки с уровня ${band}. Передумаешь — поменяешь в кабинете.`, { icon: "🎓", ms: 5000 });
   };
   append(overlay,
     el("div", { class: "prologue-inner" },
@@ -754,7 +754,7 @@ function renderHome(v) {
       el("div", {},
         el("h1", {}, `${greeting()}, ${name}! `, el("span", { class: "wave" }, "👋")),
         el("p", { class: "hero-sub" }, s.streak.count > 1
-          ? `${s.streak.count} ${plural(s.streak.count, "день", "дня", "дней")} подряд — не бросай.`
+          ? tr`${s.streak.count} ${plural(s.streak.count, "день", "дня", "дней")} подряд — не бросай.`
           : "Пятнадцать минут сегодня — это уже много."),
       ),
       el("div", { class: "home-level" },
@@ -762,7 +762,7 @@ function renderHome(v) {
         el("div", { class: "cefr-meta" },
           el("div", { class: "cefr-name" }, CEFR_TITLE[band.band]),
           el("div", { class: "progress-track slim" }, el("div", { class: "progress-bar", style: { width: Math.round((band.done / band.total) * 100) + "%" } })),
-          el("div", { class: "muted small" }, `${band.done} из ${band.total} уроков уровня ${band.band}`),
+          el("div", { class: "muted small" }, tr`${band.done} из ${band.total} уроков уровня ${band.band}`),
         ),
       ),
     ),
@@ -772,7 +772,7 @@ function renderHome(v) {
       el("div", { class: "big-cta-text" },
         el("div", { class: "cta-kicker" }, "Продолжить"),
         el("div", { class: "big-cta-title" }, `${next.icon} ${next.label}`),
-        el("div", { class: "cta-sub" }, next.level ? `Урок ${next.level.id} · ${next.level.emoji} ${next.level.titleRu}` : "Курс пройден — закрепляй слова"),
+        el("div", { class: "cta-sub" }, next.level ? tr`Урок ${next.level.id} · ${next.level.emoji} ${next.level.titleRu}` : "Курс пройден — закрепляй слова"),
       ),
       el("div", { class: "cta-arrow" }, "→"),
     ),
@@ -788,7 +788,7 @@ function renderHome(v) {
       stripItem("🔥", s.streak.count, plural(s.streak.count, "день", "дня", "дней")),
       stripItem("⚡", s.xp, "XP"),
       el("a", { class: "strip-item", href: "#/shop" }, el("span", { class: "strip-icon" }, "🪙"), el("span", { class: "strip-val" }, String(s.coins)), el("span", { class: "strip-label" }, "монет")),
-      el("a", { class: "strip-item", href: "#/profile" }, el("span", { class: "strip-icon" }, cur.icon), el("span", { class: "strip-val" }, title || cur.title), el("span", { class: "strip-label" }, nextRank ? `${nextRank.xp - s.xp} XP до «${nextRank.title}»` : "выше некуда")),
+      el("a", { class: "strip-item", href: "#/profile" }, el("span", { class: "strip-icon" }, cur.icon), el("span", { class: "strip-val" }, title || cur.title), el("span", { class: "strip-label" }, nextRank ? tr`${nextRank.xp - s.xp} XP до «${nextRank.title}»` : "выше некуда")),
       el("div", { class: "strip-item goal" },
         el("div", { class: "goal-ring small" }, ringSvg(goalPct, 44, 6), el("div", { class: "goal-pct" }, `${goalPct}%`)),
         el("span", { class: "strip-val" }, `${today}/${s.dailyGoal}`), el("span", { class: "strip-label" }, "цель дня")),
@@ -799,7 +799,7 @@ function renderHome(v) {
 
     // Only the band he is in — a strip of 36 dots is a wall, not a map.
     el("section", { class: "card path-card" },
-      el("div", { class: "card-head" }, el("h2", {}, `Уровень ${band.band} · ${CEFR_TITLE[band.band]}`), el("a", { class: "link", href: "#/levels" }, "Все уроки →")),
+      el("div", { class: "card-head" }, el("h2", {}, tr`Уровень ${band.band} · ${CEFR_TITLE[band.band]}`), el("a", { class: "link", href: "#/levels" }, "Все уроки →")),
       el("div", { class: "mini-path" }, LEVELS.filter((l) => l.id >= CEFR_FIRST[band.band] && l.id <= CEFR_LAST[band.band]).map((l) => {
         const st = store.isCompleted(l.id) ? "done" : store.isUnlocked(l.id) ? "open" : "locked";
         return el(st === "locked" ? "div" : "a", { class: `mini-node ${st}`, href: st === "locked" ? null : `#/level/${l.id}`, title: `${l.id}. ${l.titleRu}`, style: { "--accent": l.color } }, el("span", {}, st === "locked" ? "🔒" : l.emoji));
@@ -822,7 +822,7 @@ function renderLevels(v) {
   const band = store.cefr();
   v.append(el("div", { class: "page-head" },
     el("h1", {}, "🗺️ Путь в Германию"),
-    el("p", { class: "muted" }, `${LEVELS.length} уроков: A1 → A2 → B1. Каждый урок — слова → грамматика → 3 миссии → диалог → разговор с Мией → экзамен. Экзамен на 70% открывает следующий урок и новую главу истории.`)));
+    el("p", { class: "muted" }, tr`${LEVELS.length} уроков: A1 → A2 → B1. Каждый урок — слова → грамматика → 3 миссии → диалог → разговор с Мией → экзамен. Экзамен на 70% открывает следующий урок и новую главу истории.`)));
   // Thirty-six nodes in one column is a wall. Three named stretches with a heading each is a map.
   const path = el("div", { class: "level-path" });
   let shown = null;
@@ -835,7 +835,7 @@ function renderLevels(v) {
         el("div", { class: "cefr-badge small" }, shown),
         el("div", {},
           el("div", { class: "cefr-name" }, CEFR_TITLE[shown]),
-          el("div", { class: "muted small" }, `${doneHere} из ${total} пройдено`)),
+          el("div", { class: "muted small" }, tr`${doneHere} из ${total} пройдено`)),
       ));
     }
     const done = store.isCompleted(l.id);
@@ -848,7 +848,7 @@ function renderLevels(v) {
       el("div", { class: "ln-body" },
         el("div", { class: "ln-title" }, l.title),
         el("div", { class: "ln-ru muted" }, l.titleRu),
-        el("div", { class: "ln-meta" }, done ? el("span", { class: "stars" }, "★".repeat(stars) + "☆".repeat(3 - stars)) : open ? el("span", { class: "tag" }, current ? `${pct}% · в процессе` : "открыт") : el("span", { class: "tag" }, `Сдай экзамен уровня ${l.id - 1}`)),
+        el("div", { class: "ln-meta" }, done ? el("span", { class: "stars" }, "★".repeat(stars) + "☆".repeat(3 - stars)) : open ? el("span", { class: "tag" }, current ? tr`${pct}% · в процессе` : "открыт") : el("span", { class: "tag" }, tr`Сдай экзамен уровня ${l.id - 1}`)),
       ),
     );
     path.append(node);
@@ -857,7 +857,7 @@ function renderLevels(v) {
 }
 
 function renderLocked(v, level) {
-  v.append(el("div", { class: "card center" }, el("div", { class: "big-emoji" }, "🔒"), el("h2", {}, `Уровень ${level.id} пока закрыт`), el("p", { class: "muted" }, `Сдай экзамен уровня ${level.id - 1} минимум на 70%, чтобы открыть «${level.titleRu}».`), el("a", { class: "btn primary", href: `#/level/${level.id - 1}` }, `К уровню ${level.id - 1}`)));
+  v.append(el("div", { class: "card center" }, el("div", { class: "big-emoji" }, "🔒"), el("h2", {}, tr`Уровень ${level.id} пока закрыт`), el("p", { class: "muted" }, tr`Сдай экзамен уровня ${level.id - 1} минимум на 70%, чтобы открыть «${level.titleRu}».`), el("a", { class: "btn primary", href: `#/level/${level.id - 1}` }, tr`К уровню ${level.id - 1}`)));
 }
 
 /* ----------------------------------------------------------------- level */
@@ -888,7 +888,7 @@ function renderLevel(v, level) {
     el("section", { class: "level-hero card", style: { "--accent": level.color } },
       el("div", { class: "lh-emoji" }, level.emoji),
       el("div", { class: "lh-text" },
-        el("div", { class: "lh-kicker" }, `Уровень ${level.id} из ${LEVELS.length}`),
+        el("div", { class: "lh-kicker" }, tr`Уровень ${level.id} из ${LEVELS.length}`),
         el("h1", {}, level.title),
         el("div", { class: "lh-ru" }, level.titleRu),
         el("p", { class: "lh-intro" }, level.intro),
@@ -896,16 +896,16 @@ function renderLevel(v, level) {
       ),
       el("div", { class: "lh-progress" }, ringSvg(pct, 120, 10, level.color), el("div", { class: "lh-pct" }, `${pct}%`), completed ? el("div", { class: "stars big" }, "★".repeat(stars) + "☆".repeat(3 - stars)) : null),
     ),
-    completed ? el("div", { class: "card done-banner" }, el("div", {}, `🎉 Уровень пройден! Лучший результат экзамена: ${p.examBest}%`), nextLevel ? el("a", { class: "btn primary", href: `#/level/${nextLevel.id}` }, `Уровень ${nextLevel.id}: ${nextLevel.titleRu} →`) : el("a", { class: "btn primary", href: "#/practice" }, "Закрепить слова →")) : null,
+    completed ? el("div", { class: "card done-banner" }, el("div", {}, tr`🎉 Уровень пройден! Лучший результат экзамена: ${p.examBest}%`), nextLevel ? el("a", { class: "btn primary", href: `#/level/${nextLevel.id}` }, tr`Уровень ${nextLevel.id}: ${nextLevel.titleRu} →`) : el("a", { class: "btn primary", href: "#/practice" }, "Закрепить слова →")) : null,
     el("div", { class: "stages" },
-      stage("📖", "Слова", `${level.vocab.length} ${plural(level.vocab.length, "новое слово", "новых слова", "новых слов")} с карточками и озвучкой`, `#/level/${level.id}/vocab`, { done: p.vocabDone, badge: p.vocabQuizBest ? `квиз ${p.vocabQuizBest}%` : null, reward: `+25 XP · +${COINS.vocab} 🪙` }),
+      stage("📖", "Слова", tr`${level.vocab.length} ${plural(level.vocab.length, "новое слово", "новых слова", "новых слов")} с карточками и озвучкой`, `#/level/${level.id}/vocab`, { done: p.vocabDone, badge: p.vocabQuizBest ? tr`квиз ${p.vocabQuizBest}%` : null, reward: `+25 XP · +${COINS.vocab} 🪙` }),
       stage("🧠", "Грамматика", level.grammar.map((g) => g.title).join(" · "), `#/level/${level.id}/grammar`, { done: p.grammarDone, reward: `+15 XP · +${COINS.grammar} 🪙` }),
-      ...missions.map((m, i) => stage("🎯", `Миссия ${i + 1}`, `${m.length} ${plural(m.length, "задание", "задания", "заданий")} · нужно 60% · ${[...new Set(m.map((x) => KIND_SHORT[x.type]))].join(", ")}`, `#/level/${level.id}/mission/${i + 1}`, { done: p.missions[i], reward: `+20 XP · +${COINS.mission} 🪙 + монеты за ответы` })),
-      stage("🎧", "Диалог", `${level.dialogue.title} — послушай и сыграй роль Эмиля`, `#/level/${level.id}/dialogue`, { done: p.dialogueDone, reward: `+30 XP · +${COINS.dialogue} 🪙` }),
+      ...missions.map((m, i) => stage("🎯", tr`Миссия ${i + 1}`, tr`${m.length} ${plural(m.length, "задание", "задания", "заданий")} · нужно 60% · ${[...new Set(m.map((x) => KIND_SHORT[x.type]))].join(", ")}`, `#/level/${level.id}/mission/${i + 1}`, { done: p.missions[i], reward: tr`+20 XP · +${COINS.mission} 🪙 + монеты за ответы` })),
+      stage("🎧", "Диалог", tr`${level.dialogue.title} — послушай и сыграй роль Эмиля`, `#/level/${level.id}/dialogue`, { done: p.dialogueDone, reward: `+30 XP · +${COINS.dialogue} 🪙` }),
       stage("🗣️", "Разговор с Мией", level.speaking.title, `#/level/${level.id}/speak`, { done: p.speakingDone, badge: AI ? "AI" : "офлайн", reward: `+40 XP · +${COINS.speaking} 🪙` }),
-      stage("🏆", "Экзамен", `10 заданий · нужно 70% · звёзды: 70 / 80 / 95% · ${p.examTries ? `попыток: ${p.examTries}, лучший: ${p.examBest}%` : "ещё не сдавал"}`, `#/level/${level.id}/exam`, { done: completed, locked: !examOpen, hint: "Сначала выучи слова и пройди все 3 миссии", reward: `+100 XP · +${COINS.examPass + COINS.levelComplete} 🪙` }),
+      stage("🏆", "Экзамен", tr`10 заданий · нужно 70% · звёзды: 70 / 80 / 95% · ${p.examTries ? `попыток: ${p.examTries}, лучший: ${p.examBest}%` : "ещё не сдавал"}`, `#/level/${level.id}/exam`, { done: completed, locked: !examOpen, hint: "Сначала выучи слова и пройди все 3 миссии", reward: `+100 XP · +${COINS.examPass + COINS.levelComplete} 🪙` }),
       stage("🎓", "Устный экзамен с Мией", "Мия задаст 5–7 вопросов по теме голосом и объяснит ошибки по-русски", `#/level/${level.id}/oral`, { done: p.oralDone, locked: !completed, hint: "Откроется после письменного экзамена", badge: AI ? "AI" : null, reward: "+30 XP · +25 🪙" }),
-      stage("💬", "Разговор по теме", `Свободная беседа с Мией про «${level.titleRu.toLowerCase()}» — можно спрашивать что угодно по-русски`, `#/level/${level.id}/chat`, { done: p.chatDone, locked: !completed, hint: "Откроется после письменного экзамена", badge: AI ? "AI" : null, reward: "+30 XP · +25 🪙" }),
+      stage("💬", "Разговор по теме", tr`Свободная беседа с Мией про «${level.titleRu.toLowerCase()}» — можно спрашивать что угодно по-русски`, `#/level/${level.id}/chat`, { done: p.chatDone, locked: !completed, hint: "Откроется после письменного экзамена", badge: AI ? "AI" : null, reward: "+30 XP · +25 🪙" }),
     ),
   );
 }
@@ -940,7 +940,7 @@ function viewQuiz(v, level) {
   const quiz = buildVocabQuiz(level, 10);
   prewarmExercises(quiz);
   const s = new ExerciseSession({
-    container: v, exercises: quiz, title: `${level.emoji} Квиз по словам`,
+    container: v, exercises: quiz, title: tr`${level.emoji} Квиз по словам`,
     onExit: () => go(`#/level/${level.id}`),
     // onRecord writes the score (it runs however he leaves), onDone only navigates
     onRecord: (res) => {
@@ -955,11 +955,11 @@ function viewQuiz(v, level) {
 function viewGrammar(v, level) {
   const p = store.level(level.id);
   const pendingMission = p.missions.findIndex((x) => !x);
-  const nextMissionLabel = pendingMission >= 0 ? `Понятно! К миссии ${pendingMission + 1} →` : "Понятно! Назад к уровню →";
+  const nextMissionLabel = pendingMission >= 0 ? tr`Понятно! К миссии ${pendingMission + 1} →` : "Понятно! Назад к уровню →";
   v.style.setProperty("--accent", level.color);
   prewarm(level.grammar.flatMap((g) => g.examples.map((e) => ({ text: e.de, rate: RATES.example }))));
   append(v,
-    el("a", { class: "back", href: `#/level/${level.id}` }, `← Уровень ${level.id}`),
+    el("a", { class: "back", href: `#/level/${level.id}` }, tr`← Уровень ${level.id}`),
     el("div", { class: "page-head" }, el("h1", {}, "🧠 Грамматика"), el("p", { class: "muted" }, `${level.emoji} ${level.titleRu}`)),
     el("div", { class: "grammar-list" }, level.grammar.map((g, i) =>
       el("article", { class: "card grammar", style: { "--i": i } },
@@ -997,14 +997,14 @@ function viewMission(v, level, n) {
   if (!ex) return go(`#/level/${level.id}`, { replace: true });
   prewarmExercises(ex);
   const s = new ExerciseSession({
-    container: v, exercises: ex, title: `${level.emoji} Миссия ${n} · ${level.titleRu}`,
+    container: v, exercises: ex, title: tr`${level.emoji} Миссия ${n} · ${level.titleRu}`,
     onExit: () => go(`#/level/${level.id}`),
     onRecord: (res) => {
       const p = store.level(level.id);
       const passed = res.accuracy >= 60;
       const first = passed && !p.missions[n - 1];
       store.update(() => { if (passed) p.missions[n - 1] = true; });
-      if (first) reward({ xp: 20, coins: COINS.mission, label: `Миссия ${n} выполнена`, icon: "🎯" });
+      if (first) reward({ xp: 20, coins: COINS.mission, label: tr`Миссия ${n} выполнена`, icon: "🎯" });
       else if (!passed) toast("Нужно минимум 60% — повтори слова и попробуй ещё раз", { icon: "💪", kind: "warn" });
     },
     onDone: (res) => {
@@ -1059,7 +1059,7 @@ function viewExam(v, level) {
   const exam = shuffle(level.exam);
   prewarmExercises(exam);
   const s = new ExerciseSession({
-    container: v, exercises: exam, title: `🏆 Экзамен · Уровень ${level.id}`, exam: true, xpMult: 1.5,
+    container: v, exercises: exam, title: tr`🏆 Экзамен · Уровень ${level.id}`, exam: true, xpMult: 1.5,
     onExit: () => go(`#/level/${level.id}`),
     onRecord: (res) => {
       const wasDone = store.isCompleted(level.id);
@@ -1076,10 +1076,10 @@ function viewExam(v, level) {
         unlocked = unlocked.concat(store.addXp(Math.round(100 * store.xpMultiplier())));
         confetti({ count: 260, duration: 3200 });
         sfx.levelUp();
-        toast(`Уровень ${level.id} пройден! +100 XP · +${coinsGot} 🪙${LEVEL_BY_ID[level.id + 1] ? ` · открыт уровень ${level.id + 1}` : ""}`, { icon: "🏆", kind: "achievement", ms: 5500, title: "Glückwunsch!" });
+        toast(tr`Уровень ${level.id} пройден! +100 XP · +${coinsGot} 🪙${LEVEL_BY_ID[level.id + 1] ? ` · открыт уровень ${level.id + 1}` : ""}`, { icon: "🏆", kind: "achievement", ms: 5500, title: "Glückwunsch!" });
         if (level.id === 12) setTimeout(() => toast("Ты прошёл весь A1. Дальше — A2!", { icon: "🎓", kind: "achievement", ms: 6000 }), 2600);
         if (level.id === LEVELS.length) setTimeout(() => toast("Весь курс пройден. Эпилог открыт.", { icon: "🏁", kind: "achievement", ms: 7000 }), 2600);
-      } else if (!passed) toast(`${res.accuracy}% — нужно 70%. Повтори миссии и попробуй снова!`, { icon: "💪", kind: "warn", ms: 4500 });
+      } else if (!passed) toast(tr`${res.accuracy}% — нужно 70%. Повтори миссии и попробуй снова!`, { icon: "💪", kind: "warn", ms: 4500 });
     },
     onDone: () => go(`#/level/${level.id}`, { replace: true }),
   });
@@ -1134,7 +1134,7 @@ function renderShop(v) {
     el("div", { class: "inv-title" }, "Инвентарь"),
     el("div", { class: "inv-items" },
       invItem("💡", "Подсказки", s.inventory.hint), invItem("🛡️", "Щиты", s.inventory.shield), invItem("🔁", "Попытки", s.inventory.retry),
-      store.boostActive() ? invItem("⚡", "XP ×2", `${Math.ceil((s.boostUntil - Date.now()) / 60000)} мин`) : null,
+      store.boostActive() ? invItem("⚡", "XP ×2", tr`${Math.ceil((s.boostUntil - Date.now()) / 60000)} мин`) : null,
     ),
   );
   append(v,
@@ -1158,7 +1158,7 @@ function renderShop(v) {
     if (owned && it.kind === "theme") btn = el("button", { class: `btn small ${active ? "ghost" : "primary"}`, type: "button", disabled: active, onClick: () => { store.update((st) => (st.theme = it.theme)); applyTheme(it.theme); sfx.pop(); redrawShop(); } }, active ? "Активна" : "Применить");
     else if (owned && it.kind === "title") btn = el("button", { class: `btn small ${active ? "ghost" : "primary"}`, type: "button", disabled: active, onClick: () => { store.update((st) => (st.title = it.id)); sfx.pop(); redrawShop(); } }, active ? "Активен" : "Надеть");
     else if (owned) btn = el("button", { class: "btn small ghost", type: "button", disabled: true }, "Куплено ✓");
-    else btn = el("button", { class: `btn small ${can ? "primary" : "ghost"}`, type: "button", disabled: !can, onClick: () => buy(it, price) }, can ? `Купить · ${price} 🪙` : `${price} 🪙`);
+    else btn = el("button", { class: `btn small ${can ? "primary" : "ghost"}`, type: "button", disabled: !can, onClick: () => buy(it, price) }, can ? tr`Купить · ${price} 🪙` : `${price} 🪙`);
     return el("div", { class: `shop-item ${owned ? "owned" : ""} ${it.kind === "theme" ? "theme-" + it.theme : ""}`, style: { "--i": i } },
       el("div", { class: "si-icon" }, it.icon),
       el("div", { class: "si-body" }, el("div", { class: "si-name" }, it.name, el("span", { class: "si-de" }, it.de)), el("div", { class: "si-desc muted" }, it.desc)),
@@ -1171,7 +1171,7 @@ function renderShop(v) {
     if (got === false) { toast("Не хватает монет", { icon: "🪙", kind: "warn" }); return; }
     sfx.levelUp();
     if (it.kind === "theme") applyTheme(it.theme);
-    toast(`${it.name} — куплено за ${price} 🪙`, { icon: it.icon, kind: "achievement", title: "Покупка" });
+    toast(tr`${it.name} — куплено за ${price} 🪙`, { icon: it.icon, kind: "achievement", title: "Покупка" });
     // redraw first: the old balance node is discarded by redrawShop(), so counting on it animated
     // an element that was no longer in the document and Emil just saw the number jump
     redrawShop();
@@ -1216,13 +1216,13 @@ function renderWords(v) {
   }
   search.addEventListener("input", draw);
   append(v,
-    el("div", { class: "page-head" }, el("h1", {}, "📚 Мои слова"), el("p", { class: "muted" }, `${total} ${plural(total, "слово", "слова", "слов")} из открытых уровней. Нажми на слово, чтобы услышать.`)),
+    el("div", { class: "page-head" }, el("h1", {}, "📚 Мои слова"), el("p", { class: "muted" }, tr`${total} ${plural(total, "слово", "слова", "слов")} из открытых уровней. Нажми на слово, чтобы услышать.`)),
     el("div", { class: "words-tools" }, search,
       el("a", { class: "btn primary", href: "#/review" },
-        due ? `⚡ Повторить ${due} ${plural(due, "слово", "слова", "слов")}` : "⚡ Повторить (квиз)"),
+        due ? tr`⚡ Повторить ${due} ${plural(due, "слово", "слова", "слов")}` : "⚡ Повторить (квиз)"),
     ),
     // what the schedule says is slipping — silent when nothing is waiting
-    due ? el("div", { class: "due-note" }, `🔁 ${due} ${plural(due, "слово ждёт", "слова ждут", "слов ждут")} повторения — те, что ты начал забывать. Квиз возьмёт сначала их.`) : null,
+    due ? el("div", { class: "due-note" }, tr`🔁 ${due} ${plural(due, "слово ждёт", "слова ждут", "слов ждут")} повторения — те, что ты начал забывать. Квиз возьмёт сначала их.`) : null,
     list,
   );
   draw();
@@ -1301,7 +1301,7 @@ function cefrCard() {
   const band = store.cefrProgress();
   const claim = store.state.cefrClaim || "A1";
   return el("section", { class: "card" },
-    el("div", { class: "card-head" }, el("h2", {}, "Твой уровень немецкого"), el("span", { class: "muted small" }, `${band.done} / ${band.total} уроков уровня ${band.band}`)),
+    el("div", { class: "card-head" }, el("h2", {}, "Твой уровень немецкого"), el("span", { class: "muted small" }, tr`${band.done} / ${band.total} уроков уровня ${band.band}`)),
     el("div", { class: "home-level", style: { border: "none", padding: "6px 0 14px", background: "none" } },
       el("div", { class: "cefr-badge" }, band.band),
       el("div", { class: "cefr-meta" },
@@ -1318,8 +1318,8 @@ function cefrCard() {
         if (claim === c) return;
         store.claimCefr(c, { allowLower: true });
         toast(CEFR.indexOf(c) < CEFR.indexOf(claim)
-          ? `Ведём с уровня ${c}. Всё, что ты уже открыл, осталось открытым.`
-          : `Открыл уроки с уровня ${c}.`, { icon: "🎓" });
+          ? tr`Ведём с уровня ${c}. Всё, что ты уже открыл, осталось открытым.`
+          : tr`Открыл уроки с уровня ${c}.`, { icon: "🎓" });
         route();
       },
     }, `${c} · ${CEFR_TITLE[c]}`))),
@@ -1384,7 +1384,7 @@ function renderProfile(v) {
     try {
       const data = JSON.parse(await f.text());
       if (!data || typeof data !== "object" || !Number.isFinite(data.xp)) throw new Error("bad");
-      if (!confirm(`Импортировать прогресс (${data.xp} XP, ${data.coins || 0} монет)? Текущий будет заменён.`)) return;
+      if (!confirm(tr`Импортировать прогресс (${data.xp} XP, ${data.coins || 0} монет)? Текущий будет заменён.`)) return;
       store.adopt(data); // fills in any missing fields so an old/partial file cannot break the app
       applyTheme(store.state.theme);
       setSoundEnabled(store.state.settings.sound);
@@ -1409,28 +1409,28 @@ function renderProfile(v) {
           el("div", { class: "cefr-badge" }, band.band),
           el("div", {},
             el("div", { class: "cefr-name" }, CEFR_TITLE[band.band]),
-            el("div", { class: "muted small" }, `${band.done} / ${band.total} уроков`)),
+            el("div", { class: "muted small" }, tr`${band.done} / ${band.total} уроков`)),
         ),
       ),
       el("div", { class: "cabinet-rank" },
         el("div", { class: "cabinet-rank-line" },
           el("span", {}, `${cur.icon} ${cur.title}`),
-          el("span", { class: "muted small" }, next ? `до «${next.title}» ещё ${next.xp - s.xp} XP` : "максимальный ранг")),
+          el("span", { class: "muted small" }, next ? tr`до «${next.title}» ещё ${next.xp - s.xp} XP` : "максимальный ранг")),
         el("div", { class: "progress-track" }, el("div", { class: "progress-bar", style: { width: pct + "%" } })),
       ),
       el("div", { class: "cabinet-actions" }, ...accountActions()),
     ),
     cefrCard(),
     el("section", { class: "home-tiles" },
-      tile("🛍️", "Магазин", `${s.coins} монет — подсказки, щиты, темы`, "#/shop", "shop"),
+      tile("🛍️", "Магазин", tr`${s.coins} монет — подсказки, щиты, темы`, "#/shop", "shop"),
       tile("🏆", "Рейтинг", "Как ты идёшь рядом с другими", "#/board", "board"),
     ),
     el("section", { class: "stats-grid" },
-      statCard("🔥", `${s.streak.count}`, `${plural(s.streak.count, "день", "дня", "дней")} подряд · рекорд ${s.streak.best}`),
-      statCard("🎯", `${acc}%`, `точность · ${s.stats.answered} ${plural(s.stats.answered, "ответ", "ответа", "ответов")}`),
+      statCard("🔥", `${s.streak.count}`, tr`${plural(s.streak.count, "день", "дня", "дней")} подряд · рекорд ${s.streak.best}`),
+      statCard("🎯", `${acc}%`, tr`точность · ${s.stats.answered} ${plural(s.stats.answered, "ответ", "ответа", "ответов")}`),
       statCard("📚", `${s.stats.wordsLearned}`, `${plural(s.stats.wordsLearned, "слово выучено", "слова выучено", "слов выучено")}`),
       statCard("🏆", `${done}/${LEVELS.length}`, `${plural(done, "урок пройден", "урока пройдено", "уроков пройдено")}`),
-      statCard("🗣️", `${s.stats.tutorTurns}`, `${plural(s.stats.tutorTurns, "реплика", "реплики", "реплик")} с Мией`),
+      statCard("🗣️", `${s.stats.tutorTurns}`, tr`${plural(s.stats.tutorTurns, "реплика", "реплики", "реплик")} с Мией`),
       statCard("🪙", `${s.coinsEarned}`, `${plural(s.coinsEarned, "монета заработана", "монеты заработано", "монет заработано")} · ${s.purchases} ${plural(s.purchases, "покупка", "покупки", "покупок")}`),
       statCard("📅", `${s.stats.days.length}`, `${plural(s.stats.days.length, "день занятий", "дня занятий", "дней занятий")}`),
       statCard("💡", `${s.stats.hintsUsed}`, `${plural(s.stats.hintsUsed, "подсказка использована", "подсказки использовано", "подсказок использовано")}`),
@@ -1453,7 +1453,7 @@ function renderProfile(v) {
         setting("Живой голос Мии", "neural", NEURAL ? "Нейросетевой голос вместо робота из браузера. Нужен интернет." : "Недоступен: сервер не смог загрузить голосовой модуль, используется голос браузера"),
         setting("Авто-микрофон в разговоре", "autoListen", "После реплики Мии микрофон включается сам"),
         setting("Показывать перевод", "showRu", "Русский перевод под репликами Мии и в диалогах"),
-        el("div", { class: "setting" }, el("div", {}, el("div", { class: "setting-label" }, "Голос Мии"), el("div", { class: "muted small" }, NEURAL ? "Нейросетевые голоса звучат как живой человек" : voices.length ? `Найдено немецких голосов: ${voices.length}` : "Немецкие голоса не найдены — в Windows добавь язык «Deutsch» в настройках речи")), voiceSel),
+        el("div", { class: "setting" }, el("div", {}, el("div", { class: "setting-label" }, "Голос Мии"), el("div", { class: "muted small" }, NEURAL ? "Нейросетевые голоса звучат как живой человек" : voices.length ? tr`Найдено немецких голосов: ${voices.length}` : "Немецкие голоса не найдены — в Windows добавь язык «Deutsch» в настройках речи")), voiceSel),
         el("div", { class: "setting" }, el("div", {}, el("div", { class: "setting-label" }, "Скорость речи"), el("div", { class: "muted small" }, "медленнее ← → быстрее")), rate),
         el("div", { class: "setting tone-setting" },
           el("div", {}, el("div", { class: "setting-label" }, "Мягкость голоса"), el("div", { class: "muted small" }, "Нажми вариант — Мия сразу скажет фразу этим тембром. Выбери тот, что приятнее на слух.")),

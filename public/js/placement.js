@@ -8,6 +8,7 @@
 // Шкала: ступень засчитана, если из её шести вопросов верны хотя бы четыре, и все предыдущие
 // ступени тоже засчитаны. Ошибиться в паре вопросов — нормально, угадать четыре из шести на трёх
 // вариантах — маловероятно.
+import { t as tr } from "./i18n.js";
 import { el, nextTick, shuffle } from "./utils.js";
 import { store, CEFR, CEFR_TITLE, CEFR_FIRST } from "./store.js";
 import { sfx, confetti, toast } from "./fx.js";
@@ -87,7 +88,7 @@ export function renderPlacement(container, { onDone, onExit } = {}) {
 
   const draw = () => {
     const q = items[i];
-    counter.textContent = `Вопрос ${i + 1} из ${items.length}`;
+    counter.textContent = tr`Вопрос ${i + 1} из ${items.length}`;
     bar.style.width = `${Math.round((i / items.length) * 100)}%`;
     host.innerHTML = "";
 
@@ -137,8 +138,8 @@ export function renderPlacement(container, { onDone, onExit } = {}) {
     host.append(
       el("div", { class: "placement-result" },
         el("div", { class: "cefr-badge big" }, band),
-        el("h2", {}, `Твой уровень — ${band}`),
-        el("p", { class: "muted" }, `${CEFR_TITLE[band]} · правильных ответов ${total} из ${items.length}`),
+        el("h2", {}, tr`Твой уровень — ${band}`),
+        el("p", { class: "muted" }, tr`${CEFR_TITLE[band]} · правильных ответов ${total} из ${items.length}`),
         el("div", { class: "placement-breakdown" },
           ["A1", "A2", "B1"].map((b) => el("div", { class: `placement-band ${correct[b] >= PASS ? "ok" : ""}` },
             el("span", { class: "placement-band-name" }, b),
@@ -146,22 +147,22 @@ export function renderPlacement(container, { onDone, onExit } = {}) {
         ),
         el("p", { class: "muted small" }, band === "A1"
           ? "Начнём с самого начала — это нормально и это правильный старт. Всё остальное откроется по пути."
-          : `Уроки с уровня ${band} уже открыты. Предыдущие никуда не делись — заглядывай, если захочешь повторить.`),
+          : tr`Уроки с уровня ${band} уже открыты. Предыдущие никуда не делись — заглядывай, если захочешь повторить.`),
         // Опускать заявленный уровень тест не должен молча: человек мог зайти сюда из любопытства,
         // уже пройдя половину B1, и «начать сначала» ему никто не предлагал.
         lower ? el("p", { class: "muted small" },
-          `Сейчас у тебя заявлен ${claim}, и всё пройденное останется на месте. Если хочешь пойти с ${band} — скажи, я переключу.`) : null,
+          tr`Сейчас у тебя заявлен ${claim}, и всё пройденное останется на месте. Если хочешь пойти с ${band} — скажи, я переключу.`) : null,
         el("div", { class: "placement-actions" },
           el("button", { class: "btn primary big", type: "button", onClick: () => {
             store.update((s) => { s.introSeen = true; });
             store.claimCefr(band, { allowLower: lower });
-            toast(`Уровень ${band}. Открыл уроки с ${CEFR_FIRST[band]}-го.`, { icon: "🎓", ms: 5000 });
+            toast(tr`Уровень ${band}. Открыл уроки с ${CEFR_FIRST[band]}-го.`, { icon: "🎓", ms: 5000 });
             onDone?.(band);
-          } }, lower ? `Всё равно начать с ${band} →` : `Начать с уровня ${band} →`),
+          } }, lower ? tr`Всё равно начать с ${band} →` : tr`Начать с уровня ${band} →`),
           lower ? el("button", { class: "btn ghost", type: "button", onClick: () => {
             store.update((s) => { s.introSeen = true; });
             onDone?.(claim);
-          } }, `Оставить ${claim}`) : null,
+          } }, tr`Оставить ${claim}`) : null,
           el("button", { class: "btn ghost", type: "button", onClick: () => { i = 0; correct.A1 = correct.A2 = correct.B1 = 0; draw(); } }, "Пройти заново"),
         ),
       ),
