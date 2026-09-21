@@ -1,15 +1,15 @@
 # Lingua Mia
 
 Сайт для изучения немецкого — **36 уроков от A1 до B1**, с голосовым собеседником, интервальным
-повторением, играми и рейтингом. Сделан для одного человека и доведён до состояния, когда им может
-пользоваться кто угодно.
+повторением, играми и рейтингом. Объясняет **по-русски или по-азербайджански**: язык переключается
+целиком — интерфейс, уроки, игры и сама Мия.
 
-<sub>**In English** — A German course, 36 levels from A1 to B1: a voice tutor powered by Claude,
-spaced repetition, a placement test, five mini-games and a leaderboard. No framework and no build
-step — vanilla ES modules served as static files, with Postgres behind them. Course content is
-machine-validated (structure, answer keys, German/Russian consistency) and the offline conversation
-engine has 138 regression tests. The documentation below is in Russian: it is written for the
-person this was built for.</sub>
+<sub>**In English** — A German course, 36 levels from A1 to B1, explained in Russian or in
+Azerbaijani: a voice tutor powered by Claude, spaced repetition, a placement test, five mini-games
+and a leaderboard. No framework and no build step — vanilla ES modules served as static files, with
+Postgres behind them. Course content is machine-validated (structure, answer keys, German/Russian
+consistency) and the offline conversation engine has 138 regression tests. The documentation below
+is in Russian.</sub>
 
 ---
 
@@ -34,6 +34,9 @@ person this was built for.</sub>
 
 **Игры и рейтинг.** Пять мини-игр на уже открытых словах — память, блиц, анаграмма, виселица,
 артикли. Общая таблица: опыт, серия дней, уроки, слова и отдельный рейтинг по каждой игре.
+
+**Два языка объяснения.** Русский и азербайджанский. Немецкий при этом не трогается — он и есть
+предмет. Переключатель в кабинете и на первом экране; выбор запоминается.
 
 **Аккаунт.** Прогресс привязан к почте: заходишь с любого устройства и продолжаешь с того же
 места. Без регистрации тоже работает — тогда прогресс живёт в браузере.
@@ -80,6 +83,8 @@ public/js/tutor.js        Мия: разговор, немецкий режим,
 public/js/speech.js       голос и распознавание речи
 public/js/games.js        пять мини-игр
 public/js/brain.js        офлайн-движок Мии, когда нет ключа
+public/js/i18n.js         два языка объяснения: словари, t(), перевод уроков в данных
+public/js/i18n/           азербайджанские словари (интерфейс, уроки)
 public/js/content/        36 уроков (levelNN.js)
 tools/                    валидатор уроков, тесты, предгенерация звука
 ```
