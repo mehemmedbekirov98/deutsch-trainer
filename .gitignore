@@ -13,3 +13,6 @@ node_modules/
 
 # scratch
 *.tmp
+
+# мои заметки по развёртыванию — не для публичного репозитория
+DEPLOY.local.md
