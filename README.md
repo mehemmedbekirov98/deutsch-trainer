@@ -53,8 +53,18 @@
 ### 1. Supabase
 
 1. Создай проект на [supabase.com](https://supabase.com) (Free-тариф хватает с запасом).
-2. **SQL Editor** → вставь целиком `supabase/migrations/0001_init.sql` → Run.
-   Это создаёт таблицы, правила доступа, функцию рейтинга и бакет для голоса.
+   Пароль базы придумываешь сам и сохраняешь — он нужен только для прямого подключения к Postgres,
+   само приложение им не пользуется.
+2. **SQL Editor** → вставь целиком `supabase/migrations/0001_init.sql` → Run,
+   затем так же `supabase/migrations/0002_admin.sql`. Это создаёт таблицы, права доступа,
+   функцию рейтинга, бакет для голоса, админа и хранилище настроек.
+
+   Из терминала то же самое, если установлен Supabase CLI:
+   ```bash
+   supabase link --project-ref <ref>
+   supabase db query --file supabase/migrations/0001_init.sql
+   supabase db query --file supabase/migrations/0002_admin.sql
+   ```
 3. **Authentication → Providers → Email**: включён по умолчанию. Реши, нужно ли подтверждение
    почты («Confirm email»). С ним надёжнее, без него регистрация на один шаг короче.
 4. **Authentication → URL Configuration**: в *Site URL* впиши адрес сайта на Netlify, а в
@@ -72,7 +82,12 @@
    | `SUPABASE_URL` | Project URL |
    | `SUPABASE_ANON_KEY` | ключ anon |
    | `SUPABASE_SERVICE_ROLE_KEY` | ключ service_role |
-   | `ANTHROPIC_API_KEY` | ключ Claude (без него Мия работает офлайн) |
+   | `ANTHROPIC_API_KEY` | ключ Claude — необязательно, можно вставить в панели на самом сайте |
+
+   Где взять ключ Claude: [console.anthropic.com](https://console.anthropic.com) → вход по той же
+   почте → **Settings → API keys → Create Key** → скопировать кнопкой *Copy key* (выделять мышкой
+   нельзя, утащишь перенос строки). Нужен пополненный баланс: **Billing → Add credits**, минимум 5 $.
+   Ключ показывается один раз — потерял, создавай новый.
 
 3. Задеплой. Открой сайт — если всё сошлось, на экране входа появятся поля регистрации.
 
