@@ -299,7 +299,7 @@ export default {
       type: "translate",
       dir: "de-ru",
       text: "Emil hat mir ein Geschenk mitgebracht.",
-      answers: ["Эмиль принёс мне подарок.", "Эмиль принёс мне подарок с собой.", "Мне Эмиль принёс подарок."],
+      answers: ["Эмиль принёс мне подарок.", "Эмиль принёс мне подарок с собой.", "Эмиль принёс мне подарок."],
       hint: "mitbringen → mitgebracht",
     },
     {

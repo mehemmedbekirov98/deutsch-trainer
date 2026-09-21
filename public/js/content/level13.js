@@ -22,7 +22,7 @@ export default {
     { de: "die Nebenkosten", ru: "коммунальные расходы (мн. ч.)", example: "Die Nebenkosten sind nicht in der Miete.", exampleRu: "Коммунальные расходы не входят в аренду." },
     { de: "die Kaution", ru: "залог за квартиру", plural: "die Kautionen", example: "Emil bezahlt die Kaution vor dem Umzug.", exampleRu: "Эмиль платит залог до переезда." },
     { de: "der Mietvertrag", ru: "договор аренды", plural: "die Mietverträge", example: "Am Freitag unterschreiben wir den Mietvertrag.", exampleRu: "В пятницу мы подписываем договор аренды." },
-    { de: "der Vermieter", ru: "арендодатель, хозяин квартиры", plural: "die Vermieter", example: "Der Vermieter gibt Emil die Schlüssel.", exampleRu: "Хозяин квартиры даёт Эмиль ключи." },
+    { de: "der Vermieter", ru: "арендодатель, хозяин квартиры", plural: "die Vermieter", example: "Der Vermieter gibt Emil die Schlüssel.", exampleRu: "Хозяин квартиры даёт Эмилю ключи." },
     { de: "der Nachbar", ru: "сосед", plural: "die Nachbarn", example: "Unser Nachbar ist sehr freundlich.", exampleRu: "Наш сосед очень приветливый." },
     { de: "die Hausordnung", ru: "правила дома", plural: "die Hausordnungen", example: "In der Hausordnung steht: Ab 22 Uhr ist Ruhe.", exampleRu: "В правилах дома написано: после 22 часов — тишина." },
     { de: "das Wohnzimmer", ru: "гостиная", plural: "die Wohnzimmer", example: "Im Wohnzimmer steht ein großes Sofa.", exampleRu: "В гостиной стоит большой диван." },
@@ -46,7 +46,7 @@ export default {
     { de: "umziehen", ru: "переезжать", example: "Emil zieht nach Leipzig um.", exampleRu: "Эмиль переезжает в Лейпциг." },
     { de: "aufräumen", ru: "убирать, наводить порядок", example: "Am Samstag räume ich die Wohnung auf.", exampleRu: "В субботу я убираю квартиру." },
     { de: "sich anmelden", ru: "зарегистрироваться (по месту жительства)", example: "Nach dem Umzug muss man sich anmelden.", exampleRu: "После переезда нужно зарегистрироваться по месту жительства." },
-    { de: "das Bürgeramt", ru: "бюргерамт (ведомство по месту жительства)", plural: "die Bürgerämter", example: "Emil hat am Montag einen Termin im Bürgeramt.", exampleRu: "У Эмиль в понедельник приём в бюргерамте." },
+    { de: "das Bürgeramt", ru: "бюргерамт (ведомство по месту жительства)", plural: "die Bürgerämter", example: "Emil hat am Montag einen Termin im Bürgeramt.", exampleRu: "У Эмиля в понедельник приём в бюргерамте." },
   ],
 
   grammar: [

@@ -234,7 +234,7 @@ export default {
       type: "order",
       words: ["Zeit", "Wenn", "übt", "hat", "Emil", "Deutsch", "er"],
       answer: "Wenn Emil Zeit hat, übt er Deutsch.",
-      ru: "Когда у Эмиль есть время, он занимается немецким.",
+      ru: "Когда у Эмиля есть время, он занимается немецким.",
     },
     {
       type: "translate",

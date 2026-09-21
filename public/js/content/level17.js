@@ -16,7 +16,7 @@ export default {
   ],
 
   vocab: [
-    { de: "die Kleidung", ru: "одежда", example: "Im Winter braucht Emil warme Kleidung.", exampleRu: "Зимой Эмиль нужна тёплая одежда." },
+    { de: "die Kleidung", ru: "одежда", example: "Im Winter braucht Emil warme Kleidung.", exampleRu: "Зимой Эмилю нужна тёплая одежда." },
     { de: "das Hemd", ru: "рубашка", plural: "die Hemden", example: "Das weiße Hemd passt mir gut.", exampleRu: "Белая рубашка мне хорошо сидит." },
     { de: "die Hose", ru: "брюки, штаны", plural: "die Hosen", example: "Die schwarze Hose ist zu lang.", exampleRu: "Чёрные брюки слишком длинные." },
     { de: "der Pullover", ru: "свитер", plural: "die Pullover", example: "Der graue Pullover kostet 30 Euro.", exampleRu: "Серый свитер стоит 30 евро." },
@@ -468,7 +468,7 @@ export default {
       sentence: "Emil braucht einen ___ Schal.",
       answers: ["neuen"],
       options: ["neuen", "neue", "neuer"],
-      ru: "Эмиль нужен новый шарф.",
+      ru: "Эмилю нужен новый шарф.",
       explain: "einen → -en, и в Akkusativ это всегда так.",
     },
     {

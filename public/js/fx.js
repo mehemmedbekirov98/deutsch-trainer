@@ -127,13 +127,13 @@ export function countUp(node, from, to, ms = 800, fmt = (n) => Math.round(n)) {
     if (finished) return;
     const p = Math.min(1, (now - start) / ms);
     const eased = 1 - Math.pow(1 - p, 3);
-    node.textContent = fmt(from + (to - from) * eased);
+    node.textContent = tr(fmt(from + (to - from) * eased));
     if (p < 1) requestAnimationFrame(frame);
     else finished = true;
   }
   requestAnimationFrame(frame);
   // guarantee the final value even if rAF is paused (hidden tab)
-  setTimeout(() => { if (!finished) { finished = true; node.textContent = fmt(to); } }, ms + 60);
+  setTimeout(() => { if (!finished) { finished = true; node.textContent = tr(fmt(to)); } }, ms + 60);
 }
 
 export function xpFloat(anchor, amount) {

@@ -72,15 +72,15 @@ export function renderDialogue({ container, level, onDone, onExit }) {
     root.classList.toggle("play-mode", m === "play");
     if (m === "play") {
       root_msg.textContent = tr`Нажимай 🎤 у реплик Эмиля и произноси их. Произнесено: ${heroDone}/${heroLines}`;
-      roleBtn.textContent = "🎧 Режим прослушивания";
+      roleBtn.textContent = tr("🎧 Режим прослушивания");
       roleBtn.onclick = () => setMode("listen");
-      playBtn.textContent = "▶ Диалог с моими репликами";
+      playBtn.textContent = tr("▶ Диалог с моими репликами");
       playBtn.onclick = () => playAll(true);
     } else {
-      root_msg.textContent = "Сначала послушай весь диалог, потом сыграй роль Эмиля.";
-      roleBtn.textContent = "🎭 Сыграть роль Эмиля";
+      root_msg.textContent = tr("Сначала послушай весь диалог, потом сыграй роль Эмиля.");
+      roleBtn.textContent = tr("🎭 Сыграть роль Эмиля");
       roleBtn.onclick = () => setMode("play");
-      playBtn.textContent = "▶ Прослушать диалог";
+      playBtn.textContent = tr("▶ Прослушать диалог");
       playBtn.onclick = () => playAll(false);
     }
   }
@@ -88,7 +88,7 @@ export function renderDialogue({ container, level, onDone, onExit }) {
   async function playAll(interactive = false) {
     if (playing) { stopped = true; speech.stop(); speech.abortListening(); return; }
     playing = true; stopped = false;
-    playBtn.textContent = "⏹ Стоп";
+    playBtn.textContent = tr("⏹ Стоп");
     for (let i = 0; i < d.lines.length; i++) {
       if (stopped) break;
       const l = d.lines[i];
@@ -117,7 +117,7 @@ export function renderDialogue({ container, level, onDone, onExit }) {
         xpFloat(playBtn, Math.round(15 * store.xpMultiplier()));
       }
       if (!store.level(level.id).dialogueDone) noMicBtn.hidden = false;
-      root_msg.textContent = speech.sttSupported
+      root_msg.textContent = tr(speech.sttSupported)
         ? "Отлично! Теперь попробуй сыграть роль Эмиля 🎭 Если микрофон не работает, отметь диалог кнопкой слева."
         : "Отлично! Микрофон недоступен, поэтому отметь диалог кнопкой слева, когда прочитаешь реплики Эмиля вслух.";
     }
@@ -129,18 +129,18 @@ export function renderDialogue({ container, level, onDone, onExit }) {
     const status = row.querySelector(".dl-status");
     const mic = row.querySelector(".mic-btn");
     if (!speech.sttSupported) {
-      status.textContent = STT_ERRORS.unsupported;
+      status.textContent = tr(STT_ERRORS.unsupported);
       if (!store.level(level.id).dialogueDone) noMicBtn.hidden = false;
       return false;
     }
     mic.classList.add("listening");
-    status.textContent = "Слушаю…";
+    status.textContent = tr("Слушаю…");
     sfx.mic();
     let heard = "";
     try {
-      heard = await speech.listen({ onInterim: (t) => (status.textContent = t) });
+      heard = await speech.listen({ onInterim: (t) => (status.textContent = tr(t)) });
     } catch (e) {
-      status.textContent = STT_ERRORS[e.code] || "Ошибка микрофона";
+      status.textContent = tr(STT_ERRORS[e.code] || "Ошибка микрофона");
       mic.classList.remove("listening");
       if (!store.level(level.id).dialogueDone) noMicBtn.hidden = false; // never leave him stuck here
       return false;
@@ -152,7 +152,7 @@ export function renderDialogue({ container, level, onDone, onExit }) {
     if (ok) {
       const firstTime = !row.classList.contains("done");
       if (firstTime) { row.classList.add("done"); heroDone++; }
-      status.textContent = `✅ ${Math.round(Math.max(score, 0.68) * 100)}% — «${heard}»`;
+      status.textContent = tr(`✅ ${Math.round(Math.max(score, 0.68) * 100)}% — «${heard}»`);
       sfx.correct();
       if (firstTime) {
         store.update((s) => { s.stats.speakCorrect += 1; });
@@ -167,7 +167,7 @@ export function renderDialogue({ container, level, onDone, onExit }) {
         onDone?.();
       } else if (mode === "play") root_msg.textContent = tr`Произнесено: ${heroDone}/${heroLines}`;
     } else {
-      status.textContent = heard ? tr`❌ Я услышала: «${heard}». Попробуй ещё раз.` : "Ничего не услышала. Попробуй ещё раз.";
+      status.textContent = tr(heard ? tr`❌ Я услышала: «${heard}». Попробуй ещё раз.` : "Ничего не услышала. Попробуй ещё раз.");
       sfx.wrong();
     }
     return ok;

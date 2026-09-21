@@ -200,7 +200,7 @@ export default {
       type: "listen",
       text: "Mein Nachbar wirft mir vor, dass meine Tochter zu laut spielt.",
       mode: "choice",
-      q: "В чём сосед упрекает Эмиль?",
+      q: "В чём сосед упрекает Эмиля?",
       options: ["Его дочь слишком громко играет", "Он паркуется на чужом месте", "Он не выносит мусор"],
       answer: 0,
       ru: "Мой сосед упрекает меня в том, что моя дочь слишком громко играет.",

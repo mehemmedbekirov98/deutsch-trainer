@@ -35,7 +35,7 @@ export default {
     { de: "die Autobahn", ru: "автобан, автомагистраль", plural: "die Autobahnen", example: "Auf der Autobahn darf man oft schnell fahren.", exampleRu: "На автобане часто можно ехать быстро." },
     { de: "tanken", ru: "заправляться", example: "Emil tankt das Auto an der Tankstelle.", exampleRu: "Эмиль заправляет машину на заправке." },
     { de: "die Tankstelle", ru: "заправка", plural: "die Tankstellen", example: "Die nächste Tankstelle ist zehn Kilometer entfernt.", exampleRu: "Ближайшая заправка в десяти километрах." },
-    { de: "der Führerschein", ru: "водительские права", plural: "die Führerscheine", example: "Emil hat seit fünf Jahren einen Führerschein.", exampleRu: "У Эмиль уже пять лет есть водительские права." },
+    { de: "der Führerschein", ru: "водительские права", plural: "die Führerscheine", example: "Emil hat seit fünf Jahren einen Führerschein.", exampleRu: "У Эмиля уже пять лет есть водительские права." },
     { de: "das Fahrrad", ru: "велосипед", plural: "die Fahrräder", example: "Im Sommer fahre ich mit dem Fahrrad ins Büro.", exampleRu: "Летом я езжу на велосипеде в офис." },
     { de: "zu Fuß", ru: "пешком", example: "Zum Bäcker gehe ich immer zu Fuß.", exampleRu: "В булочную я всегда хожу пешком." },
     { de: "der Weg", ru: "дорога, путь", plural: "die Wege", example: "Der Weg zum Bahnhof dauert zehn Minuten.", exampleRu: "Дорога до вокзала занимает десять минут." },
@@ -297,7 +297,7 @@ export default {
       sentence: "Emil ___ gestern keine Fahrkarte.",
       answers: ["hatte"],
       options: ["hatte", "hat", "hätte"],
-      ru: "У Эмиль вчера не было билета.",
+      ru: "У Эмиля вчера не было билета.",
       explain: "er (Emil) → hatte, форма как у ich.",
     },
     {

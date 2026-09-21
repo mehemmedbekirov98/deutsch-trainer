@@ -39,7 +39,7 @@ export default {
     { de: "die Jahreszeit", ru: "время года", plural: "die Jahreszeiten", example: "Es gibt vier Jahreszeiten.", exampleRu: "Есть четыре времени года." },
     { de: "der Monat", ru: "месяц", plural: "die Monate", example: "Ein Jahr hat zwölf Monate.", exampleRu: "В году двенадцать месяцев." },
     { de: "der Januar", ru: "январь", example: "Der Januar ist der erste Monat.", exampleRu: "Январь — первый месяц." },
-    { de: "der Mai", ru: "май", example: "Emil hat im Mai Geburtstag.", exampleRu: "У Эмиль день рождения в мае." },
+    { de: "der Mai", ru: "май", example: "Emil hat im Mai Geburtstag.", exampleRu: "У Эмиля день рождения в мае." },
     { de: "der Juli", ru: "июль", example: "Im Juli sind es dreißig Grad.", exampleRu: "В июле тридцать градусов." },
     { de: "der Dezember", ru: "декабрь", example: "Der Dezember ist der letzte Monat.", exampleRu: "Декабрь — последний месяц." },
     { de: "das Datum", ru: "дата, число", example: "Welches Datum ist heute?", exampleRu: "Какое сегодня число?" },
@@ -115,7 +115,7 @@ export default {
       },
       examples: [
         { de: "Der Wievielte ist heute? — Heute ist der dritte Mai.", ru: "Какое сегодня число? — Сегодня третье мая." },
-        { de: "Emil hat am fünfzehnten Mai Geburtstag.", ru: "У Эмиль день рождения пятнадцатого мая." },
+        { de: "Emil hat am fünfzehnten Mai Geburtstag.", ru: "У Эмиля день рождения пятнадцатого мая." },
         { de: "Letzte Woche habe ich viel gelernt.", ru: "На прошлой неделе я много занимался." }
       ]
     }
@@ -278,7 +278,7 @@ export default {
       sentence: "Emil hat ___ 15. Mai Geburtstag.",
       answers: ["am"],
       options: ["am", "im", "um"],
-      ru: "У Эмиль день рождения 15 мая.",
+      ru: "У Эмиля день рождения 15 мая.",
       explain: "Дата с предлогом am: am fünfzehnten Mai."
     },
     {
@@ -502,7 +502,7 @@ export default {
       sentence: "Emil hat am ___ Mai Geburtstag.",
       answers: ["dritten"],
       options: ["dritten", "dritte", "drei"],
-      ru: "У Эмиль день рождения третьего мая.",
+      ru: "У Эмиля день рождения третьего мая.",
       explain: "После am окончание -en: am dritten Mai."
     },
     {

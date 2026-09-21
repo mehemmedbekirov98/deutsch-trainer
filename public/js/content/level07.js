@@ -159,7 +159,7 @@ export default {
     { type: "translate", dir: "ru-de", text: "Сколько стоит платье?", answers: ["Wie viel kostet das Kleid?", "Was kostet das Kleid?"], hint: "kosten, das Kleid" },
     { type: "speak", text: "Ich nehme diese Jacke.", ru: "Я беру эту куртку." },
     { type: "choice", q: "Das Kleid ___ mir.", options: ["gefällt", "gefallen", "gefällst"], answer: 0, explain: "das Kleid — ед. число: gefällt (с умлаутом)." },
-    { type: "fill", sentence: "Gefällt ___ die Jacke, Emil?", answers: ["dir"], options: ["dir", "du", "mir"], ru: "Тебе нравится куртка, Эмиль?", explain: "Вопрос к Эмиль → dir (тебе)." },
+    { type: "fill", sentence: "Gefällt ___ die Jacke, Emil?", answers: ["dir"], options: ["dir", "du", "mir"], ru: "Тебе нравится куртка, Эмиль?", explain: "Вопрос к Эмилю → dir (тебе)." },
     { type: "choice", q: "Die Schuhe ___ mir nicht.", options: ["gefällt", "gefallen", "gefalle"], answer: 1, explain: "die Schuhe — мн. число → gefallen." },
     { type: "order", words: ["mir", "Diese", "gut", "Hose", "gefällt"], answer: "Diese Hose gefällt mir gut.", alt: ["Mir gefällt diese Hose gut."], ru: "Эти брюки мне очень нравятся." },
     { type: "listen", text: "Die Jacke gefällt mir sehr.", mode: "type", answers: ["Die Jacke gefällt mir sehr."], ru: "Куртка мне очень нравится." },

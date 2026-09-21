@@ -471,7 +471,7 @@ export default {
       type: "order",
       words: ["durfte", "Emil", "Woche", "eine", "arbeiten", "nicht"],
       answer: "Emil durfte eine Woche nicht arbeiten.",
-      ru: "Эмиль нельзя было работать неделю.",
+      ru: "Эмилю нельзя было работать неделю.",
     },
     {
       type: "translate",

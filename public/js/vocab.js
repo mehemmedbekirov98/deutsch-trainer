@@ -71,7 +71,7 @@ export function renderFlashcards({ container, level, onDone, onExit }) {
     const v = cards[i];
     flipped = false;
     seen.add(i);
-    counter.textContent = `${i + 1} / ${cards.length}`;
+    counter.textContent = tr(`${i + 1} / ${cards.length}`);
     bar.style.width = `${((i + 1) / cards.length) * 100}%`;
     const art = articleOf(v.de);
     cardEl.className = `flashcard ${dir > 0 ? "slide-in-right" : dir < 0 ? "slide-in-left" : "pop-in"}`;

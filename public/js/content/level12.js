@@ -291,7 +291,7 @@ export default {
       sentence: "Emil ___ im Urlaub kein Auto.",
       answers: ["hatte"],
       options: ["hatte", "war", "ist"],
-      ru: "У Эмиль в отпуске не было машины.",
+      ru: "У Эмиля в отпуске не было машины.",
       explain: "hatte — имел (Präteritum от haben).",
     },
     {

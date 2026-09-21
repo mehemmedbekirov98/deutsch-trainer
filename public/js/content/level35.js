@@ -26,7 +26,7 @@ export default {
     { de: "die Stelle", ru: "рабочее место, должность", plural: "die Stellen", example: "Er sucht eine feste Stelle in Leipzig.", exampleRu: "Он ищет постоянное место в Лейпциге." },
     { de: "die Weiterbildung", ru: "повышение квалификации", plural: "die Weiterbildungen", example: "Die Weiterbildung beginnt im September.", exampleRu: "Повышение квалификации начинается в сентябре." },
     { de: "die Umschulung", ru: "переквалификация, переобучение", plural: "die Umschulungen", example: "Nach der Umschulung arbeitet sie im Büro.", exampleRu: "После переквалификации она работает в офисе." },
-    { de: "die Ausbildung", ru: "профессиональное образование", plural: "die Ausbildungen", example: "Emil hat eine Ausbildung als Elektriker.", exampleRu: "У Эмиль профессиональное образование электрика." },
+    { de: "die Ausbildung", ru: "профессиональное образование", plural: "die Ausbildungen", example: "Emil hat eine Ausbildung als Elektriker.", exampleRu: "У Эмиля профессиональное образование электрика." },
     { de: "die Anerkennung", ru: "признание (диплома)", plural: "die Anerkennungen", example: "Die Anerkennung dauert oft drei Monate.", exampleRu: "Признание часто длится три месяца." },
     { de: "der Abschluss", ru: "диплом, законченное образование", plural: "die Abschlüsse", example: "Mein Abschluss aus Aserbaidschan ist hier anerkannt.", exampleRu: "Мой диплом из Азербайджана здесь признан." },
     { de: "der Arbeitgeber", ru: "работодатель", plural: "die Arbeitgeber", example: "Mein Arbeitgeber zahlt die Weiterbildung.", exampleRu: "Мой работодатель оплачивает повышение квалификации." },

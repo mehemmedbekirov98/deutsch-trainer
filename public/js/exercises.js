@@ -1,5 +1,5 @@
 // Exercise session engine: renders one exercise at a time, checks answers, tracks XP/combo.
-import { t as tr } from "./i18n.js";
+import { t as tr, lang as uiLang } from "./i18n.js";
 import { el, $, append, nextTick, normalize, matchAnswer, similarity, spokenSimilarity, digitsToWords, shuffle, pick, sleep } from "./utils.js";
 import { speech, STT_ERRORS, RATES } from "./speech.js";
 import { sfx, confetti, xpFloat, countUp, toast } from "./fx.js";
@@ -185,7 +185,7 @@ export class ExerciseSession {
 
   updateCombo() {
     if (this.combo > (this.bestCombo || 0)) this.bestCombo = this.combo;
-    this.comboEl.textContent = this.combo >= 2 ? `🔥 x${this.combo}` : "";
+    this.comboEl.textContent = tr(this.combo >= 2 ? `🔥 x${this.combo}` : "");
     this.comboEl.classList.toggle("hot", this.combo >= 3);
   }
 
@@ -195,7 +195,7 @@ export class ExerciseSession {
     this.state = "answer";
     this.feedback.innerHTML = "";
     this.foot.className = "session-foot";
-    this.mainBtn.textContent = "Проверить";
+    this.mainBtn.textContent = tr("Проверить");
     this.skipBtn.hidden = !(ex.type === "speak" || ex.type === "listen");
     this.bar.style.width = `${(this.i / this.exercises.length) * 100}%`;
     this.updateCombo();
@@ -302,7 +302,7 @@ export class ExerciseSession {
     }
     if (earned) xpFloat(this.mainBtn, earned);
     this.skipBtn.hidden = true; // the answer is in: skipping is no longer a thing he can do
-    this.mainBtn.textContent = this.i + 1 >= this.exercises.length ? "Завершить" : "Дальше";
+    this.mainBtn.textContent = tr(this.i + 1 >= this.exercises.length ? "Завершить" : "Дальше");
     this.setReady(true);
     this.mainBtn.focus();
   }
@@ -316,7 +316,7 @@ export class ExerciseSession {
    */
   async askLena(ex, res, btn) {
     btn.disabled = true;
-    btn.textContent = "Мия думает…";
+    btn.textContent = tr("Мия думает…");
     const question = [
       "Объясни коротко мою ошибку в упражнении.",
       tr`Задание: ${ex.q || ex.text || ex.de || ""}`,
@@ -333,7 +333,7 @@ export class ExerciseSession {
           messages: [{ role: "user", content: question }],
           scenario: null,
           notes: [],
-          profile: { name: store.state.name || "", cefr: store.cefr(), mode: "chat" },
+          profile: { name: store.state.name || "", cefr: store.cefr(), mode: "chat", uiLang: uiLang() },
         }),
       });
       const data = await r.json();
@@ -343,7 +343,7 @@ export class ExerciseSession {
       btn.replaceWith(el("div", { class: "fb-lena" }, el("div", { class: "fb-lena-name" }, "Мия"), el("div", {}, text)));
     } catch (e) {
       btn.disabled = false;
-      btn.textContent = "Не получилось — нажми ещё раз";
+      btn.textContent = tr("Не получилось — нажми ещё раз");
     }
   }
 
@@ -566,7 +566,7 @@ function fillRenderer(ex, api) {
     chips.forEach((c) => c.addEventListener("click", () => {
       if (locked) return;
       value = c.textContent;
-      blankEl.textContent = value;
+      blankEl.textContent = tr(value);
       blankEl.classList.add("filled");
       chips.forEach((x) => x.classList.toggle("selected", x === c));
       sfx.pop();
@@ -597,7 +597,7 @@ function fillRenderer(ex, api) {
         wrong.slice(0, Math.max(1, wrong.length - 1)).forEach((c) => { c.disabled = true; c.classList.add("eliminated"); });
       } else {
         const n = Math.max(1, Math.ceil(a.length / 2));
-        input.placeholder = a.slice(0, n) + "…";
+        input.placeholder = tr(a.slice(0, n) + "…");
         node.append(el("div", { class: "hint-box" }, tr`💡 Начинается на «${a.slice(0, n)}…», всего букв: ${a.length}`));
       }
     },
@@ -769,13 +769,13 @@ function speakRenderer(ex, api) {
     listening = true;
     sfx.mic();
     mic.classList.add("listening");
-    status.textContent = "Слушаю… говори!";
+    status.textContent = tr("Слушаю… говори!");
     transcript.textContent = "";
     let text = "";
     try {
-      text = await speech.listen({ onInterim: (t) => (transcript.textContent = t) });
+      text = await speech.listen({ onInterim: (t) => (transcript.textContent = tr(t)) });
     } catch (e) {
-      status.textContent = STT_ERRORS[e.code] || "Ошибка микрофона. Попробуй ещё раз.";
+      status.textContent = tr(STT_ERRORS[e.code] || "Ошибка микрофона. Попробуй ещё раз.");
       mic.classList.remove("listening");
       listening = false;
       // The microphone failing is not his fault and must not trap him: «Проверить» stays reachable
@@ -788,7 +788,7 @@ function speakRenderer(ex, api) {
     mic.classList.remove("listening");
     heard = text;
     tries++;
-    transcript.textContent = heard || "(ничего не услышала)";
+    transcript.textContent = tr(heard || "(ничего не услышала)");
     // spokenSimilarity also matches when recognition wrote numbers as digits
     const score = heard ? spokenSimilarity(heard, ex.text) : 0;
     const h = normalize(digitsToWords(heard)), t = normalize(ex.text);
@@ -799,11 +799,11 @@ function speakRenderer(ex, api) {
     best = Math.max(best, contains ? Math.max(score, 0.85) : score);
     meter.querySelector(".sim-fill").style.width = `${Math.round(best * 100)}%`;
     if (best >= 0.72) {
-      status.textContent = "Отлично, я тебя поняла!";
+      status.textContent = tr("Отлично, я тебя поняла!");
       api.setReady(true);
       api.later(() => api.autoCheck(), 300);
     } else {
-      status.textContent = tries >= 3 ? "Не получилось распознать. Можно проверить или пропустить." : tr`Похоже на ${Math.round(best * 100)}%. Попробуй ещё раз, чётче и ближе к микрофону.`;
+      status.textContent = tr(tries >= 3 ? "Не получилось распознать. Можно проверить или пропустить." : tr`Похоже на ${Math.round(best * 100)}%. Попробуй ещё раз, чётче и ближе к микрофону.`);
       api.setReady(true);
     }
   }
@@ -820,7 +820,7 @@ function speakRenderer(ex, api) {
   return {
     node,
     hint() {
-      status.textContent = "Слушай медленно и повторяй по частям";
+      status.textContent = tr("Слушай медленно и повторяй по частям");
       speech.speak(ex.text, { rate: 0.6, force: true });
     },
     check() {

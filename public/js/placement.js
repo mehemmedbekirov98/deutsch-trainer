@@ -107,7 +107,7 @@ export function renderPlacement(container, { onDone, onExit } = {}) {
         if (b.dataset.right === "1") b.classList.add("correct");
       });
       if (!opt.right) buttons.find((b) => b.textContent === opt.text)?.classList.add("wrong");
-      feedback.textContent = q.why;
+      feedback.textContent = tr(q.why);
       feedback.classList.add("show");
       next.hidden = false;
       nextTick(() => next.focus());
@@ -131,7 +131,7 @@ export function renderPlacement(container, { onDone, onExit } = {}) {
     const lower = CEFR.indexOf(band) < CEFR.indexOf(claim);
     const total = correct.A1 + correct.A2 + correct.B1;
     bar.style.width = "100%";
-    counter.textContent = "Готово";
+    counter.textContent = tr("Готово");
     host.innerHTML = "";
     if (band !== "A1") { confetti({ count: 160, duration: 2200 }); sfx.levelUp(); }
 

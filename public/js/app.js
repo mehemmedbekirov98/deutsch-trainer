@@ -157,7 +157,7 @@ function viewPractice(v) {
             el("div", { class: "game-card-body" },
               el("div", { class: "game-card-name" }, g.name),
               el("div", { class: "game-card-desc" }, g.desc),
-              el("div", { class: "game-card-best" }, blocked ? `🔒 ${blocked}` : best ? `${g.label || "Рекорд"} ${best}${typeof g.unit === "function" ? g.unit(best) : g.unit}` : "Ещё не играл"),
+              el("div", { class: "game-card-best" }, blocked ? tr`🔒 ${blocked}` : best ? tr`${g.label || "Рекорд"} ${best}${typeof g.unit === "function" ? g.unit(best) : g.unit}` : "Ещё не играл"),
             ));
         })));
     }),
@@ -188,7 +188,7 @@ function viewBoard(v) {
     const all = [...BOARD_TABS, ...games];
     for (const t of all) {
       tabsRow.append(el("button", { class: `board-tab ${t.id === tab ? "on" : ""}`, type: "button",
-        onClick: () => { tab = t.id; paint(data); } }, `${t.icon} ${t.title}`));
+        onClick: () => { tab = t.id; paint(data); } }, tr`${t.icon} ${t.title}`));
     }
     const t = all.find((x) => x.id === tab) || all[0];
     const rows = data.rows.slice().map((r) => ({ ...r, v: t.value(r) })).filter((r) => r.v > 0).sort((a, b) => b.v - a.v);
@@ -292,22 +292,22 @@ function viewAdmin(v) {
     const keyMsg = el("div", { class: "auth-msg" });
     const save = el("button", { class: "btn primary", type: "button", onClick: async () => {
       const value = keyInput.value.trim();
-      if (!value) { keyMsg.className = "auth-msg bad"; keyMsg.textContent = "Вставь ключ в поле."; return; }
+      if (!value) { keyMsg.className = "auth-msg bad"; keyMsg.textContent = tr("Вставь ключ в поле."); return; }
       save.disabled = true;
       keyMsg.className = "auth-msg";
-      keyMsg.textContent = "Проверяю ключ у Anthropic…";
+      keyMsg.textContent = tr("Проверяю ключ у Anthropic…");
       try {
         const out = await backend.admin("setKey", { key: value });
         if (out.error) throw new Error(out.error);
         keyInput.value = "";
         keyMsg.className = "auth-msg ok";
-        keyMsg.textContent = "Ключ принят и сохранён. Обновляю страницу, чтобы Мия его подхватила…";
+        keyMsg.textContent = tr("Ключ принят и сохранён. Обновляю страницу, чтобы Мия его подхватила…");
         // AI вычисляется один раз при загрузке из /api/status — без перезагрузки панель говорила
         // «Мия уже отвечает», а Мия продолжала отвечать офлайн.
         setTimeout(() => location.reload(), 1200);
       } catch (e) {
         keyMsg.className = "auth-msg bad";
-        keyMsg.textContent = e.message;
+        keyMsg.textContent = tr(e.message);
       }
       save.disabled = false;
     } }, "Проверить и сохранить");
@@ -578,7 +578,7 @@ function micCard() {
   const card = el("section", { class: "card mic-card" });
   const btn = el("button", { class: "btn primary", type: "button", onClick: async () => {
     btn.disabled = true;
-    btn.textContent = "Запрашиваю…";
+    btn.textContent = tr("Запрашиваю…");
     const ok = await speech.requestMic();
     micState = ok ? "granted" : "denied";
     if (ok) {
@@ -587,7 +587,7 @@ function micCard() {
       card.remove();
     } else {
       btn.disabled = false;
-      btn.textContent = "Разрешить микрофон";
+      btn.textContent = tr("Разрешить микрофон");
       card.querySelector(".mic-card-text").textContent =
         "Браузер отказал. Нажми на значок замка слева в адресной строке → «Микрофон» → «Разрешить», затем обнови страницу.";
     }
@@ -628,7 +628,7 @@ export function aiKeyCard({ compact = false } = {}) {
     return el("section", { class: `card key-card ${compact ? "compact" : ""}` },
       el("div", { class: "card-head" }, el("h2", {}, "💬 Мия сейчас без интернета")),
       el("p", { class: "muted small" },
-        "Она отвечает из своего словаря: объясняет слова и грамматику, ведёт разговоры по урокам и рассказывает про Германию. " +
+        "Она отвечает из своего словаря: объясняет слова и грамматику, ведёт разговоры по урокам и рассказывает про Германию. ",
         "Свободная беседа на любые темы появится, когда сайту включат её."),
     );
   }
@@ -725,7 +725,7 @@ async function typewriter(node, text, ms, isSkipped = () => false) {
   node.classList.add("show");
   for (let i = 0; i <= text.length; i++) {
     if (!node.isConnected || isSkipped()) return;
-    node.textContent = text.slice(0, i);
+    node.textContent = tr(text.slice(0, i));
     await sleep(ms);
   }
 }
@@ -771,7 +771,7 @@ function renderHome(v) {
     el("a", { class: "big-cta", href: next.route, style: next.level ? { "--accent": next.level.color } : null },
       el("div", { class: "big-cta-text" },
         el("div", { class: "cta-kicker" }, "Продолжить"),
-        el("div", { class: "big-cta-title" }, `${next.icon} ${next.label}`),
+        el("div", { class: "big-cta-title" }, tr`${next.icon} ${next.label}`),
         el("div", { class: "cta-sub" }, next.level ? tr`Урок ${next.level.id} · ${next.level.emoji} ${next.level.titleRu}` : "Курс пройден — закрепляй слова"),
       ),
       el("div", { class: "cta-arrow" }, "→"),
@@ -822,7 +822,7 @@ function renderLevels(v) {
   const band = store.cefr();
   v.append(el("div", { class: "page-head" },
     el("h1", {}, "🗺️ Путь в Германию"),
-    el("p", { class: "muted" }, tr`${LEVELS.length} уроков: A1 → A2 → B1. Каждый урок — слова → грамматика → 3 миссии → диалог → разговор с Мией → экзамен. Экзамен на 70% открывает следующий урок и новую главу истории.`)));
+    el("p", { class: "muted" }, tr`${LEVELS.length} уроков: A1 → A2 → B1. Каждый урок — слова → грамматика → 3 миссии → диалог → разговор с Мией → экзамен. Экзамен на 70% открывает следующий урок.`)));
   // Thirty-six nodes in one column is a wall. Three named stretches with a heading each is a map.
   const path = el("div", { class: "level-path" });
   let shown = null;
@@ -1078,7 +1078,7 @@ function viewExam(v, level) {
         sfx.levelUp();
         toast(tr`Уровень ${level.id} пройден! +100 XP · +${coinsGot} 🪙${LEVEL_BY_ID[level.id + 1] ? ` · открыт уровень ${level.id + 1}` : ""}`, { icon: "🏆", kind: "achievement", ms: 5500, title: "Glückwunsch!" });
         if (level.id === 12) setTimeout(() => toast("Ты прошёл весь A1. Дальше — A2!", { icon: "🎓", kind: "achievement", ms: 6000 }), 2600);
-        if (level.id === LEVELS.length) setTimeout(() => toast("Весь курс пройден. Эпилог открыт.", { icon: "🏁", kind: "achievement", ms: 7000 }), 2600);
+        if (level.id === LEVELS.length) setTimeout(() => toast("Весь курс пройден — от A1 до B1. Это была большая работа.", { icon: "🏁", kind: "achievement", ms: 7000 }), 2600);
       } else if (!passed) toast(tr`${res.accuracy}% — нужно 70%. Повтори миссии и попробуй снова!`, { icon: "💪", kind: "warn", ms: 4500 });
     },
     onDone: () => go(`#/level/${level.id}`, { replace: true }),
@@ -1156,7 +1156,7 @@ function renderShop(v) {
     const can = store.canAfford(price) && !owned;
     let btn;
     if (owned && it.kind === "theme") btn = el("button", { class: `btn small ${active ? "ghost" : "primary"}`, type: "button", disabled: active, onClick: () => { store.update((st) => (st.theme = it.theme)); applyTheme(it.theme); sfx.pop(); redrawShop(); } }, active ? "Активна" : "Применить");
-    else if (owned && it.kind === "title") btn = el("button", { class: `btn small ${active ? "ghost" : "primary"}`, type: "button", disabled: active, onClick: () => { store.update((st) => (st.title = it.id)); sfx.pop(); redrawShop(); } }, active ? "Активен" : "Надеть");
+    else if (owned && it.kind === "title") btn = el("button", { class: `btn small ${active ? "ghost" : "primary"}`, type: "button", disabled: active, onClick: () => { store.update((st) => (st.title = tr(it.id))); sfx.pop(); redrawShop(); } }, active ? "Активен" : "Надеть");
     else if (owned) btn = el("button", { class: "btn small ghost", type: "button", disabled: true }, "Куплено ✓");
     else btn = el("button", { class: `btn small ${can ? "primary" : "ghost"}`, type: "button", disabled: !can, onClick: () => buy(it, price) }, can ? tr`Купить · ${price} 🪙` : `${price} 🪙`);
     return el("div", { class: `shop-item ${owned ? "owned" : ""} ${it.kind === "theme" ? "theme-" + it.theme : ""}`, style: { "--i": i } },
@@ -1322,7 +1322,7 @@ function cefrCard() {
           : tr`Открыл уроки с уровня ${c}.`, { icon: "🎓" });
         route();
       },
-    }, `${c} · ${CEFR_TITLE[c]}`))),
+    }, tr`${c} · ${CEFR_TITLE[c]}`))),
   );
 }
 
@@ -1375,7 +1375,7 @@ function renderProfile(v) {
   rate.addEventListener("change", () => { store.update((st) => (st.settings.rate = Number(rate.value))); speech.speak("Guten Tag, Emil. Wie geht es dir?", { rate: Number(rate.value), force: true }); });
   const goal = el("input", { type: "range", min: "20", max: "200", step: "10", value: String(s.dailyGoal) });
   const goalVal = el("span", { class: "muted" }, `${s.dailyGoal} XP`);
-  goal.addEventListener("input", () => (goalVal.textContent = `${goal.value} XP`));
+  goal.addEventListener("input", () => (goalVal.textContent = tr(`${goal.value} XP`)));
   goal.addEventListener("change", () => store.update((st) => (st.dailyGoal = Number(goal.value))));
   const importInput = el("input", { type: "file", accept: "application/json", hidden: true });
   importInput.addEventListener("change", async () => {
@@ -1498,8 +1498,8 @@ function renderProfile(v) {
     ),
     el("section", { class: "card danger" },
       el("div", { class: "card-head" }, el("h2", {}, "Сброс")),
-      el("p", { class: "muted" }, "Удалит весь прогресс, XP, монеты и достижения. Отменить нельзя (но есть резервные копии в data/backups)."),
-      el("button", { class: "btn danger", type: "button", onClick: () => { if (confirm("Точно сбросить весь прогресс Эмиль?")) { store.reset(); applyTheme("nacht"); toast("Прогресс сброшен", { icon: "🗑️" }); go("#/"); } } }, "Сбросить прогресс"),
+      el("p", { class: "muted" }, "Удалит весь прогресс, XP, монеты и достижения. Отменить нельзя — сначала сохрани файл кнопкой «Экспорт прогресса»."),
+      el("button", { class: "btn danger", type: "button", onClick: () => { if (confirm("Точно сбросить весь прогресс?")) { store.reset(); applyTheme("nacht"); toast("Прогресс сброшен", { icon: "🗑️" }); go("#/"); } } }, "Сбросить прогресс"),
     ),
   );
 }

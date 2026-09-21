@@ -60,9 +60,39 @@ export async function initI18n() {
   if (current === "ru") return current;
   await Promise.all([
     load(() => import("./i18n/az-ui.js")),
+    load(() => import("./i18n/az-brain.js")),
     load(() => import("./i18n/az-content.js")),
   ]);
+  translateDocument();
   return current;
+}
+
+/**
+ * Перевести то, что уже лежит в index.html: меню, логотип, заголовок вкладки.
+ *
+ * Эта часть страницы не строится через el() — она приезжает готовой разметкой, и крючок в el()
+ * её не видит. Проход разовый и по маленькому дереву: в index.html только оболочка, всё
+ * остальное рисуется приложением.
+ */
+function translateDocument(root = document.body) {
+  if (current === "ru" || !DICT.size) return;
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+  const hits = [];
+  for (let n = walker.nextNode(); n; n = walker.nextNode()) {
+    const hit = DICT.get(n.nodeValue.trim());
+    if (hit) hits.push([n, hit]);
+  }
+  // сначала собираем, потом правим: менять узлы во время обхода — значит обходить их дважды
+  for (const [node, text] of hits) node.nodeValue = node.nodeValue.replace(node.nodeValue.trim(), text);
+  for (const el of root.querySelectorAll("[title],[placeholder],[aria-label]")) {
+    for (const attr of ["title", "placeholder", "aria-label"]) {
+      const v = el.getAttribute(attr);
+      const hit = v && DICT.get(v);
+      if (hit) el.setAttribute(attr, hit);
+    }
+  }
+  const title = DICT.get(document.title);
+  if (title) document.title = title;
 }
 
 async function load(importer) {
@@ -89,14 +119,26 @@ export function setLang(next) {
  *   t`Урок ${id} из ${n}`          — шаблон с подстановкой
  */
 export function t(input, ...values) {
-  if (current === "ru") return typeof input === "string" ? input : join(input.raw, values);
-  if (typeof input === "string") return DICT.get(input) || input;
-  const key = input.raw.join(SLOT);
-  const tpl = DICT.get(key);
-  if (!tpl) return join(input.raw, values);
+  if (typeof input === "string") return current === "ru" ? input : DICT.get(input) || input;
+  if (current === "ru") return join(input.raw, values);
+
+  // Подставляемые значения тоже проходят через словарь. Половина из них — не числа и не имена, а
+  // русские строки из соседних таблиц: CEFR_TITLE, названия рангов, подписи игр. Без этого фраза
+  // получалась наполовину переведённой — «Səviyyə A1 · Начальный».
+  const vals = values.map((v) => (typeof v === "string" ? translateText(v) : v));
+
+  const tpl = DICT.get(input.raw.join(SLOT));
+  if (!tpl) return join(input.raw, vals);
+
+  // Перевод может ставить подстановки в другом порядке — в азербайджанском он и есть другой:
+  // «Уровень 5 из 36» → «Dərs 5 / 36», но «5 XP до «Мастера»» → ««Usta»-ya qədər 5 XP».
+  // Явная нумерация {0}, {1} читается в словаре и не зависит от порядка слов.
+  if (tpl.includes("{0}") || tpl.includes("{1}")) {
+    return tpl.replace(/\{(\d+)\}/g, (m, i) => (i < vals.length ? String(vals[i] ?? "") : m));
+  }
   const parts = tpl.split(SLOT);
   let out = parts[0] ?? "";
-  for (let i = 0; i < values.length; i++) out += String(values[i] ?? "") + (parts[i + 1] ?? "");
+  for (let i = 0; i < vals.length; i++) out += String(vals[i] ?? "") + (parts[i + 1] ?? "");
   return out;
 }
 

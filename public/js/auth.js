@@ -44,8 +44,8 @@ function field({ label, type = "text", placeholder = "", autocomplete, icon, hin
       onClick: () => {
         const shown = input.type === "text";
         input.type = shown ? "password" : "text";
-        reveal.textContent = shown ? "👁" : "🙈";
-        reveal.title = shown ? "Показать пароль" : "Скрыть пароль";
+        reveal.textContent = tr(shown ? "👁" : "🙈");
+        reveal.title = tr(shown ? "Показать пароль" : "Скрыть пароль");
         input.focus();
       } }, "👁");
   }
@@ -105,7 +105,7 @@ export function renderAuth(container, { onDone, localXp = 0, adoptLocal = null }
       pass.input.addEventListener("input", () => {
         const s = strengthOf(pass.input.value);
         strength.className = `auth-strength ${s ? s.level : ""}`;
-        strength.textContent = s ? s.text : "";
+        strength.textContent = tr(s ? s.text : "");
       });
     }
 
@@ -117,7 +117,7 @@ export function renderAuth(container, { onDone, localXp = 0, adoptLocal = null }
     const busy = (on, label) => {
       submit.disabled = on;
       submit.classList.toggle("loading", on);
-      submit.textContent = on ? label : (isForgot ? "Прислать ссылку" : isReg ? "Создать аккаунт" : "Войти");
+      submit.textContent = tr(on ? label : (isForgot ? "Прислать ссылку" : isReg ? "Создать аккаунт" : "Войти"));
     };
 
     const form = el("form", { class: "auth-form", onSubmit: async (e) => {
@@ -129,7 +129,7 @@ export function renderAuth(container, { onDone, localXp = 0, adoptLocal = null }
           busy(true, "Отправляю…");
           await requestReset(email.input.value.trim());
           msg.className = "auth-msg ok";
-          msg.textContent = "Письмо отправлено. Открой ссылку из него — и задашь новый пароль.";
+          msg.textContent = tr("Письмо отправлено. Открой ссылку из него — и задашь новый пароль.");
           busy(false);
           return;
         }
@@ -170,7 +170,7 @@ export function renderAuth(container, { onDone, localXp = 0, adoptLocal = null }
         onDone?.(backend.user);
       } catch (err) {
         msg.className = "auth-msg bad";
-        msg.textContent = err.message;
+        msg.textContent = tr(err.message);
         busy(false);
       }
     } },
@@ -248,7 +248,7 @@ export function renderNewPassword(container, { onDone } = {}) {
   pass.input.addEventListener("input", () => {
     const s = strengthOf(pass.input.value);
     strength.className = `auth-strength ${s ? s.level : ""}`;
-    strength.textContent = s ? s.text : "";
+    strength.textContent = tr(s ? s.text : "");
   });
   const msg = el("div", { class: "auth-msg" });
   const submit = el("button", { class: "btn primary big auth-submit", type: "submit" }, "Сохранить пароль");
@@ -263,7 +263,7 @@ export function renderNewPassword(container, { onDone } = {}) {
         e.preventDefault();
         submit.disabled = true;
         submit.classList.add("loading");
-        submit.textContent = "Сохраняю…";
+        submit.textContent = tr("Сохраняю…");
         try {
           if (String(pass.input.value).length < 8) throw new Error("Пароль — минимум 8 символов.");
           await changePassword(pass.input.value);
@@ -271,10 +271,10 @@ export function renderNewPassword(container, { onDone } = {}) {
           onDone?.();
         } catch (err) {
           msg.className = "auth-msg bad";
-          msg.textContent = err.message;
+          msg.textContent = tr(err.message);
           submit.disabled = false;
           submit.classList.remove("loading");
-          submit.textContent = "Сохранить пароль";
+          submit.textContent = tr("Сохранить пароль");
         }
       } }, pass.wrap, strength, submit, msg),
     ),

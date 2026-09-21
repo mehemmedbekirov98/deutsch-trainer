@@ -17,7 +17,7 @@ export default {
 
   vocab: [
     { de: "der Kopf", ru: "голова", plural: "die Köpfe", example: "Mein Kopf tut weh.", exampleRu: "У меня болит голова." },
-    { de: "der Bauch", ru: "живот", plural: "die Bäuche", example: "Emil hat Bauchschmerzen.", exampleRu: "У Эмиль болит живот." },
+    { de: "der Bauch", ru: "живот", plural: "die Bäuche", example: "Emil hat Bauchschmerzen.", exampleRu: "У Эмиля болит живот." },
     { de: "der Rücken", ru: "спина", plural: "die Rücken", example: "Mein Rücken tut weh.", exampleRu: "У меня болит спина." },
     { de: "das Bein", ru: "нога", plural: "die Beine", example: "Meine Beine sind müde.", exampleRu: "Мои ноги устали." },
     { de: "der Arm", ru: "рука (от плеча до кисти)", plural: "die Arme", example: "Der Arm tut mir weh.", exampleRu: "У меня болит рука." },
@@ -32,7 +32,7 @@ export default {
     { de: "gesund", ru: "здоровый", example: "Bald bist du wieder gesund.", exampleRu: "Скоро ты снова будешь здоров." },
     { de: "die Schmerzen", ru: "боли (мн. ч.)", example: "Ich habe Schmerzen im Rücken.", exampleRu: "У меня боли в спине." },
     { de: "das Fieber", ru: "температура, жар", example: "Ich habe Fieber.", exampleRu: "У меня температура." },
-    { de: "der Husten", ru: "кашель", example: "Emil hat Husten.", exampleRu: "У Эмиль кашель." },
+    { de: "der Husten", ru: "кашель", example: "Emil hat Husten.", exampleRu: "У Эмиля кашель." },
     { de: "der Schnupfen", ru: "насморк", example: "Ich habe Schnupfen.", exampleRu: "У меня насморк." },
     { de: "die Erkältung", ru: "простуда", plural: "die Erkältungen", example: "Das ist nur eine Erkältung.", exampleRu: "Это всего лишь простуда." },
     { de: "der Arzt", ru: "врач", plural: "die Ärzte", example: "Ich gehe heute zum Arzt.", exampleRu: "Я сегодня иду к врачу." },
@@ -68,7 +68,7 @@ export default {
       },
       examples: [
         { de: "Du sollst im Bett bleiben.", ru: "Тебе следует оставаться в постели." },
-        { de: "Emil soll viel Tee trinken.", ru: "Эмиль надо пить много чая." },
+        { de: "Emil soll viel Tee trinken.", ru: "Эмилю надо пить много чая." },
         { de: "Darf ich morgen arbeiten?", ru: "Можно мне завтра работать?" },
         { de: "Sie dürfen keinen Sport machen.", ru: "Вам нельзя заниматься спортом." },
       ],

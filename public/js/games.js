@@ -106,7 +106,7 @@ function shell({ container, title, subtitle, onExit }) {
     root, body, foot,
     get alive() { return !dead && root.isConnected; },
     score: root.querySelector(".game-score"),
-    setScore(text) { root.querySelector(".game-score").textContent = text; },
+    setScore(text) { root.querySelector(".game-score").textContent = tr(text); },
     finish({ icon, headline, lines, isRecord, onAgain }) {
       if (dead) return;
       body.innerHTML = "";
@@ -241,8 +241,8 @@ function playArticles({ container, onExit, onAgain }) {
   function show() {
     const it = items[i];
     ui.setScore(tr`${i + 1} / ${items.length} · серия ${streak}`);
-    wordEl.textContent = it.noun;
-    ruEl.textContent = it.ru;
+    wordEl.textContent = tr(it.noun);
+    ruEl.textContent = tr(it.ru);
     hintEl.textContent = "";
     hintEl.className = "art-hint";
     buttons.forEach((b) => { b.disabled = false; b.classList.remove("right", "wrong"); });
@@ -256,7 +256,7 @@ function playArticles({ container, onExit, onAgain }) {
     if (ok) {
       correct++; streak++; bestStreak = Math.max(bestStreak, streak);
       chosen.classList.add("right");
-      hintEl.textContent = `✅ ${it.article} ${it.noun}`;
+      hintEl.textContent = tr(`✅ ${it.article} ${it.noun}`);
       hintEl.className = "art-hint ok";
       sfx.correct();
     } else {
@@ -325,7 +325,7 @@ function playScramble({ container, onExit, onAgain }) {
     const it = items[i];
     resolving = false;
     ui.setScore(`${i + 1} / ${items.length}`);
-    clue.textContent = it.ru;
+    clue.textContent = tr(it.ru);
     note.textContent = "";
     note.className = "art-hint";
     line.innerHTML = "";
@@ -358,7 +358,7 @@ function playScramble({ container, onExit, onAgain }) {
     const got = current();
     if (got.length < it.word.length) return;
     if (normalize(got) === normalize(it.word)) { solved++; return reveal(true); }
-    note.textContent = "Пока не то — попробуй переставить.";
+    note.textContent = tr("Пока не то — попробуй переставить.");
     note.className = "art-hint bad";
     sfx.wrong();
   }
@@ -391,7 +391,7 @@ function playScramble({ container, onExit, onAgain }) {
     hintBtn.disabled = true;
     skipBtn.disabled = true;
     line.classList.add(ok ? "correct" : "wrong");
-    note.textContent = ok ? `✅ ${it.de} — ${it.ru}` : tr`Это было: ${it.de} — ${it.ru}`;
+    note.textContent = tr(ok ? `✅ ${it.de} — ${it.ru}` : tr`Это было: ${it.de} — ${it.ru}`);
     note.className = `art-hint ${ok ? "ok" : "bad"}`;
     if (ok) sfx.correct(); else sfx.wrong();
     say(it.de);
@@ -453,7 +453,7 @@ function playBlitz({ container, onExit, onAgain }) {
 
   /** One place that draws the clock, so a penalty shows the moment it is taken. */
   function drawTime() {
-    timerEl.textContent = String(Math.max(0, left));
+    timerEl.textContent = tr(String(Math.max(0, left)));
     bar.style.width = `${(Math.max(0, left) / SECONDS) * 100}%`;
     timerEl.classList.toggle("hurry", left <= 5);
   }
@@ -467,7 +467,7 @@ function playBlitz({ container, onExit, onAgain }) {
     if (over) return;
     const right = pick(pool);
     const wrong = shuffle(pool.filter((w) => w.ru !== right.ru)).slice(0, 3);
-    wordEl.textContent = stripArticle(right.de);
+    wordEl.textContent = tr(stripArticle(right.de));
     ui.setScore(tr`${score} · серия ${streak}`);
     opts.innerHTML = "";
     shuffle([right, ...wrong]).forEach((w) => {
@@ -568,8 +568,8 @@ function playHangman({ container, onExit, onAgain }) {
   ui.root.addEventListener("game:destroy", () => document.removeEventListener("keydown", onKey));
 
   function draw() {
-    hearts.textContent = "❤️".repeat(lives) + "🖤".repeat(LIVES - lives);
-    wordEl.textContent = target.split("").map((c) => (guessed.has(c) ? c : "•")).join(" ");
+    hearts.textContent = tr("❤️".repeat(lives) + "🖤".repeat(LIVES - lives));
+    wordEl.textContent = tr(target.split("").map((c) => (guessed.has(c) ? c : "•")).join(" "));
     ui.setScore(tr`${lives} / ${LIVES} жизней`);
   }
 
@@ -594,7 +594,7 @@ function playHangman({ container, onExit, onAgain }) {
     over = true;
     if (!ui.alive) return;
     Array.from(keys.querySelectorAll("button")).forEach((b) => (b.disabled = true));
-    wordEl.textContent = target.split("").join(" ");
+    wordEl.textContent = tr(target.split("").join(" "));
     say(item.de);
     if (won) {
       confetti();
@@ -682,8 +682,8 @@ export function renderGames({ container, onExit, startId = null }) {
           el("div", { class: "game-card-body" },
             el("div", { class: "game-card-name" }, g.name),
             el("div", { class: "game-card-desc" }, g.desc),
-            el("div", { class: "game-card-best" }, blocked ? `🔒 ${blocked}`
-              : best ? `${g.label || "Рекорд"} ${best}${typeof g.unit === "function" ? g.unit(best) : g.unit}`
+            el("div", { class: "game-card-best" }, blocked ? tr`🔒 ${blocked}`
+              : best ? tr`${g.label || "Рекорд"} ${best}${typeof g.unit === "function" ? g.unit(best) : g.unit}`
                 : "Ещё не играл"),
           ),
         );

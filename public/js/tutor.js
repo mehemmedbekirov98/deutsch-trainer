@@ -1,5 +1,5 @@
 // Mia — the voice tutor. AI mode talks to /api/tutor (Claude); offline mode runs the level's script.
-import { t as tr } from "./i18n.js";
+import { t as tr, lang as uiLang } from "./i18n.js";
 import { el, normalize, sleep, nextTick, todayKey } from "./utils.js";
 import { speech, STT_ERRORS } from "./speech.js";
 import { sfx, confetti, toast, xpFloat } from "./fx.js";
@@ -242,7 +242,7 @@ export class Tutor {
     }).catch(() => {});
     if (!speech.sttSupported) {
       this.mic.disabled = true;
-      this.mic.title = STT_ERRORS.unsupported;
+      this.mic.title = tr(STT_ERRORS.unsupported);
       toast(STT_ERRORS.unsupported, { icon: "🎤", kind: "warn", ms: 6000 });
     }
     this.begin();
@@ -264,11 +264,11 @@ export class Tutor {
   setState(state, text) {
     if (this.stopped) return;
     this.orb.className = `orb ${state}`;
-    this.status.textContent = text;
+    this.status.textContent = tr(text);
     this.mic.classList.toggle("listening", state === "listening");
     const waiting = state === "thinking" || state === "speaking";
     this.sendBtn.disabled = waiting;
-    this.sendBtn.textContent = waiting ? "…" : "➤";
+    this.sendBtn.textContent = tr(waiting ? "…" : "➤");
   }
 
   async begin({ speakFirst = this.talkMode !== "free" } = {}) {
@@ -337,7 +337,9 @@ export class Tutor {
       notes: store.state.miaNotes || [],
       // Who she is talking to today: his name, the CEFR level her German should match, and whether
       // this conversation is currently running in German or is just a conversation.
-      profile: { name: store.state.name || "Emil", cefr: store.cefr(), mode: this.chatMode },
+      // uiLang — на каком языке человек читает сайт. Мия отвечает на языке реплики, но объяснения,
+      // перевод и разбор ошибок должны приходить на его языке, а не на угаданном.
+      profile: { name: store.state.name || "", cefr: store.cefr(), mode: this.chatMode, uiLang: uiLang() },
     };
     if (!this.history.length) this.history.push(body.messages[0]);
     this.setState("thinking", "Мия думает…");
@@ -386,7 +388,7 @@ export class Tutor {
       }
       if (!transient) {
         this.useAi = false;
-        if (this.badge) { this.badge.className = "badge offline"; this.badge.textContent = "обычный режим"; }
+        if (this.badge) { this.badge.className = "badge offline"; this.badge.textContent = tr("обычный режим"); }
       }
       // mid-conversation drop-out: the script has never advanced, so offlineTurn must not restart
       // it. Only the first drop-out announces the hand-over — on a flaky connection every later
@@ -463,9 +465,9 @@ export class Tutor {
     const btn = el("button", { class: "mic-lang", type: "button" });
     const paint = () => {
       const ru = this.micLang() === "ru-RU";
-      btn.textContent = ru ? "RU" : "DE";
+      btn.textContent = tr(ru ? "RU" : "DE");
       btn.classList.toggle("ru", ru);
-      btn.title = ru ? "Микрофон слушает русский. Нажми, чтобы говорить по-немецки." : "Микрофон слушает немецкий. Нажми, чтобы говорить по-русски.";
+      btn.title = tr(ru ? "Микрофон слушает русский. Нажми, чтобы говорить по-немецки." : "Микрофон слушает немецкий. Нажми, чтобы говорить по-русски.");
       btn.setAttribute("aria-label", btn.title);
     };
     btn.addEventListener("click", () => {
@@ -524,13 +526,13 @@ export class Tutor {
       try {
         // German AND Russian at once: Emil is a Russian speaker, and a German-only recogniser
         // simply does not hear him when he asks something in his own language.
-        text = await speech.listen({ lang: this.micLang(), onInterim: (t) => { live.querySelector(".bubble-de").textContent = t || "…"; } });
+        text = await speech.listen({ lang: this.micLang(), onInterim: (t) => { live.querySelector(".bubble-de").textContent = tr(t || "…"); } });
       } catch (e) {
         if (e?.code === "aborted") {
           // the DE/RU switch, not a cancel: reopen in the chosen language without spending a try
           if (this.relisten && !this.cancelListen && !this.stopped && gen === this.gen && this.listening) {
             this.relisten = false;
-            live.querySelector(".bubble-de").textContent = "…"; // drop the other language's interim text
+            live.querySelector(".bubble-de").textContent = tr("…"); // drop the other language's interim text
             await sleep(200); // Chrome throws if start() follows abort() too closely
             if (this.stopped || gen !== this.gen || this.cancelListen || !this.listening) break;
             attempt--; // switching language is not one of his three tries
@@ -743,12 +745,12 @@ export class Tutor {
     this.chatMode = next;
     if (this.talkMode === "free") store.update((s) => { s.settings.chatMode = next; });
     if (this.modeBtn) {
-      this.modeBtn.textContent = next === "german" ? "🇩🇪 Немецкий" : "💬 Разговор";
+      this.modeBtn.textContent = tr(next === "german" ? "🇩🇪 Немецкий" : "💬 Разговор");
       this.modeBtn.classList.toggle("de", next === "german");
     }
     if (this.input) {
       this.input.lang = next === "german" ? "de" : "ru";
-      this.input.placeholder = next === "german"
+      this.input.placeholder = tr(next === "german")
         ? "Пиши по-немецки — Мия поправит…"
         : "Говори или пиши на любом языке…";
     }

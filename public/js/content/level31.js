@@ -42,7 +42,7 @@ export default {
     { de: "die Mahnung", ru: "напоминание об оплате", plural: "die Mahnungen", example: "Nach der zweiten Mahnung kommen Gebühren dazu.", exampleRu: "После второго напоминания добавляются сборы." },
     { de: "die Versicherung", ru: "страховка, страховая компания", plural: "die Versicherungen", example: "Die Versicherung zahlt den Schaden am Auto.", exampleRu: "Страховка оплачивает ущерб машине." },
     { de: "die Krankenkasse", ru: "больничная касса (медицинская страховка)", plural: "die Krankenkassen", example: "Die Krankenkasse bezahlt den Arzt und die Medikamente.", exampleRu: "Больничная касса оплачивает врача и лекарства." },
-    { de: "das Einkommen", ru: "доход", plural: "die Einkommen", example: "Als Fahrer hat Emil ein festes Einkommen.", exampleRu: "У Эмиль как у водителя постоянный доход." },
+    { de: "das Einkommen", ru: "доход", plural: "die Einkommen", example: "Als Fahrer hat Emil ein festes Einkommen.", exampleRu: "У Эмиля как у водителя постоянный доход." },
     { de: "sich etwas leisten können", ru: "мочь себе что-то позволить", example: "Ein neues Auto können wir uns dieses Jahr nicht leisten.", exampleRu: "Новую машину мы в этом году себе позволить не можем." },
     { de: "der Berater", ru: "консультант, специалист", plural: "die Berater", example: "Der Berater in der Bank hat mir alles erklärt.", exampleRu: "Консультант в банке мне всё объяснил." },
     { de: "monatlich", ru: "ежемесячно, ежемесячный", example: "Der Beitrag wird monatlich abgebucht.", exampleRu: "Взнос списывается ежемесячно." },
