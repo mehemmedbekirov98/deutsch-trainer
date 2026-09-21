@@ -13,6 +13,7 @@ import { SHOP, THEMES, TITLE_NAMES, COINS, priceOf, applyTheme } from "./game.js
 import { NEURAL_CHOICES, VOICE_PRESETS, presetById, RATES, MIA_VOICE } from "./speech.js";
 import { logoSvg } from "./logo.js";
 import { session, renderAuth, renderNewPassword, patchMe, changePassword, requestReset } from "./auth.js";
+import { renderPlacement } from "./placement.js";
 import { backend } from "./backend.js";
 import { CEFR, CEFR_TITLE, CEFR_FIRST, CEFR_LAST } from "./store.js";
 
@@ -367,6 +368,19 @@ function viewAdmin(v) {
   load();
 }
 
+
+/* ------------------------------------------------------------ тест уровня */
+
+function viewPlacement(v) {
+  renderPlacement(v, {
+    onDone: () => {
+      // прогресс уже записан внутри теста — остаётся отвести туда, где начинать
+      const from = CEFR_FIRST[store.state.cefrClaim] || 1;
+      go(`#/level/${from}`, { replace: true });
+    },
+  });
+}
+
 function route() {
   cleanup?.();
   cleanup = null;
@@ -410,6 +424,7 @@ function route() {
     else if (a === "login") { focus = true; viewLogin(v); }
     else if (a === "password") { focus = true; renderNewPassword(v, { onDone: () => go("#/profile") }); }
     else if (a === "admin") { routeName = "profile"; viewAdmin(v); }
+    else if (a === "test") { focus = true; viewPlacement(v); }
     else if (a === "games") viewGames(v, b);
     else if (a === "shop") renderShop(v);
     else if (a === "words") renderWords(v);
@@ -670,6 +685,14 @@ function showWelcome() {
           .map(([band, title, sub]) => el("button", { class: "card level-choice-btn", type: "button", onClick: () => choose(band) },
             el("div", { class: "cefr-badge" }, band),
             el("div", {}, el("div", { class: "cefr-name" }, title), el("div", { class: "muted small" }, sub)))),
+        // Most people genuinely do not know, and guessing wrong costs them weeks either way.
+        el("button", { class: "card level-choice-btn test", type: "button", onClick: () => {
+          overlay.classList.remove("show");
+          setTimeout(() => overlay.remove(), 500);
+          go("#/test");
+        } },
+          el("div", { class: "cefr-badge test" }, "?"),
+          el("div", {}, el("div", { class: "cefr-name" }, "Не знаю"), el("div", { class: "muted small" }, "Пройду короткий тест — 18 вопросов, минуты три."))),
       ),
     ),
   );
@@ -1267,6 +1290,7 @@ function cefrCard() {
       ),
     ),
     el("div", { class: "muted small", style: { marginBottom: "10px" } }, "Если ты уже знаешь больше — скажи, и курс откроется с нужного места. Ниже опустить нельзя: пройденное остаётся пройденным."),
+    el("a", { class: "btn ghost small", href: "#/test", style: { marginBottom: "12px" } }, "🎯 Пройти тест уровня"),
     el("div", { class: "board-tabs" }, CEFR.map((c) => el("button", {
       class: `board-tab ${claim === c ? "on" : ""}`, type: "button",
       onClick: () => {

@@ -7,24 +7,39 @@
 alter table public.profiles add column if not exists is_admin boolean not null default false;
 alter table public.profiles add column if not exists blocked   boolean not null default false;
 
--- The first account to be created owns the place. Doing it here rather than by hand means there
--- is never a window where the site has users and nobody who can administer them.
+-- Ownership is by address, not by who got there first: the person who built this is the admin
+-- whenever he signs up, and nobody can take the place by registering ahead of him.
+create or replace function public.is_owner_email(addr text)
+returns boolean
+language sql
+immutable
+as $$
+  select lower(coalesce(addr, '')) in ('mehemmedbekirov98@gmail.com')
+$$;
+
 create or replace function public.handle_new_user()
 returns trigger
 language plpgsql
 security definer
 set search_path = public
 as $$
-declare
-  first_one boolean;
 begin
-  select count(*) = 0 into first_one from public.profiles;
   insert into public.profiles (id, name, is_admin)
-  values (new.id, coalesce(nullif(trim(new.raw_user_meta_data->>'name'), ''), 'Ученик'), first_one)
-  on conflict (id) do nothing;
+  values (
+    new.id,
+    coalesce(nullif(trim(new.raw_user_meta_data->>'name'), ''), 'Ученик'),
+    public.is_owner_email(new.email)
+  )
+  on conflict (id) do update set is_admin = public.is_owner_email(new.email);
   return new;
 end;
 $$;
+
+-- …and if the account already exists (the site ran before this migration), promote it now.
+update public.profiles p
+set is_admin = true
+from auth.users u
+where u.id = p.id and public.is_owner_email(u.email) and not p.is_admin;
 
 -- A blocked account disappears from the shared table.
 create or replace function public.leaderboard()

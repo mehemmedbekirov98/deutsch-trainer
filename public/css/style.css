@@ -1146,3 +1146,35 @@ a.strip-item:hover { background: var(--card-hover); }
   .cabinet-level { width: 100%; }
 }
 .welcome-text { color: #e2e8f0; font-size: 1.05rem; line-height: 1.7; margin-bottom: 8px; }
+
+/* ---------- проверка уровня ---------- */
+.placement { min-height: calc(100vh - 80px); display: grid; place-items: center; padding: 24px 16px; }
+.placement-card { width: min(640px, 100%); padding: 30px; border-radius: 26px; background: var(--card);
+  border: 1px solid var(--border-strong); backdrop-filter: blur(18px); box-shadow: var(--shadow);
+  display: flex; flex-direction: column; gap: 18px; }
+.placement-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 14px; flex-wrap: wrap; }
+.placement-title { font-size: 1.3rem; font-weight: 800; letter-spacing: -0.01em; }
+.placement-body { display: flex; flex-direction: column; gap: 14px; }
+.placement-q { font-size: 0.9rem; color: var(--muted); font-weight: 700; }
+.placement-de { font-size: 1.35rem; font-weight: 700; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.placement-opts { display: flex; flex-direction: column; gap: 10px; }
+.placement-opt { justify-content: flex-start; font-size: 1.05rem; }
+/* пояснение появляется только после ответа — до этого оно было бы подсказкой */
+.placement-why { max-height: 0; opacity: 0; overflow: hidden; font-size: 0.9rem; line-height: 1.55; color: var(--muted);
+  transition: max-height 0.35s ease, opacity 0.3s ease, padding 0.3s ease; }
+.placement-why.show { max-height: 140px; opacity: 1; padding: 12px 14px; border-radius: 12px;
+  background: var(--acc2-10); border-left: 3px solid var(--accent2); }
+.placement-result { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 12px; }
+.placement-result h2 { font-size: 1.6rem; }
+.cefr-badge.big { width: 82px; height: 82px; border-radius: 26px; font-size: 1.9rem; }
+.cefr-badge.test { background: linear-gradient(135deg, var(--warn), var(--accent)); }
+.placement-breakdown { display: flex; gap: 10px; margin: 6px 0; flex-wrap: wrap; justify-content: center; }
+.placement-band { display: flex; align-items: center; gap: 8px; padding: 8px 14px; border-radius: 999px;
+  background: rgba(0, 0, 0, 0.25); border: 1px solid var(--border); font-size: 0.88rem; }
+.placement-band.ok { border-color: var(--ok); background: rgba(52, 211, 153, 0.14); }
+.placement-band-name { font-weight: 800; }
+.placement-band-score { color: var(--muted); font-variant-numeric: tabular-nums; }
+.placement-actions { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-top: 6px; }
+.level-choice-btn.test { border-style: dashed; }
+
+@media (max-width: 600px) { .placement-card { padding: 22px 18px; } }
