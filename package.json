@@ -1,0 +1,23 @@
+{
+  "name": "deutsch-fuer-ali",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "German A1→B1 trainer with a voice tutor — static site on Netlify, data in Supabase",
+  "scripts": {
+    "dev": "netlify dev",
+    "preview": "node tools/dev.mjs",
+    "audio": "node --env-file-if-exists=.env tools/pregen-audio.mjs",
+    "validate": "node tools/validate-content.mjs",
+    "test": "node tools/test-answers.mjs && node tools/test-brain.mjs",
+    "check": "npm run validate && npm test"
+  },
+  "engines": {
+    "node": ">=20.19"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.126.0",
+    "msedge-tts": "^2.0.7",
+    "zod": "^4.6.5"
+  }
+}

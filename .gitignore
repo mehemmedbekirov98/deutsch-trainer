@@ -1,0 +1,15 @@
+# dependencies
+node_modules/
+
+# secrets — never commit these
+.env
+.env.local
+
+# netlify cli state
+.netlify/
+
+# personal machine settings
+.claude/settings.local.json
+
+# scratch
+*.tmp

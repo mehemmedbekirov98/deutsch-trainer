@@ -1,0 +1,57 @@
+# Deutsch für Ali on Netlify.
+#
+# The site is plain static files — no build, no bundler, no framework — so "publish" is simply the
+# folder the browser gets. Only three things need a server at all: Claude, speech synthesis, and
+# telling the page which Supabase project it belongs to. Everything else (sign-in, progress, the
+# leaderboard) goes straight from the browser to Supabase.
+
+[build]
+  publish = "public"
+  command = "echo 'static site — nothing to build'"
+
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+
+# The app calls /api/* exactly as it did against the old local server, so nothing in the client
+# had to learn where it is deployed.
+[[redirects]]
+  from = "/api/tutor"
+  to = "/.netlify/functions/tutor"
+  status = 200
+
+[[redirects]]
+  from = "/api/tts"
+  to = "/.netlify/functions/tts"
+  status = 200
+
+[[redirects]]
+  from = "/api/status"
+  to = "/.netlify/functions/status"
+  status = 200
+
+# Single page app: every other path is the app itself, so a reload on #/profile does not 404.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    # The app loads Supabase from a CDN and talks to Supabase and the Netlify functions; the audio
+    # comes from Supabase Storage. Nothing else, and no inline scripts.
+    Content-Security-Policy = "default-src 'self'; script-src 'self' https://esm.sh https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' blob: https://*.supabase.co; connect-src 'self' https://*.supabase.co https://esm.sh https://cdn.jsdelivr.net; frame-ancestors 'none'"
+
+# Mia's voice never changes once it is synthesised — the cache key contains the text and every
+# voice setting — so it can be cached hard.
+[[headers]]
+  for = "/.netlify/functions/tts"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[dev]
+  publish = "public"
+  port = 8888
