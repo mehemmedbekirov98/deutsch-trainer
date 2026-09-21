@@ -225,7 +225,6 @@ input[type="range"] { accent-color: var(--accent); width: 200px; }
 .big-emoji { font-size: 3.5rem; margin-bottom: 10px; }
 .error pre { white-space: pre-wrap; color: var(--bad); font-size: 0.8rem; }
 .actions-row { display: flex; justify-content: flex-end; gap: 12px; }
-.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
 .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 14px; }
 .stat-card { display: flex; align-items: center; gap: 14px; padding: 18px; flex-wrap: wrap; }
 .stat-icon { font-size: 1.7rem; width: 48px; height: 48px; display: grid; place-items: center; border-radius: 14px; background: var(--card-hover); }
@@ -245,21 +244,12 @@ input[type="range"] { accent-color: var(--accent); width: 200px; }
 .hero-sub { color: var(--muted); margin-top: 10px; font-size: 1.05rem; max-width: 560px; }
 .wave { display: inline-block; animation: wave 2.4s ease-in-out infinite; transform-origin: 70% 70%; }
 @keyframes wave { 0%, 60%, 100% { transform: rotate(0); } 10% { transform: rotate(14deg); } 20% { transform: rotate(-8deg); } 30% { transform: rotate(14deg); } 40% { transform: rotate(-4deg); } 50% { transform: rotate(10deg); } }
-.hero-orbit { position: relative; width: 120px; height: 120px; flex-shrink: 0; }
-.orbit-core { position: absolute; inset: 22px; border-radius: 22px; display: grid; place-items: center; overflow: hidden; box-shadow: 0 0 40px var(--acc-55); animation: floaty 4s ease-in-out infinite; }
-.orbit-ring { position: absolute; inset: 0; border-radius: 50%; border: 1px dashed rgba(255, 255, 255, 0.25); animation: spin 18s linear infinite; }
-.orbit-ring::after { content: ""; position: absolute; top: -5px; left: 50%; width: 10px; height: 10px; border-radius: 50%; background: var(--accent2); box-shadow: 0 0 12px var(--accent2); }
 @keyframes spin { to { transform: rotate(360deg); } }
 @keyframes floaty { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
-.cta-card { display: flex; flex-direction: column; gap: 6px; overflow: hidden; transition: transform 0.25s, box-shadow 0.25s; --accent: #7c5cff; }
-.cta-card::before { content: ""; position: absolute; inset: -40% auto auto -20%; width: 70%; height: 180%; background: radial-gradient(closest-side, color-mix(in srgb, var(--accent) 45%, transparent), transparent); opacity: 0.8; pointer-events: none; }
-.cta-card:hover, .lena-card:hover { transform: translateY(-4px); box-shadow: 0 30px 60px -24px rgba(0, 0, 0, 0.8); }
 .cta-kicker { font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); font-weight: 800; }
 .cta-title { font-size: 1.4rem; font-weight: 800; }
 .cta-sub { color: var(--muted); }
 .cta-arrow { position: absolute; right: 22px; bottom: 18px; font-size: 1.8rem; font-weight: 800; opacity: 0.6; transition: 0.25s; }
-.cta-card:hover .cta-arrow { transform: translateX(6px); opacity: 1; }
-.lena-card { display: flex; align-items: center; gap: 18px; transition: transform 0.25s, box-shadow 0.25s; }
 .mini-path { display: flex; flex-wrap: wrap; gap: 10px; margin: 6px 0 12px; }
 .mini-node { width: 48px; height: 48px; border-radius: 16px; display: grid; place-items: center; font-size: 1.3rem; border: 1px solid var(--border); background: var(--card); transition: 0.2s; }
 .mini-node.open { border-color: color-mix(in srgb, var(--accent) 70%, transparent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 25%, transparent), 0 8px 24px -10px var(--accent); animation: pulse-soft 2.4s ease-in-out infinite; }
@@ -267,10 +257,6 @@ input[type="range"] { accent-color: var(--accent); width: 200px; }
 .mini-node.locked { opacity: 0.45; filter: grayscale(1); }
 .mini-node:not(.locked):hover { transform: translateY(-3px) scale(1.05); }
 @keyframes pulse-soft { 0%, 100% { box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 25%, transparent); } 50% { box-shadow: 0 0 0 8px color-mix(in srgb, var(--accent) 8%, transparent); } }
-.wod { display: flex; flex-direction: column; gap: 6px; }
-.wod-de { font-size: 1.8rem; font-weight: 800; }
-.wod-ru { color: var(--accent2); font-weight: 700; font-size: 1.1rem; }
-.wod-ex { margin-top: 6px; }
 
 /* ---------- level path ---------- */
 .level-path { display: flex; flex-direction: column; gap: 14px; position: relative; padding: 10px 0; }
@@ -512,10 +498,6 @@ input[type="range"] { accent-color: var(--accent); width: 200px; }
 .mic-card-icon { width: 54px; height: 54px; border-radius: 16px; display: grid; place-items: center; font-size: 1.7rem; background: linear-gradient(135deg, #f43f5e, #f97316); box-shadow: 0 10px 26px -12px #f43f5e; animation: mic-pulse 2.4s ease-out infinite; }
 .mic-card > div:nth-child(2) { flex: 1; min-width: 220px; }
 .mic-card-text { margin-top: 4px; font-size: 0.9rem; }
-.ai-hint { padding: 14px 18px; border-radius: 16px; background: var(--acc-10); border: 1px solid var(--acc-35); font-size: 0.92rem; line-height: 1.55; color: #d6dcf5; }
-.ai-hint-title { font-weight: 800; margin-bottom: 6px; color: #fff; }
-.ai-steps { margin: 8px 0 0; padding-left: 20px; display: flex; flex-direction: column; gap: 4px; }
-.ai-hint code { background: rgba(0, 0, 0, 0.35); padding: 2px 7px; border-radius: 6px; font-family: ui-monospace, "SFMono-Regular", Consolas, monospace; font-size: 0.88em; }
 /* the quiet opening state of a free conversation: Mia waits instead of talking first */
 .tutor-idle { align-self: center; margin: auto 0; display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 28px 24px; text-align: center; max-width: 460px; color: var(--muted); }
 .tutor-idle-icon { font-size: 2.6rem; line-height: 1; filter: drop-shadow(0 6px 18px var(--acc-45)); animation: idlePulse 3.2s ease-in-out infinite; }
@@ -575,10 +557,7 @@ input[type="range"] { accent-color: var(--accent); width: 200px; }
 .wr-ru { grid-column: 1; font-size: 0.88rem; }
 
 /* ---------- profile ---------- */
-.profile-hero { display: flex; align-items: center; gap: 22px; }
 .avatar { width: 92px; height: 92px; border-radius: 30px; display: grid; place-items: center; font-size: 2.4rem; font-weight: 800; background: linear-gradient(135deg, var(--accent), var(--accent2)); box-shadow: 0 16px 40px -14px var(--accent); flex-shrink: 0; }
-.ph-text { flex: 1; display: flex; flex-direction: column; gap: 8px; }
-.ph-rank { font-weight: 700; color: var(--accent2); }
 .ach-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
 .ach { padding: 14px 10px; border-radius: 16px; border: 1px solid var(--border); background: rgba(0, 0, 0, 0.2); text-align: center; opacity: 0.45; transition: 0.2s; }
 .ach.got { opacity: 1; background: linear-gradient(135deg, rgba(251, 191, 36, 0.18), var(--card)); border-color: rgba(251, 191, 36, 0.45); }
@@ -595,7 +574,6 @@ input[type="range"] { accent-color: var(--accent); width: 200px; }
 
 /* ---------- responsive ---------- */
 @media (max-width: 1000px) {
-  .grid-2 { grid-template-columns: 1fr; }
   .scenario-picker { position: static; }
   .level-hero { grid-template-columns: auto 1fr; }
   .lh-progress { grid-column: 2; justify-self: start; }
@@ -615,7 +593,6 @@ input[type="range"] { accent-color: var(--accent); width: 200px; }
   body.focus .sidebar { transform: translateY(120%); visibility: hidden; transition: transform 0.4s, opacity 0.3s, visibility 0s 0.4s; }
   .main { padding: 18px 14px 96px; }
   .hero { flex-direction: column; align-items: flex-start; }
-  .hero-orbit { display: none; }
   .level-node.left, .level-node.right { margin: 0; align-self: stretch; width: 100%; }
   .level-path::before { display: none; }
   .level-hero { grid-template-columns: 1fr; }
@@ -634,8 +611,6 @@ input[type="range"] { accent-color: var(--accent); width: 200px; }
   .tutor-toggles { width: 100%; }
   .foot-actions { flex-wrap: wrap; }
   .foot-actions .btn.big { flex: 1; }
-  .profile-hero { flex-direction: column; text-align: center; }
-  .ph-text { width: 100%; }
   .setting { flex-wrap: wrap; }
 }
 /* ---------- items, shop, welcome ---------- */
@@ -657,12 +632,7 @@ input[type="range"] { accent-color: var(--accent); width: 200px; }
 .stat-card.coins { --accent: #f59e0b; transition: transform 0.2s; }
 .stat-card.coins .stat-icon { background: linear-gradient(135deg, rgba(245, 158, 11, 0.35), rgba(251, 191, 36, 0.12)); }
 .stat-card.coins:hover { transform: translateY(-3px); }
-.hero-rank { display: flex; align-items: center; gap: 12px; margin-top: 14px; font-weight: 700; max-width: 520px; }
-.hero-rank .progress-track { max-width: 180px; }
-.hero-title-badge { display: inline-block; margin-top: 6px; padding: 4px 12px; border-radius: 999px; background: linear-gradient(90deg, rgba(251, 191, 36, 0.25), var(--acc-20)); border: 1px solid rgba(251, 191, 36, 0.5); font-weight: 800; font-size: 0.85rem; }
 .title-chip { display: inline-block; margin-left: 12px; padding: 3px 10px; border-radius: 999px; background: rgba(251, 191, 36, 0.18); border: 1px solid rgba(251, 191, 36, 0.5); font-size: 0.8rem; vertical-align: middle; }
-.story-card { border-color: rgba(251, 191, 36, 0.3); }
-.story-teaser { color: #e2e8f0; font-size: 1.02rem; line-height: 1.65; }
 .stage-reward { margin-top: 6px; font-size: 0.78rem; font-weight: 700; color: var(--warn); }
 .shop-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
 .shop-balance { display: flex; align-items: baseline; gap: 8px; padding: 12px 20px; border-radius: 18px; background: linear-gradient(135deg, rgba(245, 158, 11, 0.25), rgba(251, 191, 36, 0.08)); border: 1px solid rgba(251, 191, 36, 0.5); box-shadow: 0 12px 30px -14px rgba(245, 158, 11, 0.6); }
@@ -723,7 +693,6 @@ input[type="range"] { accent-color: var(--accent); width: 200px; }
 .fc-plural { font-size: 0.9rem; }
 .fc-example-ru { font-size: 0.95rem; }
 .result-xp { display: inline-block; min-width: 2ch; }
-.hero-text { min-width: 0; }
 .lh-text { min-width: 0; }
 /* the loot emoji is absolutely placed in the top-right corner — keep the text clear of it */
 .ln-body { min-width: 0; flex: 1; padding-right: 34px; }
@@ -733,16 +702,6 @@ input[type="range"] { accent-color: var(--accent); width: 200px; }
 /* one-field setup for the smart Mia */
 .key-card { display: flex; flex-direction: column; gap: 12px; border-color: var(--acc-45); background: linear-gradient(120deg, var(--acc-16), var(--card)); }
 .key-card.compact { padding: 18px; }
-.key-head { display: flex; gap: 16px; align-items: flex-start; }
-.key-icon { width: 48px; height: 48px; border-radius: 15px; display: grid; place-items: center; font-size: 1.5rem; background: linear-gradient(135deg, var(--accent), var(--accent2)); box-shadow: 0 10px 26px -12px var(--accent); flex-shrink: 0; }
-.key-row { display: flex; gap: 10px; flex-wrap: wrap; }
-.key-row .text-input { flex: 1; min-width: 200px; font-family: ui-monospace, "SFMono-Regular", Consolas, monospace; font-size: 0.95rem; }
-.key-error { color: var(--bad); }
-.key-help summary { cursor: pointer; color: var(--muted); font-size: 0.85rem; font-weight: 700; }
-.key-help summary:hover { color: var(--text); }
-.key-help[open] summary { margin-bottom: 8px; }
-.key-help .ai-steps { font-size: 0.88rem; color: #d6dcf5; }
-.key-help code { background: rgba(0, 0, 0, 0.35); padding: 2px 7px; border-radius: 6px; font-family: ui-monospace, Consolas, monospace; font-size: 0.88em; }
 .tutor-key-slot:empty { display: none; }
 
 /* voice tone picker */
@@ -791,9 +750,6 @@ input[type="range"] { accent-color: var(--accent); width: 200px; }
 .tutor-side .phrase-list { flex-direction: column; }
 .tutor-side .phrase { width: 100%; }
 .tutor-side .key-card { padding: 16px; }
-.tutor-side .key-head { flex-direction: column; gap: 10px; }
-.tutor-side .key-row { flex-direction: column; }
-.tutor-side .key-row .btn { width: 100%; }
 
 @media (max-width: 1100px) {
   .tutor-body { grid-template-columns: 1fr; }
@@ -802,9 +758,6 @@ input[type="range"] { accent-color: var(--accent); width: 200px; }
   .tutor-side { overflow: visible; }
   .tutor-side .phrase-list { flex-direction: row; flex-wrap: wrap; }
   .tutor-side .phrase { width: auto; }
-  .tutor-side .key-head { flex-direction: row; }
-  .tutor-side .key-row { flex-direction: row; }
-  .tutor-side .key-row .btn { width: auto; }
 }
 
 @media (max-width: 760px) {
@@ -1097,9 +1050,6 @@ a.strip-item:hover { background: var(--card-hover); }
 }
 
 /* ---------- account card in the cabinet ---------- */
-.account-card { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
-.account-avatar { display: grid; place-items: center; width: 62px; height: 62px; border-radius: 20px; font-size: 1.6rem; font-weight: 800; color: #fff; background: linear-gradient(135deg, var(--accent), var(--accent2)); }
-.account-main { flex: 1; min-width: 180px; }
 .account-actions { display: flex; gap: 8px; flex-wrap: wrap; }
 
 /* ---------- Mia: talk vs practise ---------- */
