@@ -9,7 +9,7 @@ import { renderFlashcards, buildVocabQuiz, buildReviewQuiz } from "./vocab.js";
 import { renderDialogue } from "./dialogue.js";
 import { renderGames, gameCatalogue } from "./games.js";
 import { LEVELS, LEVEL_BY_ID, missionsOf } from "./levels.js";
-import { STORY, SHOP, THEMES, TITLE_NAMES, COINS, priceOf, applyTheme } from "./game.js";
+import { SHOP, THEMES, TITLE_NAMES, COINS, priceOf, applyTheme } from "./game.js";
 import { NEURAL_CHOICES, VOICE_PRESETS, presetById, RATES, MIA_VOICE } from "./speech.js";
 import { logoSvg } from "./logo.js";
 import { session, renderAuth, renderNewPassword, patchMe, changePassword, requestReset } from "./auth.js";
@@ -69,7 +69,7 @@ async function boot() {
   const loader = $("#loader");
   loader.classList.add("hide");
   setTimeout(() => loader.remove(), 700);
-  if (!store.state.introSeen) showPrologue();
+  if (!store.state.introSeen) showWelcome();
   else if (store.dailyBonus) {
     const b = store.dailyBonus;
     setTimeout(() => toast(`+${b.coins} монет за ${b.streak}-й день подряд`, { icon: "🪙", title: "Ежедневный бонус" }), 900);
@@ -239,6 +239,134 @@ function viewLogin(v) {
   });
 }
 
+
+/* ------------------------------------------------------------------ админка */
+
+/**
+ * The owner's panel: the key, who is here, and the two switches worth having.
+ *
+ * Not linked from anywhere a normal account can see, and the function behind it refuses anyone
+ * who is not an admin anyway — the hidden link is convenience, the check is the security.
+ */
+function viewAdmin(v) {
+  if (!session.isAdmin) {
+    append(v, el("div", { class: "empty-state" },
+      el("div", { class: "empty-icon" }, "🔒"),
+      el("div", {}, "Эта страница не для тебя."),
+      el("a", { class: "btn ghost", href: "#/" }, "На главную")));
+    return;
+  }
+
+  const host = el("div", {}, el("div", { class: "muted" }, "Загружаю…"));
+  append(v,
+    el("div", { class: "page-head" },
+      el("h1", {}, "⚙️ Панель управления"),
+      el("p", { class: "muted" }, "Видишь только ты. Здесь ключ Мии, люди и то, что с ними можно сделать.")),
+    host,
+  );
+
+  const load = () => backend.admin("overview").then(paint).catch((e) => {
+    host.innerHTML = "";
+    host.append(el("div", { class: "card" }, el("div", { class: "muted" }, e.message)));
+  });
+
+  const paint = (d) => {
+    host.innerHTML = "";
+
+    /* --- ключ --- */
+    const keyInput = el("input", { class: "auth-input", type: "password", placeholder: "sk-ant-…", autocomplete: "off", spellcheck: "false" });
+    const keyMsg = el("div", { class: "auth-msg" });
+    const save = el("button", { class: "btn primary", type: "button", onClick: async () => {
+      const value = keyInput.value.trim();
+      if (!value) { keyMsg.className = "auth-msg bad"; keyMsg.textContent = "Вставь ключ в поле."; return; }
+      save.disabled = true;
+      keyMsg.className = "auth-msg";
+      keyMsg.textContent = "Проверяю ключ у Anthropic…";
+      try {
+        const out = await backend.admin("setKey", { key: value });
+        if (out.error) throw new Error(out.error);
+        keyInput.value = "";
+        keyMsg.className = "auth-msg ok";
+        keyMsg.textContent = "Ключ принят и сохранён. Мия уже отвечает на любые темы.";
+        setTimeout(load, 900);
+      } catch (e) {
+        keyMsg.className = "auth-msg bad";
+        keyMsg.textContent = e.message;
+      }
+      save.disabled = false;
+    } }, "Проверить и сохранить");
+
+    host.append(el("section", { class: "card" },
+      el("div", { class: "card-head" },
+        el("h2", {}, "🤖 Ключ Anthropic"),
+        el("span", { class: d.hasKey ? "badge ai" : "badge offline" }, d.hasKey ? "подключён" : "нет ключа")),
+      el("p", { class: "muted small" }, d.keyFromEnv
+        ? "Ключ задан переменной ANTHROPIC_API_KEY в настройках Netlify. Она главнее того, что вводится здесь, — чтобы поменять, правь переменную."
+        : "Свободный разговор Мии работает через Claude. Ключ берётся в консоли Anthropic, хранится в базе и в браузер никогда не отдаётся — здесь видно только, есть он или нет."),
+      d.keyFromEnv ? null : el("div", { class: "auth-form", style: { marginTop: "12px" } },
+        keyInput,
+        el("div", { class: "account-actions" },
+          save,
+          d.hasKey ? el("button", { class: "btn ghost small", type: "button", onClick: async () => {
+            if (!confirm("Убрать ключ? Мия вернётся к офлайн-словарю.")) return;
+            await backend.admin("clearKey").catch(() => {});
+            load();
+          } }, "Убрать ключ") : null),
+        keyMsg),
+    ));
+
+    /* --- цифры --- */
+    host.append(el("section", { class: "stats-grid" },
+      statCard("👥", String(d.stats.total), "аккаунтов"),
+      statCard("🟢", String(d.stats.today), "заходили сегодня"),
+      statCard("📅", String(d.stats.week), "за неделю"),
+      statCard("⚡", String(d.stats.xp), "XP у всех вместе"),
+    ));
+
+    /* --- люди --- */
+    const rows = d.users.slice().sort((a, b) => b.xp - a.xp);
+    host.append(el("section", { class: "card" },
+      el("div", { class: "card-head" }, el("h2", {}, "👥 Люди"), el("span", { class: "muted small" }, `${rows.length}`)),
+      el("div", { class: "board-list" }, rows.map((u) => {
+        const act = (payload, ok) => async (e) => {
+          e.currentTarget.disabled = true;
+          try { await backend.admin("setUser", { id: u.id, ...payload }); toast(ok, { icon: "⚙️" }); load(); }
+          catch (err) { toast(err.message, { icon: "⚠️", kind: "warn" }); e.currentTarget.disabled = false; }
+        };
+        return el("div", { class: `board-row ${u.id === session.user?.id ? "me" : ""}` },
+          el("div", { class: "board-place" }, u.isAdmin ? "⚙️" : u.blocked ? "🚫" : "·"),
+          el("div", { class: "board-who" },
+            el("div", { class: "board-name" }, u.name,
+              u.isAdmin ? el("span", { class: "board-you" }, "админ") : null,
+              u.blocked ? el("span", { class: "board-you", style: { background: "rgba(251,113,133,.3)" } }, "заблокирован") : null),
+            el("div", { class: "board-sub muted small" },
+              `${u.cefr} · ${u.xp} XP · ${u.levels} ${plural(u.levels, "урок", "урока", "уроков")} · ${u.lastSeen ? "был " + new Date(u.lastSeen).toLocaleDateString("ru-RU") : "ещё не занимался"}`)),
+          el("div", { class: "account-actions" },
+            u.id === session.user?.id ? el("span", { class: "muted small" }, "это ты") : el("button",
+              { class: "btn ghost small", type: "button", onClick: act({ blocked: !u.blocked }, u.blocked ? "Разблокирован" : "Заблокирован") },
+              u.blocked ? "Разблокировать" : "Заблокировать"),
+            u.id === session.user?.id ? null : el("button",
+              { class: "btn ghost small", type: "button", onClick: act({ isAdmin: !u.isAdmin }, u.isAdmin ? "Права сняты" : "Теперь админ") },
+              u.isAdmin ? "Снять админа" : "Сделать админом"),
+          ));
+      })),
+    ));
+
+    /* --- что фильтруется --- */
+    host.append(el("section", { class: "card" },
+      el("div", { class: "card-head" }, el("h2", {}, "🛡️ Фильтр содержимого")),
+      el("p", { class: "muted small" }, "Работает всегда и выключить его нельзя. Сообщение отсеивается ещё до обращения к Claude, так что запрещённое не стоит ни копейки."),
+      el("div", { class: "board-tabs", style: { marginTop: "10px" } },
+        ["Порно и эротика", "Азартные игры", "Расизм и вражда", "Насилие и оружие", "Наркотики", "Политика и войны", "Мат в ответах"]
+          .map((t) => el("span", { class: "board-tab on" }, t))),
+      el("p", { class: "muted small", style: { marginTop: "10px" } },
+        "Просьбы вида «как будет …» и «что значит …» не блокируются: спросить перевод грубого слова — это словарь, а не нарушение. Разговор о том, как устроены ведомства, страховка и договоры, политикой не считается."),
+    ));
+  };
+
+  load();
+}
+
 function route() {
   cleanup?.();
   cleanup = null;
@@ -252,7 +380,7 @@ function route() {
   v.style.removeProperty("--accent");
   window.scrollTo({ top: 0 });
   let routeName = a || "home";
-  if (["games", "words", "review", "shop", "story"].includes(routeName)) routeName = routeName === "shop" || routeName === "story" ? "profile" : "practice";
+  if (["games", "words", "review", "shop"].includes(routeName)) routeName = routeName === "shop" ? "profile" : "practice";
   let focus = false;
   try {
     if (!a) renderHome(v);
@@ -281,9 +409,9 @@ function route() {
     else if (a === "board") viewBoard(v);
     else if (a === "login") { focus = true; viewLogin(v); }
     else if (a === "password") { focus = true; renderNewPassword(v, { onDone: () => go("#/profile") }); }
+    else if (a === "admin") { routeName = "profile"; viewAdmin(v); }
     else if (a === "games") viewGames(v, b);
     else if (a === "shop") renderShop(v);
-    else if (a === "story") renderStory(v);
     else if (a === "words") renderWords(v);
     else if (a === "review") { focus = true; viewReview(v); }
     else if (a === "profile") renderProfile(v);
@@ -456,13 +584,27 @@ function micCard() {
  * to write to now — the key is an environment variable on Netlify — so pretending otherwise would
  * just be a form that never works. It says what is true instead.
  */
+/**
+ * Shown when Mia has no model behind her.
+ *
+ * For an ordinary person this is a fact about the app, not a task: telling them about environment
+ * variables and API keys is noise they can do nothing with. The owner gets the panel instead.
+ */
 export function aiKeyCard({ compact = false } = {}) {
+  if (!session.isAdmin) {
+    // Nothing for them to do, so do not put a card in their way at all.
+    if (compact) return null;
+    return el("section", { class: `card key-card ${compact ? "compact" : ""}` },
+      el("div", { class: "card-head" }, el("h2", {}, "💬 Мия сейчас без интернета")),
+      el("p", { class: "muted small" },
+        "Она отвечает из своего словаря: объясняет слова и грамматику, ведёт разговоры по урокам и рассказывает про Германию. " +
+        "Свободная беседа на любые темы появится, когда сайту включат её."),
+    );
+  }
   return el("section", { class: `card key-card ${compact ? "compact" : ""}` },
     el("div", { class: "card-head" }, el("h2", {}, "🤖 Свободный разговор выключен")),
-    el("p", { class: "muted small" },
-      "Мия сейчас отвечает из своего офлайн-словаря: слова, грамматика, разговоры по урокам. " +
-      "Чтобы она говорила на любые темы, сайту нужен ключ Anthropic — он задаётся один раз в настройках Netlify " +
-      "(переменная ANTHROPIC_API_KEY), а не здесь."),
+    el("p", { class: "muted small" }, "У сайта нет ключа Anthropic. Вставь его в панели — проверю и сохраню."),
+    el("a", { class: "btn primary small", href: "#/admin", style: { marginTop: "10px" } }, "⚙️ Открыть панель"),
   );
 }
 
@@ -493,37 +635,34 @@ function statCard(icon, val, label, cls = "") {
 
 const KIND_SHORT = { choice: "выбор", fill: "пропуски", translate: "перевод", order: "порядок слов", match: "пары", listen: "аудирование", speak: "произношение" };
 
-/* -------------------------------------------------------------- prologue */
-function showPrologue() {
-  const p = STORY.prologue;
-  const overlay = el("div", { class: "prologue" });
-  const textHost = el("div", { class: "prologue-text" });
-  let skipped = false;
-  const btn = el("button", { class: "btn primary big", type: "button", hidden: true, onClick: () => askLevel() }, p.cta);
+/* --------------------------------------------------------------- welcome */
 
-  /**
-   * One question before the first lesson: how much German do you already have?
-   *
-   * The course runs from A1 to B1, and making somebody who already speaks some German sit through
-   * "Hallo, ich heiße…" is the fastest way to lose them. The answer also tells Mia how hard her
-   * German may be, so it is worth asking properly instead of guessing.
-   */
-  function askLevel() {
-    const inner = overlay.querySelector(".prologue-inner");
-    inner.innerHTML = "";
-    const choose = (band) => {
-      store.update((s) => { s.introSeen = true; s.cefrClaim = band; });
-      overlay.classList.remove("show");
-      setTimeout(() => overlay.remove(), 600);
-      sfx.levelUp();
-      route();
-      toast(band === "A1" ? "Начинаем с самого начала. Глава 1 открыта!" : `Открыл уроки с уровня ${band}. Передумаешь — поменяешь в кабинете.`, { icon: "🎓", ms: 5000 });
-    };
-    append(inner,
+/**
+ * The very first screen, and the only question the app ever asks before letting someone in:
+ * how much German do you already have?
+ *
+ * The course runs from A1 to B1, and making somebody who already speaks some German sit through
+ * "Hallo, ich heiße…" is the fastest way to lose them. The answer also tells Mia how hard her
+ * German may be, so it is worth asking properly instead of guessing.
+ */
+function showWelcome() {
+  const overlay = el("div", { class: "prologue" });
+  const choose = (band) => {
+    store.update((s) => { s.introSeen = true; s.cefrClaim = band; });
+    overlay.classList.remove("show");
+    setTimeout(() => overlay.remove(), 600);
+    sfx.levelUp();
+    route();
+    toast(band === "A1"
+      ? "Начинаем с самого начала. Первый урок открыт!"
+      : `Открыл уроки с уровня ${band}. Передумаешь — поменяешь в кабинете.`, { icon: "🎓", ms: 5000 });
+  };
+  append(overlay,
+    el("div", { class: "prologue-inner" },
       el("div", { class: "prologue-emoji" }, "🎓"),
-      el("div", { class: "prologue-kicker" }, "Последний вопрос"),
+      el("div", { class: "prologue-kicker" }, "Deutsch für Ali"),
       el("h1", {}, "Сколько немецкого у тебя уже есть?"),
-      el("p", { class: "chapter-text" }, "От этого зависит, с какого урока начать — и как Мия будет с тобой говорить. Поменять можно в любой момент в кабинете."),
+      el("p", { class: "welcome-text" }, "От этого зависит, с какого урока начать — и как Мия будет с тобой говорить. Поменять можно в любой момент в кабинете."),
       el("div", { class: "level-choice" },
         [["A1", "Совсем с нуля", "Не знаю ни одного слова или помню пару фраз."],
          ["A2", "Немного знаю", "Могу представиться, заказать кофе, понять простое предложение."],
@@ -532,33 +671,10 @@ function showPrologue() {
             el("div", { class: "cefr-badge" }, band),
             el("div", {}, el("div", { class: "cefr-name" }, title), el("div", { class: "muted small" }, sub)))),
       ),
-    );
-  }
-  append(overlay,
-    el("div", { class: "prologue-inner" },
-      el("div", { class: "prologue-emoji" }, p.emoji),
-      el("div", { class: "prologue-kicker" }, "Deutsch für Ali · история"),
-      el("h1", {}, p.title),
-      textHost,
-      btn,
-      (skipBtn = el("button", { class: "btn ghost small skip", type: "button", onClick: () => { skipped = true; textHost.innerHTML = ""; p.text.forEach((t) => textHost.append(el("p", { class: "show" }, t))); btn.hidden = false; skipBtn.hidden = true; } }, "Пропустить анимацию")),
     ),
   );
-  var skipBtn;
   document.body.append(overlay);
   nextTick(() => overlay.classList.add("show"));
-  (async () => {
-    for (const t of p.text) {
-      if (!overlay.isConnected || skipped) return;
-      const pEl = el("p");
-      textHost.append(pEl);
-      await typewriter(pEl, t, 18, () => skipped);
-      if (skipped) return;
-      await sleep(350);
-    }
-    btn.hidden = false;
-    skipBtn.hidden = true;
-  })();
 }
 
 async function typewriter(node, text, ms, isSkipped = () => false) {
@@ -683,7 +799,6 @@ function renderLevels(v) {
     const current = open && !done;
     const pct = store.levelProgress(l.id);
     const stars = store.stars(l.id);
-    const loot = STORY.chapters[l.id]?.loot;
     const node = el(open ? "a" : "div", { class: `level-node ${done ? "done" : open ? "open" : "locked"} ${current ? "current" : ""} ${i % 2 ? "right" : "left"}`, href: open ? `#/level/${l.id}` : null, style: { "--accent": l.color, "--i": i } },
       el("div", { class: "ln-badge" }, ringSvg(open ? pct : 0, 92, 6, l.color), el("div", { class: "ln-emoji" }, open ? l.emoji : "🔒"), el("div", { class: "ln-num" }, l.id)),
       el("div", { class: "ln-body" },
@@ -691,7 +806,6 @@ function renderLevels(v) {
         el("div", { class: "ln-ru muted" }, l.titleRu),
         el("div", { class: "ln-meta" }, done ? el("span", { class: "stars" }, "★".repeat(stars) + "☆".repeat(3 - stars)) : open ? el("span", { class: "tag" }, current ? `${pct}% · в процессе` : "открыт") : el("span", { class: "tag" }, `Сдай экзамен уровня ${l.id - 1}`)),
       ),
-      loot ? el("div", { class: `ln-loot ${done ? "got" : ""}`, title: done ? loot.name : "Предмет за прохождение" }, done ? loot.icon : "🎁") : null,
     );
     path.append(node);
   });
@@ -716,10 +830,7 @@ function renderLevel(v, level) {
   const completed = store.isCompleted(level.id);
   const stars = store.stars(level.id);
   const nextLevel = LEVEL_BY_ID[level.id + 1];
-  const chapter = STORY.chapters[level.id];
   v.style.setProperty("--accent", level.color);
-  const firstRead = !store.state.storyRead.includes(level.id);
-  if (firstRead) store.update((s) => s.storyRead.push(level.id));
 
   const stage = (icon, title, sub, href, { done = false, locked = false, badge = null, hint = null, reward = null } = {}) =>
     el(locked ? "div" : "a", { class: `stage ${done ? "done" : ""} ${locked ? "locked" : ""}`, href: locked ? null : href },
@@ -741,19 +852,14 @@ function renderLevel(v, level) {
       ),
       el("div", { class: "lh-progress" }, ringSvg(pct, 120, 10, level.color), el("div", { class: "lh-pct" }, `${pct}%`), completed ? el("div", { class: "stars big" }, "★".repeat(stars) + "☆".repeat(3 - stars)) : null),
     ),
-    chapter ? el("section", { class: `card chapter ${firstRead ? "fresh" : ""}` },
-      el("div", { class: "chapter-head" }, el("div", { class: "chapter-kicker" }, "📜 История"), el("h2", {}, chapter.title)),
-      el("p", { class: "chapter-text" }, chapter.text),
-      el("div", { class: "chapter-loot" }, el("span", { class: `loot-icon ${completed ? "got" : ""}` }, completed ? chapter.loot.icon : "🎁"), el("span", { class: "muted small" }, completed ? `Получено: ${chapter.loot.name} — ${chapter.loot.ru}` : `За экзамен: предмет «${chapter.loot.name}» · +${COINS.examPass + COINS.levelComplete} 🪙 · +100 XP`)),
-    ) : null,
-    completed ? el("div", { class: "card done-banner" }, el("div", {}, `🎉 Уровень пройден! Лучший результат экзамена: ${p.examBest}%`), nextLevel ? el("a", { class: "btn primary", href: `#/level/${nextLevel.id}` }, `Уровень ${nextLevel.id}: ${nextLevel.titleRu} →`) : el("a", { class: "btn primary", href: "#/story" }, "Читать эпилог →")) : null,
+    completed ? el("div", { class: "card done-banner" }, el("div", {}, `🎉 Уровень пройден! Лучший результат экзамена: ${p.examBest}%`), nextLevel ? el("a", { class: "btn primary", href: `#/level/${nextLevel.id}` }, `Уровень ${nextLevel.id}: ${nextLevel.titleRu} →`) : el("a", { class: "btn primary", href: "#/practice" }, "Закрепить слова →")) : null,
     el("div", { class: "stages" },
       stage("📖", "Слова", `${level.vocab.length} ${plural(level.vocab.length, "новое слово", "новых слова", "новых слов")} с карточками и озвучкой`, `#/level/${level.id}/vocab`, { done: p.vocabDone, badge: p.vocabQuizBest ? `квиз ${p.vocabQuizBest}%` : null, reward: `+25 XP · +${COINS.vocab} 🪙` }),
       stage("🧠", "Грамматика", level.grammar.map((g) => g.title).join(" · "), `#/level/${level.id}/grammar`, { done: p.grammarDone, reward: `+15 XP · +${COINS.grammar} 🪙` }),
       ...missions.map((m, i) => stage("🎯", `Миссия ${i + 1}`, `${m.length} ${plural(m.length, "задание", "задания", "заданий")} · нужно 60% · ${[...new Set(m.map((x) => KIND_SHORT[x.type]))].join(", ")}`, `#/level/${level.id}/mission/${i + 1}`, { done: p.missions[i], reward: `+20 XP · +${COINS.mission} 🪙 + монеты за ответы` })),
       stage("🎧", "Диалог", `${level.dialogue.title} — послушай и сыграй роль Али`, `#/level/${level.id}/dialogue`, { done: p.dialogueDone, reward: `+30 XP · +${COINS.dialogue} 🪙` }),
       stage("🗣️", "Разговор с Мией", level.speaking.title, `#/level/${level.id}/speak`, { done: p.speakingDone, badge: AI ? "AI" : "офлайн", reward: `+40 XP · +${COINS.speaking} 🪙` }),
-      stage("🏆", "Экзамен", `10 заданий · нужно 70% · звёзды: 70 / 80 / 95% · ${p.examTries ? `попыток: ${p.examTries}, лучший: ${p.examBest}%` : "ещё не сдавал"}`, `#/level/${level.id}/exam`, { done: completed, locked: !examOpen, hint: "Сначала выучи слова и пройди все 3 миссии", reward: `+100 XP · +${COINS.examPass + COINS.levelComplete} 🪙 · предмет ${chapter?.loot.icon || ""}` }),
+      stage("🏆", "Экзамен", `10 заданий · нужно 70% · звёзды: 70 / 80 / 95% · ${p.examTries ? `попыток: ${p.examTries}, лучший: ${p.examBest}%` : "ещё не сдавал"}`, `#/level/${level.id}/exam`, { done: completed, locked: !examOpen, hint: "Сначала выучи слова и пройди все 3 миссии", reward: `+100 XP · +${COINS.examPass + COINS.levelComplete} 🪙` }),
       stage("🎓", "Устный экзамен с Мией", "Мия задаст 5–7 вопросов по теме голосом и объяснит ошибки по-русски", `#/level/${level.id}/oral`, { done: p.oralDone, locked: !completed, hint: "Откроется после письменного экзамена", badge: AI ? "AI" : null, reward: "+30 XP · +25 🪙" }),
       stage("💬", "Разговор по теме", `Свободная беседа с Мией про «${level.titleRu.toLowerCase()}» — можно спрашивать что угодно по-русски`, `#/level/${level.id}/chat`, { done: p.chatDone, locked: !completed, hint: "Откроется после письменного экзамена", badge: AI ? "AI" : null, reward: "+30 XP · +25 🪙" }),
     ),
@@ -914,16 +1020,12 @@ function viewExam(v, level) {
     onRecord: (res) => {
       const wasDone = store.isCompleted(level.id);
       const passed = res.accuracy >= 70;
-      const chapter = STORY.chapters[level.id];
       let coinsGot = 0;
       let unlocked = store.update((st) => {
         p.examTries = (p.examTries || 0) + 1;
         p.examBest = Math.max(p.examBest || 0, res.accuracy);
         if (!wasDone && passed) {
           coinsGot = store.addCoins(COINS.examPass + COINS.levelComplete);
-          store.addLoot(chapter?.loot);
-          if (level.id === 12) store.addLoot(STORY.interlude.loot);
-          if (level.id === LEVELS.length) store.addLoot(STORY.epilogue.loot);
         }
       });
       if (!wasDone && passed) {
@@ -931,8 +1033,7 @@ function viewExam(v, level) {
         confetti({ count: 260, duration: 3200 });
         sfx.levelUp();
         toast(`Уровень ${level.id} пройден! +100 XP · +${coinsGot} 🪙${LEVEL_BY_ID[level.id + 1] ? ` · открыт уровень ${level.id + 1}` : ""}`, { icon: "🏆", kind: "achievement", ms: 5500, title: "Glückwunsch!" });
-        if (chapter) setTimeout(() => toast(`${chapter.loot.name} — ${chapter.loot.ru}`, { icon: chapter.loot.icon, kind: "achievement", title: "Новый предмет", ms: 5000 }), 1200);
-        if (level.id === 12) setTimeout(() => toast("Ты прошёл весь A1. Берлин — в разделе «История»", { icon: "✈️", kind: "achievement", ms: 6000 }), 2600);
+        if (level.id === 12) setTimeout(() => toast("Ты прошёл весь A1. Дальше — A2!", { icon: "🎓", kind: "achievement", ms: 6000 }), 2600);
         if (level.id === LEVELS.length) setTimeout(() => toast("Весь курс пройден. Эпилог открыт.", { icon: "🏁", kind: "achievement", ms: 7000 }), 2600);
       } else if (!passed) toast(`${res.accuracy}% — нужно 70%. Повтори миссии и попробуй снова!`, { icon: "💪", kind: "warn", ms: 4500 });
     },
@@ -1042,45 +1143,6 @@ function renderShop(v) {
   }
 }
 
-/* ----------------------------------------------------------------- story */
-const interludeCard = (open) => el("article", { class: `card chapter ${open ? "open" : "locked"} epilogue` },
-  el("div", { class: "chapter-head" }, el("div", { class: "chapter-kicker" }, STORY.interlude.emoji), el("h2", {}, open ? STORY.interlude.title : "Эпилог A1 · ???")),
-  open ? STORY.interlude.text.map((t) => el("p", { class: "chapter-text" }, t)) : el("p", { class: "chapter-text muted" }, "Пройди все 12 уроков A1, чтобы прочитать эту главу."),
-);
-
-function renderStory(v) {
-  const s = store.state;
-  const done = LEVELS.filter((l) => store.isCompleted(l.id)).length;
-  const allLoot = [...LEVELS.map((l) => STORY.chapters[l.id]?.loot).filter(Boolean), STORY.interlude.loot, STORY.epilogue.loot];
-  const finished = done >= LEVELS.length;
-  append(v,
-    el("div", { class: "page-head" }, el("h1", {}, "📜 История Али"), el("p", { class: "muted" }, "Из Говсан в Берлин. Каждый пройденный уровень открывает новую главу и предмет.")),
-    el("section", { class: "card collection" },
-      el("div", { class: "card-head" }, el("h2", {}, "🎒 Коллекция"), el("span", { class: "muted" }, `${s.loot.length} / ${allLoot.length}`)),
-      el("div", { class: "loot-grid" }, allLoot.map((l) => { const got = s.loot.includes(l.id); return el("div", { class: `loot ${got ? "got" : ""}`, title: got ? `${l.name} — ${l.ru}` : "Ещё не получен" }, el("div", { class: "loot-big" }, got ? l.icon : "❔"), el("div", { class: "loot-name" }, got ? l.name : "???")); })),
-    ),
-    el("article", { class: "card chapter open" }, el("div", { class: "chapter-head" }, el("div", { class: "chapter-kicker" }, STORY.prologue.emoji), el("h2", {}, STORY.prologue.title)), ...STORY.prologue.text.map((t) => el("p", { class: "chapter-text" }, t))),
-    ...LEVELS.flatMap((l) => {
-      const ch = STORY.chapters[l.id];
-      if (!ch) return [];
-      const open = store.isUnlocked(l.id);
-      const completed = store.isCompleted(l.id);
-      const card = el("article", { class: `card chapter ${open ? "open" : "locked"}`, style: { "--accent": l.color } },
-        el("div", { class: "chapter-head" }, el("div", { class: "chapter-kicker" }, `${l.emoji} Уровень ${l.id}`), el("h2", {}, open ? ch.title : `Глава ${l.id} · ???`)),
-        open ? el("p", { class: "chapter-text" }, ch.text) : el("p", { class: "chapter-text muted" }, `Пройди уровень ${l.id - 1}, чтобы открыть эту главу.`),
-        el("div", { class: "chapter-loot" }, el("span", { class: `loot-icon ${completed ? "got" : ""}` }, completed ? ch.loot.icon : "🎁"), el("span", { class: "muted small" }, completed ? `${ch.loot.name} — ${ch.loot.ru}` : open ? "Предмет за экзамен уровня" : "")),
-        open && !completed ? el("a", { class: "btn small primary", href: `#/level/${l.id}` }, "К уровню →") : null,
-      );
-      // the flight to Berlin sits between A1 and A2, where the first act ends
-      return l.id === 12 ? [card, interludeCard(done >= 12)] : [card];
-    }),
-    el("article", { class: `card chapter ${finished ? "open" : "locked"} epilogue` },
-      el("div", { class: "chapter-head" }, el("div", { class: "chapter-kicker" }, STORY.epilogue.emoji), el("h2", {}, finished ? STORY.epilogue.title : "Эпилог · ???")),
-      finished ? STORY.epilogue.text.map((t) => el("p", { class: "chapter-text" }, t)) : el("p", { class: "chapter-text muted" }, `Пройди все ${LEVELS.length} уроков, чтобы прочитать финал.`),
-    ),
-  );
-}
-
 /* ----------------------------------------------------------------- words */
 function renderWords(v) {
   const levels = LEVELS.filter((l) => store.isUnlocked(l.id));
@@ -1152,10 +1214,11 @@ function accountActions() {
     ];
   }
   return [
+    session.isAdmin ? el("a", { class: "btn primary small", href: "#/admin" }, "⚙️ Панель") : null,
     el("a", { class: "btn ghost small", href: "#/board" }, "🏆 Рейтинг"),
     el("button", { class: "btn ghost small", type: "button", onClick: () => askNewPassword() }, "🔒 Сменить пароль"),
     el("button", { class: "btn ghost small", type: "button", onClick: () => session.logout() }, "Выйти"),
-  ];
+  ].filter(Boolean);
 }
 
 /** Whether this person appears in the shared table. Their own decision, so it lives in settings. */
@@ -1292,7 +1355,6 @@ function renderProfile(v) {
     cefrCard(),
     el("section", { class: "home-tiles" },
       tile("🛍️", "Магазин", `${s.coins} монет — подсказки, щиты, темы`, "#/shop", "shop"),
-      tile("📜", "История Али", `${s.loot.length} ${plural(s.loot.length, "предмет", "предмета", "предметов")} собрано`, "#/story", "story"),
       tile("🏆", "Рейтинг", "Как ты идёшь рядом с другими", "#/board", "board"),
     ),
     el("section", { class: "stats-grid" },

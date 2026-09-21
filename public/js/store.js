@@ -67,8 +67,6 @@ export const ACHIEVEMENTS = [
   { id: "coins-500", icon: "🪙", title: "Sparer", ru: "Заработано 500 монет", test: (s) => s.coinsEarned >= 500 },
   { id: "coins-2000", icon: "💰", title: "Reich", ru: "Заработано 2000 монет", test: (s) => s.coinsEarned >= 2000 },
   { id: "first-buy", icon: "🛍️", title: "Erster Einkauf", ru: "Первая покупка в магазине", test: (s) => s.purchases >= 1 },
-  { id: "collector", icon: "🎒", title: "Sammler", ru: "Собрано 13 предметов истории", test: (s) => s.loot.length >= 13 },
-  { id: "collector-all", icon: "🗃️", title: "Archivar", ru: "Собраны все предметы истории", test: (s) => s.loot.length >= 37 },
   { id: "stylist", icon: "🎨", title: "Stilist", ru: "Куплена тема оформления", test: (s) => s.owned.some((o) => o.startsWith("theme-")) },
   { id: "oral-1", icon: "🎓", title: "Mündlich", ru: "Первый устный экзамен сдан", test: (s) => Object.values(s.levels).some((l) => l.oralDone) },
   { id: "oral-5", icon: "🗣️", title: "Redner", ru: "5 устных экзаменов сдано", test: (s) => Object.values(s.levels).filter((l) => l.oralDone).length >= 5 },
@@ -107,8 +105,6 @@ function freshState() {
     title: null,
     boostUntil: 0,
     introSeen: false,
-    storyRead: [],
-    loot: [],
     purchases: 0,
     miaNotes: [],
     freeChatDay: null,
@@ -217,7 +213,7 @@ class Store {
       words: (data.words && typeof data.words === "object") ? data.words : {},
       levels, // the live container, reused so views holding store.level(id) keep writing to it
     };
-    for (const k of ["owned", "storyRead", "loot", "achievements", "miaNotes"]) if (!Array.isArray(this.state[k])) this.state[k] = [];
+    for (const k of ["owned", "achievements", "miaNotes"]) if (!Array.isArray(this.state[k])) this.state[k] = [];
     for (const k of ["xp", "coins", "coinsEarned", "purchases", "dailyGoal", "boostUntil"]) if (!Number.isFinite(this.state[k])) this.state[k] = f[k];
     if (!THEME_IDS.includes(this.state.theme)) this.state.theme = "nacht";
     if (save) this.save();
@@ -279,12 +275,6 @@ class Store {
   hasItem(key) {
     return (this.state.inventory[key] || 0) > 0;
   }
-  addLoot(loot) {
-    if (!loot || this.state.loot.includes(loot.id)) return false;
-    this.state.loot.push(loot.id);
-    return true;
-  }
-
   subscribe(fn) {
     this.listeners.add(fn);
     return () => this.listeners.delete(fn);

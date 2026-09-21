@@ -12,6 +12,7 @@ export const session = {
   get user() { return backend.user; },
   get guest() { return !backend.user; },
   get available() { return backend.cloud; },   // are accounts configured on this deployment at all
+  get isAdmin() { return backend.user?.isAdmin === true; },
 
   async load() { return backend.refreshUser(); },
 

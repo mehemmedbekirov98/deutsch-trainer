@@ -48,12 +48,13 @@ export const backend = {
     const { data } = await this.sb.auth.getUser();
     const u = data?.user || null;
     if (!u) { this.user = null; return null; }
-    const { data: profile } = await this.sb.from("profiles").select("name, public_board").eq("id", u.id).maybeSingle();
+    const { data: profile } = await this.sb.from("profiles").select("name, public_board, is_admin").eq("id", u.id).maybeSingle();
     this.user = {
       id: u.id,
       email: u.email,
       name: profile?.name || u.user_metadata?.name || "Ученик",
       publicBoard: profile?.public_board !== false,
+      isAdmin: profile?.is_admin === true,
     };
     return this.user;
   },
@@ -132,6 +133,27 @@ export const backend = {
     });
     if (error) throw new Error(error.message);
     return data ? { stale: true, current: data } : { ok: true };
+  },
+
+  /* ----------------------------------------------------------------- admin */
+
+  /**
+   * The owner's panel. The function checks the caller for itself — this only carries the token
+   * Supabase already gave the browser, so there is nothing here worth faking.
+   */
+  async admin(action, payload = {}) {
+    if (!this.sb) throw new Error("База не подключена.");
+    const { data } = await this.sb.auth.getSession();
+    const token = data?.session?.access_token;
+    if (!token) throw new Error("Нужно войти.");
+    const r = await fetch("/api/admin", {
+      method: "POST",
+      headers: { "content-type": "application/json", authorization: `Bearer ${token}` },
+      body: JSON.stringify({ action, ...payload }),
+    });
+    const out = await r.json().catch(() => ({}));
+    if (!r.ok) throw new Error(out.error || "Не получилось.");
+    return out;
   },
 
   /* ----------------------------------------------------------- leaderboard */

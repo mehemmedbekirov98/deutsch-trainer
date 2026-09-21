@@ -638,7 +638,7 @@ input[type="range"] { accent-color: var(--accent); width: 200px; }
   .ph-text { width: 100%; }
   .setting { flex-wrap: wrap; }
 }
-/* ---------- RPG layer: items, shop, story, prologue ---------- */
+/* ---------- items, shop, welcome ---------- */
 .ex-count { float: right; color: var(--muted); font-weight: 700; letter-spacing: 0; text-transform: none; }
 .item-bar { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
 .item-btn { display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; border-radius: 12px; border: 1px solid var(--border-strong); background: var(--card-hover); font-weight: 800; font-size: 0.95rem; transition: 0.18s; }
@@ -664,28 +664,6 @@ input[type="range"] { accent-color: var(--accent); width: 200px; }
 .story-card { border-color: rgba(251, 191, 36, 0.3); }
 .story-teaser { color: #e2e8f0; font-size: 1.02rem; line-height: 1.65; }
 .stage-reward { margin-top: 6px; font-size: 0.78rem; font-weight: 700; color: var(--warn); }
-.ln-loot { position: absolute; right: 14px; top: 12px; font-size: 1.3rem; opacity: 0.55; filter: grayscale(1); transition: 0.25s; }
-.ln-loot.got { opacity: 1; filter: none; animation: floaty 3s ease-in-out infinite; }
-.chapter { overflow: hidden; }
-.chapter::before { content: ""; position: absolute; inset: 0 auto auto 0; width: 4px; height: 100%; background: linear-gradient(var(--warn), var(--accent)); }
-.chapter.locked { opacity: 0.6; }
-.chapter.locked .chapter-text { filter: blur(0); }
-.chapter.fresh { animation: chapter-glow 2.2s ease-out 1; }
-@keyframes chapter-glow { 0% { box-shadow: 0 0 0 0 rgba(251, 191, 36, 0.6); } 100% { box-shadow: 0 0 0 24px rgba(251, 191, 36, 0); } }
-.chapter-head { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; flex-wrap: wrap; }
-.chapter-kicker { font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--warn); font-weight: 800; }
-.chapter-text { color: #e2e8f0; font-size: 1.05rem; line-height: 1.7; margin-bottom: 8px; }
-.chapter-loot { display: flex; align-items: center; gap: 10px; margin-top: 10px; }
-.chapter .btn { margin-top: 12px; }
-.loot-icon { width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; font-size: 1.3rem; background: rgba(255, 255, 255, 0.06); border: 1px solid var(--border); opacity: 0.6; }
-.loot-icon.got { opacity: 1; background: rgba(251, 191, 36, 0.18); border-color: rgba(251, 191, 36, 0.5); box-shadow: 0 0 20px rgba(251, 191, 36, 0.3); }
-.collection { border-color: rgba(251, 191, 36, 0.3); }
-.loot-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 10px; }
-.loot { padding: 14px 8px; border-radius: 16px; text-align: center; background: rgba(0, 0, 0, 0.2); border: 1px solid var(--border); opacity: 0.45; transition: 0.25s; }
-.loot.got { opacity: 1; background: linear-gradient(135deg, rgba(251, 191, 36, 0.2), var(--card)); border-color: rgba(251, 191, 36, 0.5); }
-.loot.got:hover { transform: translateY(-4px) rotate(-2deg); }
-.loot-big { font-size: 2rem; }
-.loot-name { font-size: 0.75rem; font-weight: 700; margin-top: 4px; }
 .shop-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
 .shop-balance { display: flex; align-items: baseline; gap: 8px; padding: 12px 20px; border-radius: 18px; background: linear-gradient(135deg, rgba(245, 158, 11, 0.25), rgba(251, 191, 36, 0.08)); border: 1px solid rgba(251, 191, 36, 0.5); box-shadow: 0 12px 30px -14px rgba(245, 158, 11, 0.6); }
 .sb-icon { font-size: 1.5rem; }
@@ -716,9 +694,6 @@ input[type="range"] { accent-color: var(--accent); width: 200px; }
 .prologue-emoji { font-size: 3rem; animation: floaty 4s ease-in-out infinite; }
 .prologue-kicker { font-size: 0.75rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--warn); font-weight: 800; }
 .prologue h1 { font-size: clamp(1.8rem, 4vw, 2.6rem); background: linear-gradient(90deg, #fff, #fde68a); -webkit-background-clip: text; background-clip: text; color: transparent; }
-.prologue-text { display: flex; flex-direction: column; gap: 14px; min-height: 120px; }
-.prologue-text p { font-size: 1.15rem; line-height: 1.7; color: #e2e8f0; opacity: 0; transform: translateY(8px); transition: 0.5s; }
-.prologue-text p.show { opacity: 1; transform: none; }
 .prologue .skip { opacity: 0.6; }
 .grammar { animation: rise 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) both; animation-delay: calc(var(--i) * 80ms); }
 /* backwards, not both: "both" leaves the keyframe's opacity:1 in force for ever and beat the
@@ -989,7 +964,8 @@ a.strip-item:hover { background: var(--card-hover); }
 .strip-val { font-weight: 800; }
 .strip-label { color: var(--muted); font-size: 0.85rem; }
 .strip-item.goal { gap: 10px; }
-.goal-ring.small { position: relative; width: 44px; height: 44px; }
+.goal-ring.small { position: relative; width: 44px; height: 44px; flex-shrink: 0; }
+.goal-ring.small .ring { width: 44px; height: 44px; }
 .goal-ring.small .goal-pct { position: absolute; inset: 0; display: grid; place-items: center; font-size: 0.62rem; font-weight: 800; }
 
 .practice-top { display: grid; grid-template-columns: 2fr 1fr; gap: 14px; }
@@ -1169,3 +1145,4 @@ a.strip-item:hover { background: var(--card-hover); }
   .cabinet-hero { padding: 20px; }
   .cabinet-level { width: 100%; }
 }
+.welcome-text { color: #e2e8f0; font-size: 1.05rem; line-height: 1.7; margin-bottom: 8px; }

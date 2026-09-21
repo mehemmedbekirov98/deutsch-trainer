@@ -4,6 +4,7 @@ import { speech, STT_ERRORS } from "./speech.js";
 import { sfx, confetti, toast, xpFloat } from "./fx.js";
 import { store } from "./store.js";
 import { understand, respond, opening } from "./brain.js";
+import { check as moderate } from "./moderation.js";
 
 const PRAISE = ["Super, Ali!", "Sehr gut!", "Genau so!", "Prima!", "Das klingt gut!", "Richtig!", "Klasse gemacht!"];
 const PRAISE_RU = ["Супер, Али!", "Очень хорошо!", "Вот именно так!", "Отлично!", "Звучит здорово!", "Правильно!", "Класс!"];
@@ -234,7 +235,10 @@ export class Tutor {
     );
     this.root.classList.toggle("hide-ru", !s.showRu);
     this.container.append(this.root);
-    if (this.keySlot) import("./app.js").then((m) => this.keySlot?.append(m.aiKeyCard({ compact: true }))).catch(() => {});
+    if (this.keySlot) import("./app.js").then((m) => {
+      const card = m.aiKeyCard({ compact: true });
+      if (card) this.keySlot?.append(card);
+    }).catch(() => {});
     if (!speech.sttSupported) {
       this.mic.disabled = true;
       this.mic.title = STT_ERRORS.unsupported;
@@ -569,6 +573,15 @@ export class Tutor {
     this.chat.append(bubble);
     nextTick(() => bubble.classList.add("show"));
     this.scrollChat();
+    const verdict = moderate(text);
+    if (verdict.blocked) {
+      this.turns++;
+      store.update((s) => { s.stats.tutorTurns += 1; });
+      const seqBlocked = ++this.seq;
+      this.busy = false;
+      this.miaSays({ say: verdict.reply, lang: "ru" }, gen, seqBlocked);
+      return true;
+    }
     this.turns++;
     // XP for real attempts only (at least 2 words), max 12 rewarded turns per conversation
     const gained = this.turns <= 12 && text.trim().split(/\s+/).length >= 2 ? 5 : 0;

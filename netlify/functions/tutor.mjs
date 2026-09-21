@@ -1,5 +1,6 @@
 // Mia's turn. Everything that decides what she says is in lib/tutor.js; this only moves it in and out.
 import { askMia, friendlyError, FALLBACK_REPLY } from "../../lib/tutor.js";
+import { configured, getSetting } from "../../lib/supa.mjs";
 
 const json = (body, status = 200) =>
   new Response(JSON.stringify(body), { status, headers: { "content-type": "application/json; charset=utf-8" } });
@@ -11,7 +12,11 @@ export default async (req) => {
   try { body = await req.json(); } catch { return json({ error: "Не удалось прочитать запрос." }, 400); }
 
   try {
-    return json(await askMia(body));
+    // The key is either an environment variable set once at deploy time, or one the owner pasted
+    // into the admin panel. Looking it up costs a query only when the variable is absent.
+    const apiKey = process.env.ANTHROPIC_API_KEY
+      || (configured() ? await getSetting("anthropic_key").catch(() => null) : null);
+    return json(await askMia(body, { apiKey }));
   } catch (error) {
     if (error?.noKey) return json({ error: "Умный режим не настроен: у сайта нет ключа Anthropic." }, 503);
     if (error?.badRequest) return json({ error: "messages must alternate and end with a user message" }, 400);
