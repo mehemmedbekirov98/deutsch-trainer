@@ -1,6 +1,6 @@
 // Mia's offline brain: understands what Emil said (Russian or German) and decides what she answers,
 // entirely from local data. Used whenever the AI backend is off, so the app is fully usable without a key.
-import { t as tr } from "./i18n.js";
+import { t as tr, lang as uiLang, translateText } from "./i18n.js";
 import { normalize, pick, shuffle, stripArticle } from "./utils.js";
 import { LEVELS } from "./levels.js";
 import SMALLTALK from "./brain-data/smalltalk.js";
@@ -15,6 +15,10 @@ const NO_GLOSS = /[(][^)]*[)]/g;
 // Every German word Emil has met, indexed both ways, so Mia can answer "что значит X" for ~380 words.
 const VOCAB_DE = new Map();
 const VOCAB_RU = new Map();
+// Азербайджанский указатель строится из того же перевода, которым живёт весь сайт: русская
+// подпись слова уже лежит в словаре, её достаточно прогнать через translateText(). Ни одной
+// новой строки данных — и указатель не может разойтись с тем, что человек видит на карточке.
+const VOCAB_AZ = new Map();
 for (const level of LEVELS) {
   for (const v of level.vocab) {
     const de = normalize(stripArticle(v.de));
@@ -26,6 +30,16 @@ for (const level of LEVELS) {
     for (const part of String(v.ru).replace(NO_GLOSS, " ").split(/[,;/]/)) {
       const ru = normalize(part);
       if (ru.length > 2 && !VOCAB_RU.has(ru)) VOCAB_RU.set(ru, { ...v, level });
+    }
+    // Переводим подпись целиком, а уже перевод режем на части: ключ словаря — вся строка,
+    // и «жена; женщина» по кускам в нём не нашлось бы.
+    const az = translateText(String(v.ru));
+    if (az !== String(v.ru)) {
+      for (const part of az.replace(NO_GLOSS, " ").split(/[,;/]/)) {
+        const key = normalize(part);
+        // порог ниже русского: «ev», «su», «il», «göz» — обычные слова курса, а не предлоги
+        if (key.length > 1 && !VOCAB_AZ.has(key)) VOCAB_AZ.set(key, { ...v, level });
+      }
     }
   }
 }
@@ -47,7 +61,9 @@ function scoreMatch(text, list) {
   const words = new Set(text.split(" ").filter((w) => w.length > 2));
   let best = null, bestScore = 0;
   for (const item of list || []) {
-    for (const f of item.match || []) {
+    // match — русский и немецкий, matchAz — азербайджанский. Смотрим в оба независимо от
+    // выбранного языка: человек, который пишет вперемешку, не должен оставаться без ответа.
+    for (const f of [...(item.match || []), ...(item.matchAz || [])]) {
       const n = normalize(f);
       if (!n) continue;
       let score = 0;
@@ -104,7 +120,7 @@ function keywordRescue(text) {
   const hits = [];
   for (const [intent, list] of groups) {
     for (const item of list || []) {
-      const blob = normalize((item.match || []).join(" "));
+      const blob = normalize([...(item.match || []), ...(item.matchAz || [])].join(" "));
       const shared = words.filter((w) => blob.includes(w));
       if (shared.length) hits.push({ intent, item, shared: shared.length });
     }
@@ -150,8 +166,13 @@ const hasWord = (text, words) => {
   return words.some((w) => tokens.has(normalize(w)) || (w.includes(" ") && text.includes(normalize(w))));
 };
 
-const GREETING = ["привет", "здравствуй", "хай", "салам", "hallo", "hi", "guten tag", "guten morgen", "guten abend", "servus", "moin"];
-const BYE = ["до свидания", "до скорого", "прощай", "tschuss", "tschüss", "auf wiedersehen", "bis bald", "bis dann", "ciao", "bye"];
+// Азербайджанские варианты дописаны прямо в эти же списки: has() и hasWord() ищут любое
+// совпадение, так что лишние фрагменты русской ветке не мешают — она их просто не встретит.
+// «salam» уже был: по-азербайджански это то же приветствие, что и по-русски.
+const GREETING = ["привет", "здравствуй", "хай", "салам", "hallo", "hi", "guten tag", "guten morgen", "guten abend", "servus", "moin",
+  "salam", "sabahın xeyir", "sabahin xeyir", "axşamın xeyir", "axsamin xeyir", "günortan xeyir", "gunortan xeyir", "xoş gördük", "xos gorduk"];
+const BYE = ["до свидания", "до скорого", "прощай", "tschuss", "tschüss", "auf wiedersehen", "bis bald", "bis dann", "ciao", "bye",
+  "sağ ol", "sag ol", "sağ olun", "sag olun", "salamat qal", "hələlik", "helelik", "görüşərik", "goruserik", "tezliklə görüşərik", "tezlikle goruserik"];
 // "пока" usually means "for now" ("пока не знаю", "я пока учу") and only says goodbye on its own
 // "давай" is deliberately NOT here: on its own it means "go on, okay", never "bye" — and
 // "давай попробуем" was ending the conversation.
@@ -159,24 +180,33 @@ const BYE_SHORT = ["пока"];
 // words that may sit beside a farewell without turning it into something else
 // Only true fillers — "всё" and "хорошо" carry meaning ("пока всё хорошо" is not a goodbye).
 const BYE_FILLER = new Set(["мия", "ну", "ок", "окей", "ладно", "давай", "тогда", "уже"]);
-const THANKS = ["спасибо", "благодарю", "danke", "vielen dank", "спс"];
-const CONFUSED = ["не понимаю", "не понял", "непонятно", "что это значит", "не знаю", "verstehe nicht", "ich verstehe nicht", "was ist das", "wie bitte", "не поняла", "хз"];
-const REPEAT = ["повтори", "ещё раз", "еще раз", "медленнее", "помедленнее", "noch einmal", "langsamer", "wiederhole"];
+// «sağ ol» и прощание, и благодарность — по одному слову не различить, поэтому оно есть в обоих
+// списках; порядок проверок в read() решает, что это значит в конкретной фразе.
+const THANKS = ["спасибо", "благодарю", "danke", "vielen dank", "спс",
+  "təşəkkür", "tesekkur", "çox sağ ol", "cox sag ol", "minnətdaram", "minnetdaram"];
+const CONFUSED = ["не понимаю", "не понял", "непонятно", "что это значит", "не знаю", "verstehe nicht", "ich verstehe nicht", "was ist das", "wie bitte", "не поняла", "хз",
+  "başa düşmürəm", "basa dusmurem", "anlamadım", "anlamadim", "başa düşmədim", "basa dusmedim", "bilmirəm", "bilmirem", "nə deməkdir", "ne demekdir"];
+const REPEAT = ["повтори", "ещё раз", "еще раз", "медленнее", "помедленнее", "noch einmal", "langsamer", "wiederhole",
+  "təkrar et", "tekrar et", "bir də de", "bir de de", "yavaş", "yavas", "daha yavaş", "daha yavas"];
 // "трудно/сложно/тяжело" deliberately live in FEELING_BAD, not here: «мне тяжело» is Emil telling
 // you how he feels, and answering it with a grammar tip instead of comfort is exactly the coldness
 // this is meant to avoid. HELP_ME is for an actual request.
-const HELP_ME = ["помоги", "подскажи", "как сказать", "как будет", "wie sagt man", "не могу"];
-const FEELING_BAD = ["устал", "устала", "тяжело", "трудно", "сложно", "плохо", "грустно", "болит", "не получается", "надоело", "скучаю", "müde", "schlecht", "schwer"];
+const HELP_ME = ["помоги", "подскажи", "как сказать", "как будет", "wie sagt man", "не могу",
+  "kömək et", "komek et", "necə deyilir", "nece deyilir", "necə olur", "nece olur", "bacarmıram", "bacarmiram"];
+const FEELING_BAD = ["устал", "устала", "тяжело", "трудно", "сложно", "плохо", "грустно", "болит", "не получается", "надоело", "скучаю", "müde", "schlecht", "schwer",
+  "yorğunam", "yorgunam", "çətindir", "cetindir", "ağırdır", "agirdir", "pisdir", "kefim yoxdur", "alınmır", "alinmir", "bezmişəm", "bezmisem", "darıxıram", "darixiram"];
 // "неплохо" is praise, not a complaint — never let FEELING_BAD swallow it
 const FEELING_BAD_NOT = /(^|[\s,])не ?(плохо|трудно|сложно|тяжело)/;
-const FEELING_GOOD = ["хорошо", "отлично", "супер", "классно", "рад", "здорово", "нормально", "прекрасно", "gut", "super", "prima", "toll", "schön"];
+const FEELING_GOOD = ["хорошо", "отлично", "супер", "классно", "рад", "здорово", "нормально", "прекрасно", "gut", "super", "prima", "toll", "schön",
+  "yaxşı", "yaxsi", "əla", "ela", "möhtəşəm", "mohtesem", "şadam", "sadam", "normaldır", "normaldir", "gözəldir", "gozeldir"];
 // "Ich komme aus Baku" is Emil talking about himself, not a question about Mia's life.
 const SELF_STATEMENT = /^(ich|mein|meine|mir|mich)\b/;
-const QUESTIONY = /\?|^(wie|was|wo|wer|wann|warum|woher|wohin)\b|как|что|где|кто|когда|почему|зачем|откуда|сколько|какой|какая|можно|расскажи|объясни|скажи/;
+const QUESTIONY = /\?|^(wie|was|wo|wer|wann|warum|woher|wohin)\b|как|что|где|кто|когда|почему|зачем|откуда|сколько|какой|какая|можно|расскажи|объясни|скажи|neçə|nece|necə|nə|ne |haradan|harada|hara|kim|nə vaxt|ne vaxt|niyə|niye|nəyə görə|neye gore|hansı|hansi|olar|danış|danis|izah et|de görüm|de gorum/;
 // German yes/no questions put the verb first: "Bist du müde?", "Hast du Kinder?", "Magst du Fußball?"
 const GERMAN_YESNO = /^(bist|hast|magst|kannst|willst|moechtest|machst|spielst|wohnst|kommst|arbeitest|warst|kennst|trinkst|isst|sprichst|findest|gibt|darf|kann|ist|sind|hattest|lernst|gehst|liest|hoerst)\s+(du|ihr|sie|es|das)\b/;
 
-const ABOUT_SITE = ["сайт", "приложение", "программа", "уровень", "уровни", "монет", "магазин", "экзамен", "миссия", "достижен", "профиль", "прогресс", "xp", "опыт", "серия", "история", "подсказк", "микрофон", "голос"];
+const ABOUT_SITE = ["сайт", "приложение", "программа", "уровень", "уровни", "монет", "магазин", "экзамен", "миссия", "достижен", "профиль", "прогресс", "xp", "опыт", "серия", "история", "подсказк", "микрофон", "голос",
+  "sayt", "dərs", "ders", "səviyyə", "seviyye", "sikkə", "sikke", "mağaza", "magaza", "imtahan", "missiya", "nailiyyət", "nailiyyet", "kabinet", "irəliləyiş", "ireleyis", "ipucu", "mikrofon", "səs", "ses"];
 
 /**
  * Work out what Emil meant.
@@ -305,10 +335,14 @@ function sameLemma(a, b) {
 function findWordQuestion(text) {
   // `text` is already normalised (ß→ss, ü→ue, punctuation stripped), so the German patterns
   // must be written in that same spelling or they would never match.
-  const asksMeaning = /значит|означает|перевед|перевод|was heisst|was bedeutet|uebersetze/.test(text);
-  const asksGerman = /как будет|как сказать|по немецки|wie sagt man/.test(text);
+  // Азербайджанский спрашивает в другом порядке — «ev almanca necədir?», а не «как будет ev» —
+  // поэтому это отдельные образцы, а не перевод русских. normalize() уже съел пунктуацию, так что
+  // «necədir» и «necə» приходится ловить по корню.
+  const asksMeaning = /значит|означает|перевед|перевод|was heisst|was bedeutet|uebersetze|nə deməkdir|ne demekdir|mənası|menasi|tərcümə|tercume/.test(text);
+  const asksGerman = /как будет|как сказать|по немецки|wie sagt man|almanca nec|almancada nec|almanca nədir|almanca nedir|almancası|almancasi/.test(text);
   if (!asksMeaning && !asksGerman) return null;
-  const STOP = new Set(["что", "как", "это", "значит", "означает", "будет", "сказать", "немецки", "переведи", "перевод", "пожалуйста", "слово", "was", "heisst", "bedeutet", "sagt", "man"]);
+  const STOP = new Set(["что", "как", "это", "значит", "означает", "будет", "сказать", "немецки", "переведи", "перевод", "пожалуйста", "слово", "was", "heisst", "bedeutet", "sagt", "man",
+    "almanca", "almancada", "almancasi", "necedir", "nece", "nedir", "demekdir", "menasi", "tercume", "soz", "sozu", "bu", "zehmet", "olmasa", "deyilir", "olur"]);
   const words = text.split(" ").filter((w) => w.length > 2 && !STOP.has(w));
   // try the longest words first: they are the most likely to be the one he asked about
   for (const w of words.slice().sort((a, b) => b.length - a.length)) {
@@ -316,12 +350,24 @@ function findWordQuestion(text) {
     if (de) return { dir: "de-ru", entry: de };
     const ru = VOCAB_RU.get(w);
     if (ru) return { dir: "ru-de", entry: ru };
+    // Направление то же самое: подпись к немецкому слову на сайте всё равно переводится
+    // автоматически, поэтому отдельного «az-de» не нужно.
+    const az = VOCAB_AZ.get(w);
+    if (az) return { dir: "ru-de", entry: az };
   }
   // no exact hit: allow a stem match, so "Arbeit" still finds "arbeiten"
   for (const w of words.slice().sort((a, b) => b.length - a.length)) {
     if (w.length < 4) continue;
     for (const [key, entry] of VOCAB_DE) if (sameLemma(key, w)) return { dir: "de-ru", entry };
     for (const [key, entry] of VOCAB_RU) if (sameLemma(key, w)) return { dir: "ru-de", entry };
+  }
+  // Последний проход — двухбуквенные слова, и только по азербайджанскому указателю.
+  // Идёт последним нарочно: пока есть слово подлиннее, отвечаем по нему, потому что короткое
+  // с большей вероятностью окажется служебным.
+  for (const w of text.split(" ")) {
+    if (w.length !== 2 || STOP.has(w)) continue;
+    const az = VOCAB_AZ.get(w);
+    if (az) return { dir: "ru-de", entry: az };
   }
   return null;
 }
@@ -475,12 +521,12 @@ export function respond(u, ctx = {}) {
       return {
         de: ctx.lastDe || "Kein Problem. Ich frage anders.",
         ru: ctx.lastRu || "Ничего страшного. Спрошу по-другому.",
-        explainRu: `${R(SMALLTALK.encouragement)} ${hint}`,
+        explainRu: tr`${R(SMALLTALK.encouragement)} ${hint}`,
       };
     }
     case "help": {
       const hint = ctx.lastHint ? tr`Скажи так: «${ctx.lastHint}»` : "Начни с «Ich …» — дальше само пойдёт.";
-      return { de: "Ich helfe dir gern.", ru: "Конечно помогу.", explainRu: `${R(SMALLTALK.encouragement)} ${hint}` };
+      return { de: "Ich helfe dir gern.", ru: "Конечно помогу.", explainRu: tr`${R(SMALLTALK.encouragement)} ${hint}` };
     }
     case "feelingBad": {
       // He said he is tired or that it is hard. Stay with that — no question, no new topic. Warmth,
@@ -489,7 +535,7 @@ export function respond(u, ctx = {}) {
       const soft = R(SMALLTALK.soft);
       return {
         de: `${r.de} ${soft.de}`.trim(),
-        ru: `${r.ru} ${soft.ru}`.trim(),
+        ru: tr`${r.ru} ${soft.ru}`.trim(),
         explainRu: R(SMALLTALK.comfort), // about HIM, not about his German
         asked: false,
       };
@@ -673,7 +719,12 @@ function ruCase(word, form) {
 }
 
 /** «в Берлине», but «во Франкфурте» — Russian inserts the vowel before в/ф plus a consonant. */
-const ruIn = (w) => (/^[вф][бвгджзклмнпрстфхцчшщ]/i.test(w) ? "во " : "в ") + w;
+// «в Берлине» или «во Франкфурте» — выбор предлога существует только в русском.
+// В азербайджанском место обозначает суффикс (-də / -da), и он зависит от гармонии гласных
+// внутри самого слова — а слово здесь то, что человек только что напечатал, включая любой
+// иностранный топоним. Навесить суффикс наугад хуже, чем не навешивать: фраза вокруг
+// («Deməli, Berlin. Orası xoşuna gəlir?») прекрасно обходится без него.
+const ruIn = (w) => (uiLang() === "az" ? w : (/^[вф][бвгджзклмнпрстфхцчшщ]/i.test(w) ? "во " : "в ") + w);
 
 function ruWord(de) {
   const key = normalize(String(de || ""));
@@ -728,7 +779,7 @@ function receiveTurn(base, ctx = {}) {
   return {
     ...base,
     de: `${base.de} ${add.de}`.trim(),
-    ru: `${base.ru} ${add.ru}`.trim(),
+    ru: tr`${base.ru} ${add.ru}`.trim(),
     asked: false,
   };
 }
@@ -736,7 +787,7 @@ function receiveTurn(base, ctx = {}) {
 /** Append a question to a reaction without losing the reaction itself. */
 function withQuestion(base, q) {
   if (!q || !q.de) return { ...base, asked: false };
-  return { ...base, de: `${base.de} ${q.de}`.trim(), ru: `${base.ru} ${q.ru}`.trim(), topic: q.topic, tip: q.tip || base.tip, asked: true };
+  return { ...base, de: `${base.de} ${q.de}`.trim(), ru: tr`${base.ru} ${q.ru}`.trim(), topic: q.topic, tip: q.tip || base.tip, asked: true };
 }
 
 /** Ask something, or simply receive what he said — decided by shouldAsk(), so she does not interrogate. */

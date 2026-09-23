@@ -22,7 +22,12 @@ const BT = String.fromCharCode(96);
 const SKIP_FILES = new Set(["i18n.js", "moderation.js", "utils.js", "logo.js", "levels.js"]);
 const LOG_TAGS = ["backend", "store", "tutor", "i18n", "speech", "games"];
 const isLogLine = (s) => LOG_TAGS.some((t) => s.startsWith("[" + t + "]"));
-const SKIP_EXACT = new Set(["ru-RU", "az-AZ", "de-DE"]);
+const SKIP_EXACT = new Set([
+  "ru-RU", "az-AZ", "de-DE",
+  // «в Берлине» / «во Франкфурте»: выбор русского предлога, до которого азербайджанская ветка
+  // кода просто не доходит — там место обозначает суффикс внутри слова (см. ruIn в brain.js).
+  "в ", "во ",
+]);
 
 /**
  * Строковые литералы файла — свой маленький сканер, а не регулярка.
