@@ -1,6 +1,11 @@
 // Offline brain smoke test: does Mia understand and answer sensibly without any API key?
 // usage: node tools/test-brain.mjs
-import { understand, respond, opening, checkGerman, BRAIN_STATS } from "../public/js/brain.js";
+import { understand, respond, opening, checkGerman, BRAIN_STATS, resetBrainIndex } from "../public/js/brain.js";
+import { loadAz } from "../public/js/i18n.js";
+
+// Азербайджанский указатель слов строится из словаря перевода, а тот грузится динамически.
+// Без этого половина азербайджанских проверок молча прошла бы мимо: слово просто не нашлось бы.
+await loadAz();
 
 const cases = [
   ["привет", "greeting"],
@@ -23,6 +28,35 @@ const cases = [
   ["спасибо", "thanks"],
   ["пока", "bye"],
   ["", "empty"],
+
+  // Азербайджанский. Мия отвечать на нём умела всегда — её реплики переводятся словарём, — а
+  // вот слышала до сих пор только русский и немецкий, и для человека без ключа Anthropic это
+  // значило, что офлайн-режима у него просто нет.
+  ["Salam!", "greeting"],
+  ["Sabahın xeyir, Mia", "greeting"],
+  ["Haus nə deməkdir?", "word"],
+  ["ev almanca necədir", "word"],
+  ["ev almanca necedir", "word"],            // без диакритики — так печатают чаще всего
+  ["su almanca necədir", "word"],            // двухбуквенное слово: раньше отсеивалось фильтром
+  ["başa düşmürəm", "confused"],
+  ["basa dusmurem", "confused"],
+  ["bir də de, zəhmət olmasa", "repeat"],
+  ["yorğunam, çox çətindir", "feelingBad"],
+  ["hər şey əladır", "feelingGood"],
+  ["çox sağ ol", "thanks"],
+  ["hələlik", "bye"],
+  // маршрутизация по группам: не просто «поняла», а «поняла КУДА»
+  ["necəsən", "aboutHer"],
+  ["haradan gəlmisən", "aboutHer"],
+  ["artikllər niyə var", "aboutGerman"],
+  ["neçə ay çəkəcək", "aboutGerman"],
+  ["almaniyada iş necə tapmaq olar", "aboutGermany"],
+  ["viza lazımdırmı", "aboutGermany"],
+  ["sikkələr nə üçündür", "site"],
+  ["yazılı imtahan nədir", "site"],
+  // разговорник открывается и азербайджанским зачином, иначе весь его matchAz недостижим
+  ["almanca bilmirəm necə deyilir", "small"],
+  ["almanca təşəkkür necə deyilir", "small"],
 ];
 
 let failed = 0;
@@ -297,6 +331,25 @@ for (let i = 0; i < 8; i++) {
 }
 if (greetings) { failed++; console.log(`FAIL  greeted again ${greetings}x mid-conversation`); }
 
+// Тот же поиск слова, но ПОСЛЕ перевода уроков — так оно и работает в браузере.
+//
+// Этот случай первые азербайджанские проверки пропустили: в тестах translateLevels() никто не
+// звал, подписи оставались русскими, указатель строился правильно и всё было зелёным. На экране
+// же подпись к этому моменту уже азербайджанская, искать её в таблице «русский → азербайджанский»
+// бессмысленно, и ни одно слово не находилось.
+{
+  const { LEVELS } = await import("../public/js/levels.js");
+  const { translateLevels, setLangForTest } = await import("../public/js/i18n.js");
+  setLangForTest("az");
+  translateLevels(LEVELS);
+  resetBrainIndex();
+  for (const [q, want] of [["ev almanca necədir", "word"], ["su almanca necedir", "word"], ["Haus nə deməkdir", "word"]]) {
+    const u = understand(q);
+    if (u.intent !== want) { failed++; console.log(`FAIL  после перевода уроков: ${JSON.stringify(q)} → ${u.intent}`); }
+  }
+  setLangForTest("ru");
+}
+
 console.log(`brain: ${BRAIN_STATS.words} слов, ${BRAIN_STATS.grammar} правил, ${BRAIN_STATS.openers} вопросов, ${BRAIN_STATS.topics} тем, ${BRAIN_STATS.answers} готовых ответов`);
-console.log(failed ? `\n${failed} FAILURES` : `All ${cases.length + 118} offline-brain checks pass`);
+console.log(failed ? `\n${failed} FAILURES` : `All ${cases.length + 121} offline-brain checks pass`);
 process.exit(failed ? 1 : 0);

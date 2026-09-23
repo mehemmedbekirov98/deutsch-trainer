@@ -55,14 +55,13 @@ function detect() {
  * и человек, который им пользуется, не должен качать ничего лишнего.
  */
 export async function initI18n() {
-  document.documentElement.lang = LANGS[current].htmlLang;
-  document.body?.setAttribute("data-lang", current);
+  // Тесты запускают это в Node, где документа нет.
+  if (typeof document !== "undefined") {
+    document.documentElement.lang = LANGS[current].htmlLang;
+    document.body?.setAttribute("data-lang", current);
+  }
   if (current === "ru") return current;
-  await Promise.all([
-    load(() => import("./i18n/az-ui.js")),
-    load(() => import("./i18n/az-brain.js")),
-    load(() => import("./i18n/az-content.js")),
-  ]);
+  await loadAz();
   translateDocument();
   return current;
 }
@@ -74,8 +73,8 @@ export async function initI18n() {
  * её не видит. Проход разовый и по маленькому дереву: в index.html только оболочка, всё
  * остальное рисуется приложением.
  */
-function translateDocument(root = document.body) {
-  if (current === "ru" || !DICT.size) return;
+function translateDocument(root = typeof document === "undefined" ? null : document.body) {
+  if (!root || current === "ru" || !DICT.size) return;
   const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
   const hits = [];
   for (let n = walker.nextNode(); n; n = walker.nextNode()) {
@@ -93,6 +92,39 @@ function translateDocument(root = document.body) {
   }
   const title = DICT.get(document.title);
   if (title) document.title = title;
+}
+
+/**
+ * Загрузить азербайджанские словари, НЕ переключая язык.
+ *
+ * Нужно двум разным вещам: самому переключению языка и двуязычному поиску в офлайн-Мие —
+ * она ищет и по азербайджанскому слову, даже когда интерфейс русский. Второй вызов ничего
+ * не делает: словари уже в памяти.
+ */
+let azLoaded = null;
+export function loadAz() {
+  if (!azLoaded) {
+    azLoaded = Promise.all([
+      load(() => import("./i18n/az-ui.js")),
+      load(() => import("./i18n/az-brain.js")),
+      load(() => import("./i18n/az-content.js")),
+    ]);
+  }
+  return azLoaded;
+}
+
+/** Перевод независимо от выбранного языка: для тех, кто ищет ПО азербайджанскому тексту. */
+export const azOf = (s) => DICT.get(s) || null;
+
+/**
+ * Переключить язык без перезагрузки — только для tools/test-brain.mjs.
+ *
+ * В браузере язык меняет setLang(), и он перезагружает страницу: переводить надо не только
+ * интерфейс, но и данные уроков, а половина экранов уже нарисована. В проверке перезагружаться
+ * некуда, а состояние «выбран азербайджанский» воспроизвести необходимо.
+ */
+export function setLangForTest(next) {
+  if (LANGS[next]) current = next;
 }
 
 async function load(importer) {

@@ -1,5 +1,5 @@
 // Mia — the voice tutor. AI mode talks to /api/tutor (Claude); offline mode runs the level's script.
-import { t as tr, lang as uiLang } from "./i18n.js";
+import { t as tr, lang as uiLang, langInfo } from "./i18n.js";
 import { el, normalize, sleep, nextTick, todayKey } from "./utils.js";
 import { speech, STT_ERRORS } from "./speech.js";
 import { sfx, confetti, toast, xpFloat } from "./fx.js";
@@ -415,7 +415,7 @@ export class Tutor {
       // the other language, small and quiet — there to be read, not recited at him
       reply.translation ? el("div", { class: "bubble-ru", lang: reply.lang === "de" ? "ru" : "de" }, reply.translation,
         el("button", { class: "icon-btn tiny", type: "button", title: "Прослушать", onClick: () => speech.speak(reply.translation, { ...other, force: true }) }, "🔊")) : null,
-      reply.explain ? el("div", { class: "explain-ru" }, el("span", { class: "explain-icon" }, "🇷🇺"), el("span", {}, reply.explain), el("button", { class: "icon-btn tiny", type: "button", title: "Прослушать по-русски", onClick: () => speech.speak(reply.explain, { lang: "ru-RU", force: true }) }, "🔊")) : null,
+      reply.explain ? el("div", { class: "explain-ru" }, el("span", { class: "explain-icon" }, langInfo().flag), el("span", {}, reply.explain), el("button", { class: "icon-btn tiny", type: "button", title: "Прослушать по-русски", onClick: () => speech.speak(reply.explain, { lang: "ru-RU", force: true }) }, "🔊")) : null,
       reply.correction && reply.correction.corrected ? el("div", { class: "correction" },
         el("div", { class: "corr-row" }, el("span", { class: "corr-bad" }, reply.correction.original), el("span", {}, " → "), el("span", { class: "corr-good", lang: "de" }, reply.correction.corrected)),
         reply.correction.explanationRu ? el("div", { class: "corr-why" }, reply.correction.explanationRu) : null) : null,

@@ -1,6 +1,6 @@
 // Mia's offline brain: understands what Emil said (Russian or German) and decides what she answers,
 // entirely from local data. Used whenever the AI backend is off, so the app is fully usable without a key.
-import { t as tr, lang as uiLang, translateText } from "./i18n.js";
+import { t as tr, lang as uiLang, azOf } from "./i18n.js";
 import { normalize, pick, shuffle, stripArticle } from "./utils.js";
 import { LEVELS } from "./levels.js";
 import SMALLTALK from "./brain-data/smalltalk.js";
@@ -15,10 +15,6 @@ const NO_GLOSS = /[(][^)]*[)]/g;
 // Every German word Emil has met, indexed both ways, so Mia can answer "что значит X" for ~380 words.
 const VOCAB_DE = new Map();
 const VOCAB_RU = new Map();
-// Азербайджанский указатель строится из того же перевода, которым живёт весь сайт: русская
-// подпись слова уже лежит в словаре, её достаточно прогнать через translateText(). Ни одной
-// новой строки данных — и указатель не может разойтись с тем, что человек видит на карточке.
-const VOCAB_AZ = new Map();
 for (const level of LEVELS) {
   for (const v of level.vocab) {
     const de = normalize(stripArticle(v.de));
@@ -31,19 +27,49 @@ for (const level of LEVELS) {
       const ru = normalize(part);
       if (ru.length > 2 && !VOCAB_RU.has(ru)) VOCAB_RU.set(ru, { ...v, level });
     }
-    // Переводим подпись целиком, а уже перевод режем на части: ключ словаря — вся строка,
-    // и «жена; женщина» по кускам в нём не нашлось бы.
-    const az = translateText(String(v.ru));
-    if (az !== String(v.ru)) {
-      for (const part of az.replace(NO_GLOSS, " ").split(/[,;/]/)) {
-        const key = normalize(part);
-        // порог ниже русского: «ev», «su», «il», «göz» — обычные слова курса, а не предлоги
-        if (key.length > 1 && !VOCAB_AZ.has(key)) VOCAB_AZ.set(key, { ...v, level });
-      }
-    }
   }
 }
 const GRAMMAR = LEVELS.flatMap((l) => l.grammar.map((g) => ({ ...g, level: l })));
+
+/**
+ * Азербайджанский указатель слов — лениво, при первом обращении.
+ *
+ * Строится из того же перевода, которым живёт весь сайт: подпись к немецкому слову уже лежит
+ * в словаре, её достаточно там найти. Ни одной новой строки данных — и указатель физически не
+ * может разойтись с тем, что человек видит на карточке.
+ *
+ * Лениво — потому что словари грузятся асинхронно, уже после того как этот модуль выполнился.
+ * Если строить сразу, указатель всегда оставался бы пустым, и это молча: слово просто не
+ * находится, а почему — не видно.
+ */
+let vocabAz = null;
+
+/** Сбросить указатель — для проверки, которая переводит уроки уже после его постройки. */
+export function resetBrainIndex() { vocabAz = null; }
+
+function vocabAzIndex() {
+  if (vocabAz) return vocabAz;
+  const map = new Map();
+  for (const level of LEVELS) {
+    for (const v of level.vocab) {
+      // Переводим подпись целиком, а уже перевод режем: ключ словаря — вся строка, и
+      // «жена; женщина» по кускам в нём не нашлось бы.
+      //
+      // В азербайджанском режиме переводить нечего: translateLevels() уже прошёлся по данным,
+      // и подпись азербайджанская. Тогда azOf() вернёт null — берём её как есть.
+      const az = azOf(String(v.ru)) || (uiLang() === "az" ? String(v.ru) : null);
+      if (!az) continue;
+      for (const part of az.replace(NO_GLOSS, " ").split(/[,;/]/)) {
+        const key = normalize(part);
+        // порог ниже русского: «ev», «su», «il», «göz» — обычные слова курса, а не предлоги
+        if (key.length > 1 && !map.has(key)) map.set(key, { ...v, level });
+      }
+    }
+  }
+  // пока словарь не загружен, карта пустая — не запоминаем её, попробуем на следующем вопросе
+  if (map.size) vocabAz = map;
+  return map;
+}
 
 /* ---------------------------------------------------------------- matching */
 const has = (text, fragments) => fragments.some((f) => text.includes(normalize(f)));
@@ -172,7 +198,9 @@ const hasWord = (text, words) => {
 const GREETING = ["привет", "здравствуй", "хай", "салам", "hallo", "hi", "guten tag", "guten morgen", "guten abend", "servus", "moin",
   "salam", "sabahın xeyir", "sabahin xeyir", "axşamın xeyir", "axsamin xeyir", "günortan xeyir", "gunortan xeyir", "xoş gördük", "xos gorduk"];
 const BYE = ["до свидания", "до скорого", "прощай", "tschuss", "tschüss", "auf wiedersehen", "bis bald", "bis dann", "ciao", "bye",
-  "sağ ol", "sag ol", "sağ olun", "sag olun", "salamat qal", "hələlik", "helelik", "görüşərik", "goruserik", "tezliklə görüşərik", "tezlikle goruserik"];
+  // «sağ ol» тут намеренно НЕТ: по-азербайджански это прежде всего «спасибо», а прощание
+  // проверяется раньше благодарности — и «çox sağ ol» заканчивало разговор вместо ответа.
+  "salamat qal", "hələlik", "helelik", "görüşərik", "goruserik", "tezliklə görüşərik", "tezlikle goruserik", "sabaha qədər", "sabaha qeder"];
 // "пока" usually means "for now" ("пока не знаю", "я пока учу") and only says goodbye on its own
 // "давай" is deliberately NOT here: on its own it means "go on, okay", never "bye" — and
 // "давай попробуем" was ending the conversation.
@@ -183,7 +211,7 @@ const BYE_FILLER = new Set(["мия", "ну", "ок", "окей", "ладно", 
 // «sağ ol» и прощание, и благодарность — по одному слову не различить, поэтому оно есть в обоих
 // списках; порядок проверок в read() решает, что это значит в конкретной фразе.
 const THANKS = ["спасибо", "благодарю", "danke", "vielen dank", "спс",
-  "təşəkkür", "tesekkur", "çox sağ ol", "cox sag ol", "minnətdaram", "minnetdaram"];
+  "təşəkkür", "tesekkur", "sağ ol", "sag ol", "sağ olun", "sag olun", "çox sağ ol", "cox sag ol", "minnətdaram", "minnetdaram"];
 const CONFUSED = ["не понимаю", "не понял", "непонятно", "что это значит", "не знаю", "verstehe nicht", "ich verstehe nicht", "was ist das", "wie bitte", "не поняла", "хз",
   "başa düşmürəm", "basa dusmurem", "anlamadım", "anlamadim", "başa düşmədim", "basa dusmedim", "bilmirəm", "bilmirem", "nə deməkdir", "ne demekdir"];
 const REPEAT = ["повтори", "ещё раз", "еще раз", "медленнее", "помедленнее", "noch einmal", "langsamer", "wiederhole",
@@ -198,7 +226,9 @@ const FEELING_BAD = ["устал", "устала", "тяжело", "трудно
 // "неплохо" is praise, not a complaint — never let FEELING_BAD swallow it
 const FEELING_BAD_NOT = /(^|[\s,])не ?(плохо|трудно|сложно|тяжело)/;
 const FEELING_GOOD = ["хорошо", "отлично", "супер", "классно", "рад", "здорово", "нормально", "прекрасно", "gut", "super", "prima", "toll", "schön",
-  "yaxşı", "yaxsi", "əla", "ela", "möhtəşəm", "mohtesem", "şadam", "sadam", "normaldır", "normaldir", "gözəldir", "gozeldir"];
+  // формы перечислены целиком: совпадение идёт по слову, а не по подстроке, и «əladır» с «əla» не сойдётся
+  "yaxşı", "yaxsi", "yaxşıyam", "yaxsiyam", "əla", "ela", "əladır", "eladir", "möhtəşəm", "mohtesem",
+  "şadam", "sadam", "normaldır", "normaldir", "gözəldir", "gozeldir", "hər şey yaxşıdır", "her sey yaxsidir"];
 // "Ich komme aus Baku" is Emil talking about himself, not a question about Mia's life.
 const SELF_STATEMENT = /^(ich|mein|meine|mir|mich)\b/;
 const QUESTIONY = /\?|^(wie|was|wo|wer|wann|warum|woher|wohin)\b|как|что|где|кто|когда|почему|зачем|откуда|сколько|какой|какая|можно|расскажи|объясни|скажи|neçə|nece|necə|nə|ne |haradan|harada|hara|kim|nə vaxt|ne vaxt|niyə|niye|nəyə görə|neye gore|hansı|hansi|olar|danış|danis|izah et|de görüm|de gorum/;
@@ -227,7 +257,7 @@ export function understand(raw) {
   // consulted for every message, so "Мне не нравится грамматика" matched the «мне не нравится»
   // entry and Mia recited Emil's own sentence back at him as though it were her opinion. It sits
   // here, above the confused/help gates, because those would otherwise swallow the lead-in first.
-  if (/как сказать|как будет|как ответить|как спросить|по немецки|wie sagt man/.test(text)) {
+  if (/как сказать|как будет|как ответить|как спросить|по немецки|wie sagt man|necə deyilir|nece deyilir|necə olur|nece olur|almanca necə|almanca nece|nə cavab verim|ne cavab verim|necə soruşum|nece sorusum/.test(text)) {
     const small = bestMatch(text, QUESTIONS.smallAnswers);
     if (small) return out("small", small);
   }
@@ -342,7 +372,11 @@ function findWordQuestion(text) {
   const asksGerman = /как будет|как сказать|по немецки|wie sagt man|almanca nec|almancada nec|almanca nədir|almanca nedir|almancası|almancasi/.test(text);
   if (!asksMeaning && !asksGerman) return null;
   const STOP = new Set(["что", "как", "это", "значит", "означает", "будет", "сказать", "немецки", "переведи", "перевод", "пожалуйста", "слово", "was", "heisst", "bedeutet", "sagt", "man",
-    "almanca", "almancada", "almancasi", "necedir", "nece", "nedir", "demekdir", "menasi", "tercume", "soz", "sozu", "bu", "zehmet", "olmasa", "deyilir", "olur"]);
+    // обе записи каждого слова: normalize() трогает немецкие умлауты, но не азербайджанские
+    // ə, ı, ş, ç, ğ — а печатают и так, и так
+    "almanca", "almancada", "almancasi", "almancası", "necedir", "necədir", "nece", "necə",
+    "nedir", "nədir", "demekdir", "deməkdir", "menasi", "mənası", "tercume", "tərcümə",
+    "soz", "söz", "sozu", "sözü", "bu", "zehmet", "zəhmət", "olmasa", "deyilir", "olur"]);
   const words = text.split(" ").filter((w) => w.length > 2 && !STOP.has(w));
   // try the longest words first: they are the most likely to be the one he asked about
   for (const w of words.slice().sort((a, b) => b.length - a.length)) {
@@ -352,7 +386,7 @@ function findWordQuestion(text) {
     if (ru) return { dir: "ru-de", entry: ru };
     // Направление то же самое: подпись к немецкому слову на сайте всё равно переводится
     // автоматически, поэтому отдельного «az-de» не нужно.
-    const az = VOCAB_AZ.get(w);
+    const az = vocabAzIndex().get(w);
     if (az) return { dir: "ru-de", entry: az };
   }
   // no exact hit: allow a stem match, so "Arbeit" still finds "arbeiten"
@@ -366,7 +400,7 @@ function findWordQuestion(text) {
   // с большей вероятностью окажется служебным.
   for (const w of text.split(" ")) {
     if (w.length !== 2 || STOP.has(w)) continue;
-    const az = VOCAB_AZ.get(w);
+    const az = vocabAzIndex().get(w);
     if (az) return { dir: "ru-de", entry: az };
   }
   return null;

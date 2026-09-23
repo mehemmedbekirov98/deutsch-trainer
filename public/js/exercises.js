@@ -1,5 +1,5 @@
 // Exercise session engine: renders one exercise at a time, checks answers, tracks XP/combo.
-import { t as tr, lang as uiLang } from "./i18n.js";
+import { t as tr, lang as uiLang, langInfo } from "./i18n.js";
 import { el, $, append, nextTick, normalize, matchAnswer, similarity, spokenSimilarity, digitsToWords, shuffle, pick, sleep } from "./utils.js";
 import { speech, STT_ERRORS, RATES } from "./speech.js";
 import { sfx, confetti, xpFloat, countUp, toast } from "./fx.js";
@@ -631,7 +631,8 @@ function translateRenderer(ex, api) {
   let hintShown = false;
   const hintBtn = ex.hint ? el("button", { class: "btn ghost small", type: "button", onClick: () => { hintShown = true; hintBtn.replaceWith(el("div", { class: "hint-box" }, "💡 ", ex.hint)); } }, "Подсказка") : null;
   const node = el("div", { class: "ex ex-translate" },
-    el("div", { class: "dir-badge" }, toDe ? "🇷🇺 → 🇩🇪" : "🇩🇪 → 🇷🇺"),
+    // флаг родного языка, а не всегда русский: сайт бывает и азербайджанским
+    el("div", { class: "dir-badge" }, toDe ? `${langInfo().flag} → 🇩🇪` : `🇩🇪 → ${langInfo().flag}`),
     el("div", { class: "ex-sentence", lang: toDe ? "ru" : "de" }, ex.text, !toDe ? speakBtn(ex.text) : null),
     input,
     toDe ? umlautBar(input) : null,
