@@ -85,7 +85,12 @@ if (dry) process.exit(0);
 let made = 0, skipped = 0, failed = 0;
 const entries = [...jobs.entries()];
 // A handful at a time: the endpoint throttles, and a burst is how you get empty audio back.
-const LANES = 4;
+//
+// Two is not timidity. At four lanes Supabase Storage starts answering 429 "too_many_connections"
+// — and that failure lands AFTER the line has already been synthesised, so it throws away the
+// slow half of the work. putClip() now backs off and retries, but the cheapest fix is not to
+// crowd the door in the first place. The whole course is ~5,800 lines and runs once.
+const LANES = 2;
 await Promise.all(Array.from({ length: LANES }, async (_, lane) => {
   for (let i = lane; i < entries.length; i += LANES) {
     const [key, job] = entries[i];
