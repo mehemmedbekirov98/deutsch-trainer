@@ -1,20 +1,26 @@
 # Level content contract (Lingua Mia)
 
-Every level lives in `public/js/content/levelNN.js` (NN = two digits, `level01.js` … `level12.js`) and is an ES module:
+Every level lives in `public/js/content/levelNN.js` (NN = two digits, `level01.js` … `level36.js`) and is an ES module:
 
 ```js
 export default { ...level object... };
 ```
 
-The learner is **Emil**, 31 years old, Russian speaker, level A1 (beginner). All *instructions, explanations, translations* are in **Russian**. All *target language material* is in **German** (correct spelling with ä ö ü ß, nouns with article, `du`-form when addressing Emil). Use Emil's name in examples now and then. Tone: friendly, adult, never childish.
+The learner is **Emil**, an adult beginner. He is a character, not a person: give him no biography beyond what a textbook example needs — no wife, no home town, no back story.
+
+All *instructions, explanations, translations* are written in **Russian**, and all *target language material* in **German** (correct spelling with ä ö ü ß, nouns with their article, `du` when addressing Emil). Tone: friendly, adult, never childish.
+
+**The German is the anchor, the Russian is its gloss.** The site also explains in Azerbaijani, and that translation is keyed by the Russian string (see `public/js/i18n.js`). So the Russian must say exactly what the German says, and nothing that only makes sense for a Russian speaker — "Ich spreche Russisch" is glossed "Я говорю по-русски" and translated "Mən rusca danışıram", never localised to another language. Changing a Russian string orphans its translation; `npm run i18n` is what tells you.
 
 Validate a file with: `node tools/validate-content.mjs public/js/content/level05.js` — it must print `OK`.
+Check the whole course and both languages with `npm run check`.
 
 ## Level object
 
 | field | type | rules |
 |---|---|---|
-| `id` | number | 1..12, equals NN |
+| `id` | number | 1..36, equals NN |
+| `cefr` | string | `"A1"` (1–12), `"A2"` (13–24) or `"B1"` (25–36) — required |
 | `slug` | string | lowercase ascii, e.g. `"hallo"` |
 | `title` | string | German title, e.g. `"Hallo & Vorstellung"` |
 | `titleRu` | string | Russian title |

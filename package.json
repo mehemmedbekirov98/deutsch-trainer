@@ -10,7 +10,8 @@
     "audio": "node --env-file-if-exists=.env tools/pregen-audio.mjs",
     "validate": "node tools/validate-content.mjs",
     "test": "node tools/test-answers.mjs && node tools/test-brain.mjs",
-    "check": "npm run validate && npm test"
+    "check": "npm run validate && npm test && npm run i18n",
+    "i18n": "node tools/i18n-report.mjs"
   },
   "engines": {
     "node": ">=20.19"

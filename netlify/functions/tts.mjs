@@ -35,7 +35,10 @@ export default async (req) => {
 
   let audio;
   try {
-    audio = await synthesise({ text, voice, locale, rate, pitch, volume });
+    // Девять секунд из десяти, что даёт Netlify: остаток нужен на запись в хранилище и ответ.
+    // Без бюджета две попытки складывались в 46 секунд, и платформа убивала функцию раньше,
+    // чем та успевала сказать, что именно пошло не так.
+    audio = await synthesise({ text, voice, locale, rate, pitch, volume, budgetMs: 9000 });
   } catch (e) {
     console.error("[tts]", e?.message || e);
     // The app falls back to the browser's own voice on any failure here, so this must be quick

@@ -18,7 +18,6 @@ const MALE_NAMES = /\b(conrad|christoph|kasper|stefan|markus|hans|klaus|killian|
 // Mia always speaks with a female voice. Seraphina is multilingual, so the same voice
 // carries both her German and her Russian explanations.
 export const MIA_VOICE = "de-DE-SeraphinaMultilingualNeural";
-export const NEURAL_VOICES = { f: MIA_VOICE, m: MIA_VOICE, ru: MIA_VOICE };
 export const NEURAL_CHOICES = [
   { id: "de-DE-SeraphinaMultilingualNeural", label: "Seraphina · мягкий и живой (по умолчанию)" },
   { id: "de-DE-AmalaNeural", label: "Amala · мягкий, молодой" },

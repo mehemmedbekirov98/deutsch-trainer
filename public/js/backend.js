@@ -15,7 +15,6 @@ export const backend = {
   config: { ai: false, tts: false, supabaseUrl: "", supabaseAnonKey: "", canSetKey: false },
   sb: null,
   user: null,      // { id, email, name, publicBoard } or null
-  accounts: 0,
 
   get cloud() { return Boolean(this.sb); },
   get guest() { return !this.user; },
