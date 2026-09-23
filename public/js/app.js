@@ -1,7 +1,7 @@
 // Lingua Mia — app shell, router and views
 import { $, $$, el, append, nextTick, shuffle, plural, todayKey, articleOf, stripArticle, escapeHtml, sleep } from "./utils.js";
 import { store, RANKS, ACHIEVEMENTS } from "./store.js";
-import { speech } from "./speech.js";
+import { speech, NATIVE_LOCALE } from "./speech.js";
 import { sfx, confetti, toast, achievementToast, countUp, startParticles, setSoundEnabled, xpFloat } from "./fx.js";
 import { ExerciseSession, ringSvg } from "./exercises.js";
 import { Tutor } from "./tutor.js";
@@ -18,7 +18,7 @@ import { backend } from "./backend.js";
 import { CEFR, CEFR_TITLE, CEFR_FIRST, CEFR_LAST } from "./store.js";
 // t импортируется как tr: в этом файле t уже занято — и переменной под Tutor, и параметром
 // в списке тембров голоса. Молчаливое затенение тега перевода нашлось бы не скоро.
-import { initI18n, translateLevels, setLang, lang, LANGS, t as tr } from "./i18n.js";
+import { initI18n, translateLevels, setLang, lang, langInfo, LANGS, t as tr } from "./i18n.js";
 
 let AI = false;
 let NEURAL = false;
@@ -356,7 +356,7 @@ function viewAdmin(v) {
               u.isAdmin ? el("span", { class: "board-you" }, "админ") : null,
               u.blocked ? el("span", { class: "board-you", style: { background: "rgba(251,113,133,.3)" } }, "заблокирован") : null),
             el("div", { class: "board-sub muted small" },
-              `${u.cefr} · ${u.xp} XP · ${u.levels} ${plural(u.levels, "урок", "урока", "уроков")} · ${u.lastSeen ? "был " + new Date(u.lastSeen).toLocaleDateString("ru-RU") : "ещё не занимался"}`)),
+              `${u.cefr} · ${u.xp} XP · ${u.levels} ${plural(u.levels, "урок", "урока", "уроков")} · ${u.lastSeen ? "был " + new Date(u.lastSeen).toLocaleDateString(langInfo().speech) : "ещё не занимался"}`)),
           el("div", { class: "account-actions" },
             u.id === session.user?.id ? el("span", { class: "muted small" }, "это ты") : el("button",
               { class: "btn ghost small", type: "button", onClick: act({ blocked: !u.blocked }, u.blocked ? "Разблокирован" : "Заблокирован") },
@@ -558,7 +558,7 @@ function prewarm(items) {
     const text = typeof it === "string" ? it : it?.text;
     if (!text) continue;
     const rate = (typeof it === "object" && it.rate) || st.rate || 0.92;
-    const lang = typeof it === "object" && String(it.lang || "").startsWith("ru") ? "ru-RU" : "de-DE";
+    const lang = typeof it === "object" && String(it.lang || "").startsWith("ru") ? NATIVE_LOCALE : "de-DE";
     const plan = speech.plan(text, { rate, lang });
     if (prewarmed.has(plan.key)) continue;
     prewarmed.add(plan.key);
@@ -919,8 +919,8 @@ function viewVocab(v, level) {
     ...head.map((w) => ({ text: w.de, rate: RATES.word })),
     ...head.map((w) => ({ text: w.example, rate: RATES.example })),
     ...head.slice(0, 4).flatMap((w) => [
-      { text: w.ru, rate: RATES.translation, lang: "ru-RU" },
-      { text: w.exampleRu, rate: RATES.translation, lang: "ru-RU" },
+      { text: w.ru, rate: RATES.translation, lang: NATIVE_LOCALE },
+      { text: w.exampleRu, rate: RATES.translation, lang: NATIVE_LOCALE },
     ]),
   ]);
   const r = renderFlashcards({
@@ -1464,7 +1464,7 @@ function renderProfile(v) {
               $$(".tone-btn").forEach((b) => b.classList.remove("active"));
               e.currentTarget.classList.add("active");
               await speech.speak("Hallo Emil! Schön, dass du da bist.", { force: true });
-              await speech.speak("А по-русски я звучу вот так. Если что-то непонятно — просто спроси.", { lang: "ru-RU", force: true });
+              await speech.speak(tr("А по-русски я звучу вот так. Если что-то непонятно — просто спроси."), { lang: NATIVE_LOCALE, force: true });
             } }, el("span", { class: "tone-name" }, t.label), el("span", { class: "tone-desc muted" }, t.desc));
           })),
         ),

@@ -513,6 +513,19 @@ class Speech {
       };
       rec.onerror = (e) => {
         const code = e.error || "error";
+        // Сервис не знает этого языка. Для азербайджанского это вероятный исход, и он не должен
+        // выглядеть как поломка микрофона: берём турецкий и повторяем ту же попытку молча.
+        if (code === "language-not-supported" && !STT_FALLBACK.has(rec.lang)) {
+          const next = STT_ALTERNATIVE[rec.lang];
+          if (next) {
+            STT_FALLBACK.set(rec.lang, next);
+            settled = true;
+            clearTimeout(timer);
+            if (this.rec === rec) { this.listening = false; this.rec = null; }
+            this._listen({ lang: next, onInterim, timeoutMs }).then(resolve, reject);
+            return;
+          }
+        }
         // "aborted" means something cancelled us (Mia started speaking, Emil pressed stop, the view
         // changed) — that is NOT the same as hearing nothing, and callers must not treat it as an error
         if (code === "aborted") return settle(reject, { code: "aborted" });
@@ -547,7 +560,19 @@ class Speech {
 
 export const speech = new Speech();
 
+/**
+ * Чем заменить язык, которого нет у сервиса распознавания.
+ *
+ * Турецкий и азербайджанский — близкие родственники; турецкая модель разбирает азербайджанскую
+ * речь несопоставимо лучше, чем русская или немецкая. Это компромисс, а не решение, но молчащий
+ * микрофон — вообще не вариант.
+ */
+const STT_ALTERNATIVE = { "az-AZ": "tr-TR" };
+/** Что уже пришлось заменить: спрашивать сервис второй раз про то же — только терять время. */
+const STT_FALLBACK = new Map();
+
 export const STT_ERRORS = {
+  "language-not-supported": "Этот браузер не распознаёт речь на твоём языке. Пиши текстом — так тоже всё работает.",
   unsupported: "Распознавание речи не поддерживается в этом браузере. Открой сайт в Google Chrome или Microsoft Edge.",
   "not-allowed": "Нет доступа к микрофону. Разреши микрофон в адресной строке браузера и попробуй снова.",
   "service-not-allowed": "Браузер запретил сервис распознавания. Проверь настройки микрофона.",

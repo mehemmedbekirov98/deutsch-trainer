@@ -1,7 +1,7 @@
 // Flashcards for a level's vocabulary + automatic vocab quiz generation
 import { t as tr } from "./i18n.js";
 import { el, shuffle, stripArticle, articleOf } from "./utils.js";
-import { speech, RATES } from "./speech.js";
+import { speech, RATES, NATIVE_LOCALE } from "./speech.js";
 import { sfx } from "./fx.js";
 import { store } from "./store.js";
 
@@ -60,12 +60,12 @@ export function renderFlashcards({ container, level, onDone, onExit }) {
       await say(v.example, { rate: RATES.example });
       return;
     }
-    const firstBack = say(v.ru, { lang: "ru-RU", rate: RATES.translation });
+    const firstBack = say(v.ru, { lang: NATIVE_LOCALE, rate: RATES.translation });
     speech.prefetch(v.example, { rate: RATES.example });
     if (!(await firstBack)) return;
-    speech.prefetch(v.exampleRu, { lang: "ru-RU", rate: RATES.translation });
+    speech.prefetch(v.exampleRu, { lang: NATIVE_LOCALE, rate: RATES.translation });
     if (!(await say(v.example, { rate: RATES.example }))) return;
-    await say(v.exampleRu, { lang: "ru-RU", rate: RATES.translation });
+    await say(v.exampleRu, { lang: NATIVE_LOCALE, rate: RATES.translation });
   }
   function render(dir = 0) {
     const v = cards[i];
@@ -98,8 +98,8 @@ export function renderFlashcards({ container, level, onDone, onExit }) {
     if (next) setTimeout(async () => {
       await speech.prefetch(next.de, { rate: RATES.word });
       await speech.prefetch(next.example, { rate: RATES.example });
-      await speech.prefetch(next.ru, { lang: "ru-RU", rate: RATES.translation });
-      await speech.prefetch(next.exampleRu, { lang: "ru-RU", rate: RATES.translation });
+      await speech.prefetch(next.ru, { lang: NATIVE_LOCALE, rate: RATES.translation });
+      await speech.prefetch(next.exampleRu, { lang: NATIVE_LOCALE, rate: RATES.translation });
     }, 1200);
   }
   function flip() {

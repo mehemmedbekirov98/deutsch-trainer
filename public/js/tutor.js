@@ -1,7 +1,7 @@
 // Mia — the voice tutor. AI mode talks to /api/tutor (Claude); offline mode runs the level's script.
 import { t as tr, lang as uiLang, langInfo } from "./i18n.js";
 import { el, normalize, sleep, nextTick, todayKey } from "./utils.js";
-import { speech, STT_ERRORS } from "./speech.js";
+import { speech, STT_ERRORS, NATIVE_LOCALE } from "./speech.js";
 import { sfx, confetti, toast, xpFloat } from "./fx.js";
 import { store } from "./store.js";
 import { understand, respond, opening } from "./brain.js";
@@ -211,7 +211,7 @@ export class Tutor {
             el("form", { class: "tutor-form", onSubmit: (e) => { e.preventDefault(); const v = this.input.value.trim(); if (v && this.handleUser(v)) this.input.value = ""; } },
               (this.input = el("input", {
                 class: "text-input", type: "text", autocomplete: "off",
-                lang: this.chatMode === "german" ? "de" : "ru",
+                lang: this.chatMode === "german" ? "de" : uiLang(),
                 placeholder: this.chatMode === "german" ? "Пиши по-немецки — Мия поправит…" : "Говори или пиши на любом языке…",
               })),
               (this.sendBtn = el("button", { class: "btn primary", type: "submit", title: "Отправить" }, "➤")),
@@ -406,8 +406,8 @@ export class Tutor {
     if (this.stopped || gen !== this.gen || seq !== this.seq) return;
     const reply = normalizeReply(raw);
     this.lastReply = reply;
-    const voice = reply.lang === "de" ? {} : { lang: "ru-RU" };
-    const other = reply.lang === "de" ? { lang: "ru-RU" } : {};
+    const voice = reply.lang === "de" ? {} : { lang: NATIVE_LOCALE };
+    const other = reply.lang === "de" ? { lang: NATIVE_LOCALE } : {};
     const bubble = el("div", { class: `bubble mia ${reply.lang === "ru" ? "mia-ru" : ""}` },
       el("div", { class: "bubble-name" }, "Мия"),
       el("div", { class: "bubble-de", lang: reply.lang }, reply.say,
@@ -415,7 +415,7 @@ export class Tutor {
       // the other language, small and quiet — there to be read, not recited at him
       reply.translation ? el("div", { class: "bubble-ru", lang: reply.lang === "de" ? "ru" : "de" }, reply.translation,
         el("button", { class: "icon-btn tiny", type: "button", title: "Прослушать", onClick: () => speech.speak(reply.translation, { ...other, force: true }) }, "🔊")) : null,
-      reply.explain ? el("div", { class: "explain-ru" }, el("span", { class: "explain-icon" }, langInfo().flag), el("span", {}, reply.explain), el("button", { class: "icon-btn tiny", type: "button", title: "Прослушать по-русски", onClick: () => speech.speak(reply.explain, { lang: "ru-RU", force: true }) }, "🔊")) : null,
+      reply.explain ? el("div", { class: "explain-ru" }, el("span", { class: "explain-icon" }, langInfo().flag), el("span", {}, reply.explain), el("button", { class: "icon-btn tiny", type: "button", title: "Прослушать перевод", onClick: () => speech.speak(reply.explain, { lang: NATIVE_LOCALE, force: true }) }, "🔊")) : null,
       reply.correction && reply.correction.corrected ? el("div", { class: "correction" },
         el("div", { class: "corr-row" }, el("span", { class: "corr-bad" }, reply.correction.original), el("span", {}, " → "), el("span", { class: "corr-good", lang: "de" }, reply.correction.corrected)),
         reply.correction.explanationRu ? el("div", { class: "corr-why" }, reply.correction.explanationRu) : null) : null,
@@ -429,7 +429,7 @@ export class Tutor {
       // Her own line goes out FIRST so nothing queues ahead of it; a Russian follow-up explanation
       // is synthesised while it plays, so the two run together without a silent gap.
       const main = speech.speak(reply.say, { ...voice, gender: "f", rate: store.state.settings.rate });
-      if (reply.explain) speech.prefetch(reply.explain, { lang: "ru-RU" });
+      if (reply.explain) speech.prefetch(reply.explain, { lang: NATIVE_LOCALE });
       await main;
       // If Emil reached for the microphone while she was still talking, the turn is his. Speaking
       // the explanation now would abort the recogniser he just started (speak() always stops
@@ -437,7 +437,7 @@ export class Tutor {
       if (seq !== this.seq) return; // he took the turn while she was speaking
       if (!this.listening && !this.stopped && gen === this.gen && reply.explain) {
         this.setState("speaking", "Мия объясняет по-русски…");
-        await speech.speak(reply.explain, { lang: "ru-RU" });
+        await speech.speak(reply.explain, { lang: NATIVE_LOCALE });
         if (seq !== this.seq) return;
       }
     }
@@ -457,21 +457,24 @@ export class Tutor {
    * sessions. Pronunciation drills elsewhere always listen in German; here he decides.
    */
   micLang() {
-    return store.state.settings.micLang === "ru-RU" ? "ru-RU" : "de-DE";
+    // Настройка хранит саму локаль, и старые сейвы помнят «ru-RU». Считаем родным всё, что
+    // не немецкое: тогда человек, переключивший сайт на азербайджанский, получает азербайджанский
+    // микрофон, а его прежний выбор «слушать родной» не теряется.
+    return store.state.settings.micLang === "de-DE" ? "de-DE" : NATIVE_LOCALE;
   }
 
   /** The DE/RU switch under the microphone. */
   micLangSwitch() {
     const btn = el("button", { class: "mic-lang", type: "button" });
     const paint = () => {
-      const ru = this.micLang() === "ru-RU";
-      btn.textContent = tr(ru ? "RU" : "DE");
+      const ru = this.micLang() !== "de-DE";
+      btn.textContent = ru ? langInfo().short : "DE";
       btn.classList.toggle("ru", ru);
       btn.title = tr(ru ? "Микрофон слушает русский. Нажми, чтобы говорить по-немецки." : "Микрофон слушает немецкий. Нажми, чтобы говорить по-русски.");
       btn.setAttribute("aria-label", btn.title);
     };
     btn.addEventListener("click", () => {
-      const next = this.micLang() === "ru-RU" ? "de-DE" : "ru-RU";
+      const next = this.micLang() === "de-DE" ? NATIVE_LOCALE : "de-DE";
       store.update((st) => { st.settings.micLang = next; });
       paint();
       if (this.listening) {
@@ -479,9 +482,9 @@ export class Tutor {
         // German sentence would be submitted to Mia as a finished turn instead of being dropped.
         this.relisten = true;
         speech.abortListening();
-        this.setState("listening", next === "ru-RU" ? "Слушаю… говори по-русски" : "Слушаю… говори по-немецки");
+        this.setState("listening", next === "de-DE" ? "Слушаю… говори по-немецки" : "Слушаю… говори по-русски");
       } else {
-        this.setState("idle", next === "ru-RU" ? "Микрофон слушает по-русски" : "Микрофон слушает по-немецки");
+        this.setState("idle", next === "de-DE" ? "Микрофон слушает по-немецки" : "Микрофон слушает по-русски");
       }
     });
     paint();
@@ -756,7 +759,7 @@ export class Tutor {
     }
     // German practice listens for German; a normal conversation listens for his own language
     if (this.talkMode === "free") {
-      store.update((s) => { s.settings.micLang = next === "german" ? "de-DE" : "ru-RU"; });
+      store.update((s) => { s.settings.micLang = next === "german" ? "de-DE" : NATIVE_LOCALE; });
       this.micLangPaint?.();
     }
     if (!fromMia) toast(next === "german" ? "Хорошо, дальше по-немецки." : "Хорошо, говорим как обычно.", { icon: next === "german" ? "🇩🇪" : "💬" });
@@ -767,7 +770,7 @@ export class Tutor {
     // narration the "звук выключен" switch turns off. Same rate as she used, so it comes straight
     // out of the cache instead of being synthesised a second time.
     const r = this.lastReply;
-    if (r) speech.speak(r.say, { ...(r.lang === "ru" ? { lang: "ru-RU" } : {}), rate: store.state.settings.rate, force: true });
+    if (r) speech.speak(r.say, { ...(r.lang === "de" ? {} : { lang: NATIVE_LOCALE }), rate: store.state.settings.rate, force: true });
   }
 
   showHint() {
