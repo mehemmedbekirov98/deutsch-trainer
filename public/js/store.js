@@ -206,7 +206,13 @@ class Store {
     // A brand-new account on the browser where the progress was earned as a guest. Only when he
     // asked for it at sign-up — otherwise the next person to sign in on a shared computer would
     // inherit somebody else's XP.
-    if (!remote && !local && !this.remoteUnknown && backend.user && takeCarryOver(backend.user.email)) {
+    // Отметку забираем ВСЕГДА, а пользуемся ей только когда уместно.
+    //
+    // Раньше takeCarryOver стоял последним в цепочке `&&` и при живом облачном сейве просто не
+    // вызывался — а значит и не стирал себя. Чужая почта продолжала лежать в браузере, хотя
+    // нужна была ровно на один вход.
+    const carried = backend.user ? takeCarryOver(backend.user.email) : false;
+    if (!remote && !local && !this.remoteUnknown && backend.user && carried) {
       try {
         const guest = JSON.parse(localStorage.getItem(BASE_KEY) || "null");
         if (guest && Number.isFinite(guest.xp) && guest.xp > 0) local = guest;
@@ -271,7 +277,13 @@ class Store {
         // refill the object the views are holding instead of replacing it
         if (live && typeof live === "object" && v && typeof v === "object") {
           for (const key of Object.keys(live)) delete live[key];
-          Object.assign(live, v);
+          // Не Object.assign: он пишет через сеттер, а `__proto__` из разобранного JSON — это
+          // сеттер прототипа. Файл выбирает сам человек, так что это скорее «скачал непонятно
+          // что», чем чужая атака, — но обход стоит двух строк, а последствие невидимое.
+          for (const [key, val] of Object.entries(v)) {
+            if (key === "__proto__" || key === "constructor" || key === "prototype") continue;
+            live[key] = val;
+          }
         } else liveLevels[k] = v;
       }
       levels = liveLevels;

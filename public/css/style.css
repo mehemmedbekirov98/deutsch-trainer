@@ -594,8 +594,8 @@ input[type="range"] { accent-color: var(--accent); width: 200px; }
   .app { grid-template-columns: 1fr; }
   .sidebar { position: fixed; top: auto; bottom: 0; left: 0; right: 0; height: auto; padding: 8px 10px calc(8px + env(safe-area-inset-bottom)); flex-direction: row; align-items: center; border-right: none; border-top: 1px solid var(--border); background: rgba(11, 15, 26, 0.85); }
   .logo, .sidebar-stats { display: none; }
-  /* Eight destinations have to fit across a phone. Each takes an equal share and the label shrinks
-     with it — nothing may be pushed past the edge, where it becomes unreachable. */
+  /* Шесть разделов должны уместиться по ширине телефона. Каждый берёт равную долю, и ни один
+     не должен уехать за край, где до него не дотянуться. */
   .nav { flex-direction: row; width: 100%; justify-content: space-between; gap: 0; }
   .nav a { flex: 1 1 0; min-width: 0; flex-direction: column; gap: 2px; padding: 6px 1px; font-size: 0.64rem; text-align: center; }
   /* Многоточие — это запасной путь, а не норма. Самое длинное слово здесь «Тренировка»: при

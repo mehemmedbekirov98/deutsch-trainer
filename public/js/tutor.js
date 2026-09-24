@@ -608,8 +608,10 @@ export class Tutor {
         this.setState("listening", "Слушаю… не спеши, скажи когда будешь готов");
       }
       try {
-        // German AND Russian at once: Emil is a Russian speaker, and a German-only recogniser
-        // simply does not hear him when he asks something in his own language.
+        // Микрофон слушает ОДИН язык — тот, что выбран кнопкой DE/RU под ним (micLang).
+        // Распознаватель браузера двух языков сразу не умеет, а немецкий, включённый наглухо,
+        // просто не слышит вопрос, заданный на родном. Поэтому язык переключается явно, и
+        // переключение не съедает попытку — см. ветку «aborted» ниже.
         text = await speech.listen({ lang: this.micLang(), onInterim: (t) => { live.querySelector(".bubble-de").textContent = tr(t || "…"); } });
       } catch (e) {
         if (e?.code === "aborted") {

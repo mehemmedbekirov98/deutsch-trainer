@@ -1512,7 +1512,7 @@ function renderProfile(v) {
         el("div", { class: "setting" }, el("div", {}, el("div", { class: "setting-label" }, "Голос Мии"), el("div", { class: "muted small" }, NEURAL ? "Нейросетевые голоса звучат как живой человек" : voices.length ? tr`Найдено немецких голосов: ${voices.length}` : "Немецкие голоса не найдены — в Windows добавь язык «Deutsch» в настройках речи")), voiceSel),
         el("div", { class: "setting" }, el("div", {}, el("div", { class: "setting-label" }, "Скорость речи"), el("div", { class: "muted small" }, "медленнее ← → быстрее")), rate),
         el("div", { class: "setting tone-setting" },
-          el("div", {}, el("div", { class: "setting-label" }, "Мягкость голоса"), el("div", { class: "muted small" }, "Нажми вариант — Мия сразу скажет фразу этим тембром. Выбери тот, что приятнее на слух.")),
+          el("div", {}, el("div", { class: "setting-label" }, "Мягкость голоса"), el("div", { class: "muted small" }, "Нажми вариант — Мия сразу скажет фразу этим тембром. Весь курс заранее озвучен «Мягким»: с другим тембром или скоростью каждая фраза будет озвучиваться на ходу — это медленнее.")),
           el("div", { class: "tone-list" }, VOICE_PRESETS.map((t) => {
             // «sanft», а не «warm»: ровно это вернёт presetById() при пустой настройке
             // (VOICE_PRESETS[0]). С «warm» экран подсвечивал один тембр, а голос звучал другим —

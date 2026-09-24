@@ -8,6 +8,7 @@
 // либо использовать явную нумерацию {0}, {1}.
 
 export default {
+  "Нажми вариант — Мия сразу скажет фразу этим тембром. Весь курс заранее озвучен «Мягким»: с другим тембром или скоростью каждая фраза будет озвучиваться на ходу — это медленнее.": "Variantı seç — Mia dərhal həmin tembrlə bir cümlə deyəcək. Bütün kurs əvvəlcədən «Yumşaq» ilə səsləndirilib: başqa tembr və ya sürətlə hər cümlə anında səsləndiriləcək — bu daha yavaşdır.",
   "Удалить аккаунт": "Hesabı sil",
   "Исчезнет всё: аккаунт, прогресс на сервере, место в рейтинге и то, что Мия о тебе запомнила. Восстановить будет нечего.": "Hər şey yox olacaq: hesab, serverdəki irəliləyiş, reytinqdəki yer və Mianın sənin haqqında yadda saxladıqları. Bərpa etmək mümkün olmayacaq.",
   "Удалить аккаунт навсегда": "Hesabı həmişəlik sil",
@@ -315,7 +316,6 @@ export default {
   "Скорость речи": "Nitq sürəti",
   "медленнее ← → быстрее": "yavaş ← → sürətli",
   "Мягкость голоса": "Səsin yumşaqlığı",
-  "Нажми вариант — Мия сразу скажет фразу этим тембром. Выбери тот, что приятнее на слух.": "Variantı seç — Mia dərhal həmin tembrlə bir cümlə deyəcək. Qulağına xoş gələni seç.",
   "А по-русски я звучу вот так. Если что-то непонятно — просто спроси.": "Azərbaycanca isə belə səslənirəm. Nəsə anlaşılmazsa — sadəcə soruş.",
   "Цель на день": "Günlük hədəf",
   "Свободный разговор": "Sərbəst söhbət",
