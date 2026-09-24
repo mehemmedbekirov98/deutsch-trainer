@@ -27,15 +27,33 @@ const keyFor = () => (backend.user ? `${BASE_KEY}:${backend.user.id}` : BASE_KEY
 // after the first sign-in, because with email confirmation switched on those are two different
 // visits — the tick used to be honoured only when Supabase handed back a session immediately.
 const CARRY_KEY = "lingua-carry-guest";
+const CARRY_AT = CARRY_KEY + "-at";
+const CARRY_TTL = 24 * 60 * 60 * 1000;
+
 export const markCarryOver = (email) => {
-  try { localStorage.setItem(CARRY_KEY, String(email || "").trim().toLowerCase()); } catch {}
+  try {
+    localStorage.setItem(CARRY_KEY, String(email || "").trim().toLowerCase());
+    localStorage.setItem(CARRY_AT, String(Date.now()));
+  } catch {}
 };
+
+/**
+ * Забрать отметку «перенести прогресс» — и убрать её в любом случае.
+ *
+ * Раньше отметка стиралась только при совпадении адреса. Передумал на полпути, ошибся в почте,
+ * вошёл под другим человеком — и чужая почта оставалась лежать в браузере навсегда, хотя нужна
+ * была ровно на один вход. Заодно появился срок: через сутки отметка бессмысленна, письмо
+ * подтверждения живёт меньше.
+ */
 function takeCarryOver(email) {
   try {
     const want = localStorage.getItem(CARRY_KEY);
-    if (!want || want !== String(email || "").trim().toLowerCase()) return false;
+    const at = Number(localStorage.getItem(CARRY_AT)) || 0;
     localStorage.removeItem(CARRY_KEY);
-    return true;
+    localStorage.removeItem(CARRY_AT);
+    if (!want) return false;
+    if (at && Date.now() - at > CARRY_TTL) return false;
+    return want === String(email || "").trim().toLowerCase();
   } catch { return false; }
 }
 

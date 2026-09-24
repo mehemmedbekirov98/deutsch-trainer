@@ -1514,7 +1514,10 @@ function renderProfile(v) {
         el("div", { class: "setting tone-setting" },
           el("div", {}, el("div", { class: "setting-label" }, "Мягкость голоса"), el("div", { class: "muted small" }, "Нажми вариант — Мия сразу скажет фразу этим тембром. Выбери тот, что приятнее на слух.")),
           el("div", { class: "tone-list" }, VOICE_PRESETS.map((t) => {
-            const active = (settings.tone || "warm") === t.id;
+            // «sanft», а не «warm»: ровно это вернёт presetById() при пустой настройке
+            // (VOICE_PRESETS[0]). С «warm» экран подсвечивал один тембр, а голос звучал другим —
+            // расходились они только у старых сейвов, где поля tone ещё не было, зато молча.
+            const active = (settings.tone || "sanft") === t.id;
             return el("button", { class: `tone-btn ${active ? "active" : ""}`, type: "button", onClick: async (e) => {
               store.update((st) => (st.settings.tone = t.id));
               $$(".tone-btn").forEach((b) => b.classList.remove("active"));
