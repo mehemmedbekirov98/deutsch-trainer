@@ -44,7 +44,22 @@ export const FALLBACK_VOICE_AZ = "az-AZ-BanuNeural";
 export const NATIVE_LOCALE = uiLang() === "az" ? "az-AZ" : "ru-RU";
 export const isNativeLocale = (l) => String(l || "").startsWith(NATIVE_LOCALE.slice(0, 2));
 
-/** Voice presets Emil can switch between by ear, softest first. */
+/**
+ * Как звучит Мия. Одинаково у всех, и менять это некому.
+ *
+ * Раньше здесь лежали четыре тембра на выбор, голос из списка и ползунок скорости. Выбор убран
+ * намеренно: голос — это часть того, как курс звучит, а не настройка. Заодно он перестал быть
+ * ловушкой. Скорость и тембр входят в ключ кэша озвучки, так что человек, сдвинувший ползунок,
+ * молча терял ВСЮ предгенерацию: каждое слово шло через синтез с ожиданием, потому что клип под
+ * его скорость никто заранее не делал.
+ *
+ * Значения — ровно те, под которые озвучен весь курс (см. TONES и pctFor в tools/pregen-audio.mjs).
+ * Менять их можно только вместе с новым прогоном предгенерации.
+ *
+ * Сам список четырёх тембров остаётся здесь как данные: под них озвучен курс, и этим списком
+ * живут tools/pregen-audio.mjs и tools/check-audio.mjs. Приложение берёт из него ровно первый
+ * и никогда не спрашивает человека.
+ */
 export const VOICE_PRESETS = [
   { id: "sanft", label: "Мягкий", desc: "по умолчанию — тихо и спокойно", rate: -12, pitch: -3, volume: -12 },
   { id: "warm", label: "Тёплый", desc: "чуть живее", rate: -8, pitch: -2, volume: -6 },
@@ -52,6 +67,10 @@ export const VOICE_PRESETS = [
   { id: "klar", label: "Чёткий", desc: "громче и бодрее", rate: 0, pitch: 1, volume: 4 },
 ];
 export const presetById = (id) => VOICE_PRESETS.find((p) => p.id === id) || VOICE_PRESETS[0];
+
+/** Тембр и скорость, которыми Мия говорит у всех. */
+export const TONE = VOICE_PRESETS[0];
+export const BASE_RATE = 0.92;
 const isNeural = (id) => typeof id === "string" && id.includes("Neural");
 
 /**
@@ -263,7 +282,7 @@ class Speech {
 
   /** Work out which voice, locale and prosody a line should use. */
   plan(text, { rate = null, voiceName = null, lang = "de-DE", secret = false } = {}) {
-    const r = rate ?? this.settings.rate ?? 0.92;
+    const r = rate ?? BASE_RATE;
     const isDe = lang.startsWith("de");
     const isAz = lang.startsWith("az");
     /*
@@ -278,16 +297,17 @@ class Speech {
      * вживую, и там голос ничего не стоит. `secret` как раз и помечает живую речь. Голос,
      * переданный вызовом напрямую (voiceName), уважается всегда — это прослушивание в кабинете.
      */
-    const chosen = voiceName ?? (isDe && secret ? this.settings.voice : null);
+    // voiceName приходит только из прослушивания в кабинете; выбора голоса больше нет.
+    const chosen = voiceName ?? null;
     const german = isNeural(chosen) ? chosen : MIA_VOICE;
     // The native language keeps Mia's own voice when it is multilingual; Azerbaijani never is.
     const voice = isDe ? german
       : isAz ? FALLBACK_VOICE_AZ
       : (MULTILINGUAL.has(german) ? german : FALLBACK_VOICE_RU);
     const locale = isDe ? "" : isAz ? "az-AZ" : "ru-RU";
-    const p = presetById(this.settings.tone);
+    const p = TONE;
     const ratePct = Math.round(p.rate + (r - 0.92) * 100);
-    const server = this.settings.neural !== false && this.serverTts !== false && Date.now() > this.serverFailUntil && (!chosen || isNeural(chosen));
+    const server = this.serverTts !== false && Date.now() > this.serverFailUntil && (!chosen || isNeural(chosen));
     return {
       text, voice, locale, rate: r, ratePct, pitch: p.pitch, volume: p.volume, server, secret,
       browserVoice: isNeural(chosen) ? null : chosen,
@@ -432,7 +452,7 @@ class Speech {
         // The tone Emil picked has to reach this path too, otherwise all four presets sound
         // identical whenever the neural voice is unavailable. The preset is in SSML units
         // (rate %, pitch Hz, volume %); the Web Speech API wants plain multipliers.
-        const p = presetById(this.settings.tone);
+        const p = TONE;
         // the built-in voices are harsh: slow them down and soften the pitch a little
         u.rate = Math.max(0.5, Math.min(2, (rate - 0.05) * (1 + p.rate / 100)));
         u.pitch = Math.max(0.5, Math.min(2, (pitch - 0.05) * (1 + p.pitch / 24)));

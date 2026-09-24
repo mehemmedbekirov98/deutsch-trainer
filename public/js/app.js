@@ -10,7 +10,7 @@ import { renderDialogue } from "./dialogue.js";
 import { renderGames, gameCatalogue } from "./games.js";
 import { LEVELS, LEVEL_BY_ID, missionsOf } from "./levels.js";
 import { SHOP, TITLE_NAMES, COINS, priceOf, applyTheme } from "./game.js";
-import { NEURAL_CHOICES, VOICE_PRESETS, RATES } from "./speech.js";
+import { RATES } from "./speech.js";
 import { logoSvg } from "./logo.js";
 import { session, renderAuth, renderNewPassword, patchMe, changePassword } from "./auth.js";
 import { renderPlacement } from "./placement.js";
@@ -626,7 +626,7 @@ function prewarmExercises(list) {
       .filter((t) => typeof t === "string" && /[a-zäöüß]/i.test(t));
     for (const text of texts) {
       items.push({ text, rate: RATES.example });
-      if (x.type === "listen") items.push({ text, rate: Math.min(store.state.settings.rate, RATES.listen) });
+      if (x.type === "listen") items.push({ text, rate: RATES.listen });
     }
   }
   prewarm(items);
@@ -1485,7 +1485,6 @@ function renderProfile(v) {
   const { cur, next, pct } = store.rank();
   const acc = s.stats.answered ? Math.round((s.stats.correct / s.stats.answered) * 100) : 0;
   const done = LEVELS.filter((l) => store.isCompleted(l.id)).length;
-  const voices = speech.germanVoices();
   const settings = s.settings;
   const title = s.title ? TITLE_NAMES[s.title] : null;
 
@@ -1495,46 +1494,10 @@ function renderProfile(v) {
     input.addEventListener("change", () => { store.update((st) => (st.settings[key] = input.checked)); if (key === "sound") setSoundEnabled(input.checked); });
     return el("label", { class: "setting" }, el("div", {}, el("div", { class: "setting-label" }, label), sub ? el("div", { class: "muted small" }, sub) : null), el("span", { class: "toggle" }, input, el("span", { class: "toggle-track" }, el("span", { class: "toggle-thumb" }))));
   };
-  const voiceSel = el("select", { class: "select" },
-    el("option", { value: "" }, NEURAL ? "Автовыбор (нейросетевой голос)" : "Автовыбор (лучший голос системы)"),
-    NEURAL ? el("optgroup", { label: "Нейросетевые (звучат как человек)" }, NEURAL_CHOICES.map((vc) => el("option", { value: vc.id, selected: settings.voice === vc.id ? true : null }, vc.label))) : null,
-    voices.length ? el("optgroup", { label: "Голоса системы" }, voices.map((vc) => el("option", { value: vc.name, selected: settings.voice === vc.name ? true : null }, `${vc.name} (${vc.lang})`))) : null,
-  );
-  voiceSel.addEventListener("change", () => {
-    store.update((st) => (st.settings.voice = voiceSel.value || null));
-    speech.speak(personalise("Hallo Emil! Ich bin Mia. Schön, dass du Deutsch lernst.", store.state.name), { voiceName: voiceSel.value || null, force: true });
-  });
-  const rate = el("input", { type: "range", min: "0.6", max: "1.2", step: "0.05", value: String(settings.rate) });
-  rate.addEventListener("change", () => { store.update((st) => (st.settings.rate = Number(rate.value))); speech.speak(personalise("Guten Tag, Emil. Wie geht es dir?", store.state.name), { rate: Number(rate.value), force: true }); });
   const goal = el("input", { type: "range", min: "20", max: "200", step: "10", value: String(s.dailyGoal) });
   const goalVal = el("span", { class: "muted" }, `${s.dailyGoal} XP`);
   goal.addEventListener("input", () => (goalVal.textContent = tr(`${goal.value} XP`)));
   goal.addEventListener("change", () => store.update((st) => (st.dailyGoal = Number(goal.value))));
-  const importInput = el("input", { type: "file", accept: "application/json", hidden: true });
-  importInput.addEventListener("change", async () => {
-    const f = importInput.files?.[0];
-    if (!f) return;
-    try {
-      // `__proto__` из файла — не поле, а команда сменить прототип.
-      //
-      // JSON.parse кладёт его обычным собственным свойством, но дальше adopt() делает
-      // Object.assign, а тот пишет через сеттер — и прототип объекта уезжает. Файл человек
-      // выбирает сам, так что это не чужая атака, а скорее «скачал непонятно что и открыл»;
-      // стоит проверка один reviver, поэтому она здесь и стоит.
-      const data = JSON.parse(await f.text(), function (key, value) {
-        if (key === "__proto__" || key === "constructor" || key === "prototype") return undefined;
-        return value;
-      });
-      if (!data || typeof data !== "object" || Array.isArray(data) || !Number.isFinite(data.xp)) throw new Error("bad");
-      if (!confirm(tr`Импортировать прогресс (${data.xp} XP, ${data.coins || 0} монет)? Текущий будет заменён.`)) return;
-      store.adopt(data); // fills in any missing fields so an old/partial file cannot break the app
-      applyTheme(store.state.theme);
-      setSoundEnabled(store.state.settings.sound);
-      toast("Прогресс импортирован", { icon: "📥" });
-      route();
-    } catch { toast("Не удалось прочитать файл", { icon: "⚠️", kind: "warn" }); }
-    finally { importInput.value = ""; }
-  });
 
   const band = store.cefrProgress();
   const who = session.user?.name || s.name || "";
@@ -1593,27 +1556,8 @@ function renderProfile(v) {
         boardSetting(),
         setting("Звуковые эффекты", "sound"),
         setting("Озвучка немецкого (TTS)", "tts"),
-        setting("Живой голос Мии", "neural", NEURAL ? "Нейросетевой голос вместо робота из браузера. Нужен интернет." : "Недоступен: сервер не смог загрузить голосовой модуль, используется голос браузера"),
         setting("Авто-микрофон в разговоре", "autoListen", "После реплики Мии микрофон включается сам"),
         setting("Показывать перевод", "showRu", "Русский перевод под репликами Мии и в диалогах"),
-        el("div", { class: "setting" }, el("div", {}, el("div", { class: "setting-label" }, "Голос Мии"), el("div", { class: "muted small" }, NEURAL ? "Каким голосом Мия говорит в разговоре. Уроки озвучены заранее и всегда звучат одинаково — иначе каждое слово пришлось бы ждать." : voices.length ? tr`Найдено немецких голосов: ${voices.length}` : "Немецкие голоса не найдены — в Windows добавь язык «Deutsch» в настройках речи")), voiceSel),
-        el("div", { class: "setting" }, el("div", {}, el("div", { class: "setting-label" }, "Скорость речи Мии"), el("div", { class: "muted small" }, "медленнее ← → быстрее · в разговоре; в уроках скорость своя у каждого типа задания")), rate),
-        el("div", { class: "setting tone-setting" },
-          el("div", {}, el("div", { class: "setting-label" }, "Мягкость голоса"), el("div", { class: "muted small" }, "Нажми вариант — Мия сразу скажет фразу этим тембром. Меняется везде: и в уроках, и в разговоре.")),
-          el("div", { class: "tone-list" }, VOICE_PRESETS.map((t) => {
-            // «sanft», а не «warm»: ровно это вернёт presetById() при пустой настройке
-            // (VOICE_PRESETS[0]). С «warm» экран подсвечивал один тембр, а голос звучал другим —
-            // расходились они только у старых сейвов, где поля tone ещё не было, зато молча.
-            const active = (settings.tone || "sanft") === t.id;
-            return el("button", { class: `tone-btn ${active ? "active" : ""}`, type: "button", onClick: async (e) => {
-              store.update((st) => (st.settings.tone = t.id));
-              $$(".tone-btn").forEach((b) => b.classList.remove("active"));
-              e.currentTarget.classList.add("active");
-              await speech.speak(personalise("Hallo Emil! Schön, dass du da bist.", store.state.name), { force: true });
-              await speech.speak(tr("А по-русски я звучу вот так. Если что-то непонятно — просто спроси."), { lang: NATIVE_LOCALE, force: true });
-            } }, el("span", { class: "tone-name" }, t.label), el("span", { class: "tone-desc muted" }, t.desc));
-          })),
-        ),
         el("div", { class: "setting" }, el("div", {}, el("div", { class: "setting-label" }, "Цель на день"), goalVal), goal),
         el("div", { class: "setting" },
           el("div", {},
@@ -1625,28 +1569,7 @@ function renderProfile(v) {
       ),
     ),
     AI ? null : aiKeyCard(),
-    el("section", { class: "card" },
-      el("div", { class: "card-head" }, el("h2", {}, "Сохранение")),
-      el("p", { class: "muted" }, session.guest
-        ? "Сейчас прогресс лежит только в этом браузере. Заведи аккаунт — и он будет с тобой на любом устройстве."
-        : store.serverOk
-          ? "Прогресс привязан к твоему аккаунту и сохраняется сам. Файл ниже — на всякий случай."
-          : "Нет связи с сервером: пока сохраняется только в браузере, потом догонит само."),
-      el("div", { class: "actions-row start" },
-        el("button", { class: "btn", type: "button", onClick: () => {
-          const blob = new Blob([JSON.stringify(store.state, null, 2)], { type: "application/json" });
-          const a = el("a", { href: URL.createObjectURL(blob), download: `deutsch-ali-${todayKey()}.json` });
-          document.body.append(a); a.click(); a.remove();
-        } }, "📤 Экспорт прогресса"),
-        el("button", { class: "btn", type: "button", onClick: () => importInput.click() }, "📥 Импорт из файла"),
-        importInput,
-      ),
-    ),
-    miaNotesCard(),
     el("section", { class: "card danger" },
-      el("div", { class: "card-head" }, el("h2", {}, "Сброс")),
-      el("p", { class: "muted" }, "Удалит весь прогресс, XP, монеты и достижения. Отменить нельзя — сначала сохрани файл кнопкой «Экспорт прогресса»."),
-      el("button", { class: "btn danger", type: "button", onClick: () => { if (confirm(tr("Точно сбросить весь прогресс?"))) { store.reset(); applyTheme("nacht"); toast("Прогресс сброшен", { icon: "🗑️" }); go("#/"); } } }, "Сбросить прогресс"),
       // Завести аккаунт было можно, уйти — нельзя: кнопки не было нигде. Для сайта, который
       // хранит почту, имя, весь прогресс и заметки Мии о человеке, это неправильно.
       session.user ? el("div", { class: "danger-part" },
@@ -1658,59 +1581,6 @@ function renderProfile(v) {
   );
 }
 
-/**
- * Что Мия о тебе запомнила — и кнопка это стереть.
- *
- * Она делает заметки сама («переезжает в Лейпциг», «работает поваром») и присылает их обратно
- * себе же в каждом следующем разговоре. Это удобно и это же личное: до сих пор посмотреть на
- * них было негде, а стереть можно было только вместе с аккаунтом. Человек вправе знать, что о
- * нём записано, и убрать любую строку, не теряя всего остального.
- */
-function miaNotesCard() {
-  const notes = Array.isArray(store.state.miaNotes) ? store.state.miaNotes : [];
-  const host = el("div", { class: "notes-list" });
-  // Счётчик рисуется вместе со списком, а не один раз при сборке карточки: иначе после удаления
-  // в шапке остаётся прежнее число, и человек не понимает, сработало ли.
-  const count = el("span", { class: "muted small" }, String(notes.length));
-
-  const paint = () => {
-    host.innerHTML = "";
-    count.textContent = String((store.state.miaNotes || []).length);
-    const cur = Array.isArray(store.state.miaNotes) ? store.state.miaNotes : [];
-    if (!cur.length) {
-      host.append(el("div", { class: "muted small" }, "Пока ничего. Мия записывает только то, что ты сам рассказал в разговоре."));
-      return;
-    }
-    host.append(...cur.map((n, i) => el("div", { class: "note-row" },
-      el("span", { class: "note-text" }, n),
-      el("button", {
-        class: "icon-btn tiny", type: "button", title: "Забыть эту заметку",
-        // По ТЕКСТУ, а не по номеру строки.
-        //
-        // Между отрисовкой и нажатием список мог поменяться: соседняя вкладка
-        // прислала свою копию, Мия дописала новую строку. Номер тогда указывает на другую
-        // заметку, и человек стирает не то, что хотел, — причём безвозвратно.
-        onClick: () => { store.forgetNote(n); paint(); },
-      }, "✕"),
-    )));
-  };
-  paint();
-
-  return el("section", { class: "card" },
-    el("div", { class: "card-head" }, el("h2", {}, "🧠 Что Мия о тебе помнит"), count),
-    el("p", { class: "muted small" }, "Эти строки она пишет сама во время разговора и перечитывает перед каждым ответом — поэтому помнит, что у тебя за работа и куда ты переезжаешь. Они уходят в Claude вместе с твоей репликой."),
-    host,
-    el("button", {
-      class: "btn ghost small", type: "button",
-      onClick: () => {
-        if (!confirm(tr("Стереть всё, что Мия о тебе запомнила?"))) return;
-        for (const n of store.state.miaNotes || []) store.forgetNote(n);
-        paint();
-        toast("Мия начнёт знакомство заново", { icon: "🧠" });
-      },
-    }, "Забыть всё"),
-  );
-}
 
 /**
  * Удаление аккаунта: подтверждение собственной почтой.

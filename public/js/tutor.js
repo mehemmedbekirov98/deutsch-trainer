@@ -2,7 +2,7 @@
 import { t as tr, lang as uiLang, langInfo } from "./i18n.js";
 import { el, normalize, sleep, nextTick, todayKey, personalise } from "./utils.js";
 import { speech, STT_ERRORS, NATIVE_LOCALE, RATES } from "./speech.js";
-import { sfx, confetti, toast, xpFloat } from "./fx.js";
+import { sfx, confetti, toast } from "./fx.js";
 import { store } from "./store.js";
 import { backend } from "./backend.js";
 import { understand, respond, opening } from "./brain.js";
@@ -515,7 +515,7 @@ export class Tutor {
       // Her own line goes out FIRST so nothing queues ahead of it; a Russian follow-up explanation
       // is synthesised while it plays, so the two run together without a silent gap.
       // secret: это разговор, а не курс. Сказанное одному человеку не ложится в общее хранилище.
-      const main = speech.speak(reply.say, { ...voice, gender: "f", rate: store.state.settings.rate, secret: true });
+      const main = speech.speak(reply.say, { ...voice, gender: "f", secret: true });
       if (reply.explain) speech.prefetch(reply.explain, { lang: NATIVE_LOCALE, secret: true });
       await main;
       // If Emil reached for the microphone while she was still talking, the turn is his. Speaking
@@ -691,12 +691,16 @@ export class Tutor {
       return true;
     }
     this.turns++;
-    // XP for real attempts only (at least 2 words), max 12 rewarded turns per conversation
-    const gained = this.turns <= 12 && text.trim().split(/\s+/).length >= 2 ? 5 : 0;
-    if (gained) {
-      xpFloat(this.mic, gained);
-      store.grantXp(gained);
-    }
+    // За отдельную реплику опыт больше не даётся.
+    //
+    // Здесь было +5 XP за каждую фразу длиннее двух слов, до двенадцати за разговор. Написать
+    // «ну ладно» двенадцать раз стоило столько же, сколько пройденный сценарий, — и опыт
+    // переставал что-либо значить. Выдача осталась ровно одна, единоразовая, в конце
+    // разговора (см. finishScenario ниже): она уже умеет не платить дважды и не платить за
+    // разговор из двух слов.
+    //
+    // this.turns и tutorTurns считаем по-прежнему: по первому решается, был ли разговор
+    // настоящим, второй — статистика в профиле.
     store.update((s) => { s.stats.tutorTurns += 1; });
     const seq = ++this.seq; // this turn holds the floor until Emil takes it back
     (async () => {
@@ -877,7 +881,7 @@ export class Tutor {
     // Тем же голосом, что и в первый раз. NATIVE_LOCALE здесь давал русский голос для
     // азербайджанской реплики и, заодно, ДРУГОЙ ключ кэша — то есть «прослушать ещё раз»
     // синтезировало и оплачивало ту же самую фразу заново.
-    if (r) speech.speak(r.say, { ...(LOCALE_OF[r.lang] ? { lang: LOCALE_OF[r.lang] } : {}), rate: store.state.settings.rate, force: true, secret: true });
+    if (r) speech.speak(r.say, { ...(LOCALE_OF[r.lang] ? { lang: LOCALE_OF[r.lang] } : {}), force: true, secret: true });
   }
 
   showHint() {

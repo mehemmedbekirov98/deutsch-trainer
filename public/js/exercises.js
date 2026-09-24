@@ -510,7 +510,7 @@ function playBox(text, api, { auto = true } = {}) {
   const box = el("div", { class: "play-box" }, btn, el("div", { class: "play-hint" }, "Нажми, чтобы прослушать ещё раз"));
   const play = async () => {
     box.classList.add("playing");
-    await speech.speak(text, { rate: Math.min(store.state.settings.rate, RATES.listen), force: true });
+    await speech.speak(text, { rate: RATES.listen, force: true });
     box.classList.remove("playing");
   };
   btn.addEventListener("click", play);
