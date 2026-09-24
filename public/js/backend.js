@@ -9,7 +9,15 @@
 // localStorage and simply has no accounts. A half-configured deployment shows a working site, not
 // a blank page.
 
-const SUPABASE_CDN = "https://esm.sh/@supabase/supabase-js@2";
+// Свой файл, не чужой CDN.
+//
+// Здесь раньше стоял `https://esm.sh/@supabase/supabase-js@2`. Этот скрипт исполняется на той же
+// странице, где человек набирает пароль, — то есть читать пароль он может. Пока он приезжает с
+// чужого сервера, безопасность сайта равна безопасности чужого сервера, а «@2» вдобавок значит
+// «любая версия, какая там окажется завтра». Теперь библиотека лежит в public/vendor/ и
+// обновляется командой `node tools/vendor-supabase.mjs`; CSP сторонние скрипты больше не
+// разрешает вообще.
+const SUPABASE_LIB = "../vendor/supabase-js.js";
 
 export const backend = {
   config: { ai: false, tts: false, supabaseUrl: "", supabaseAnonKey: "", canSetKey: false },
@@ -28,7 +36,7 @@ export const backend = {
     const { supabaseUrl, supabaseAnonKey } = this.config;
     if (supabaseUrl && supabaseAnonKey) {
       try {
-        const { createClient } = await import(SUPABASE_CDN);
+        const { createClient } = await import(SUPABASE_LIB);
         this.sb = createClient(supabaseUrl, supabaseAnonKey, {
           auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true },
         });
@@ -183,10 +191,13 @@ export const backend = {
     if (!this.sb) return { rows: [], me: null, total: 0 };
     const { data, error } = await this.sb.rpc("leaderboard");
     if (error) { console.warn("[backend] leaderboard:", error.message); return { rows: [], me: null, total: 0 }; }
+    // Монет и времени последнего захода здесь больше нет: таблицу читает кто угодно, а показывали
+    // мы из них ровно ничего. `id` приходит только у твоей собственной строки — этого хватает,
+    // чтобы её подсветить, и не раздаёт постоянный идентификатор каждого ученика всем подряд.
     const rows = (data || []).map((r) => ({
-      id: r.id, name: r.name, xp: r.xp || 0, coins: r.coins || 0,
+      id: r.id, name: r.name, xp: r.xp || 0,
       streak: r.streak || 0, cefr: r.cefr || "A1", levels: r.levels || 0,
-      words: r.words || 0, games: r.games || {}, lastSeen: r.last_seen,
+      words: r.words || 0, games: r.games || {},
     }));
     return { rows, me: this.user?.id || null, total: rows.length };
   },
