@@ -42,10 +42,18 @@ function detect() {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved && LANGS[saved]) return saved;
   } catch {}
-  // Ни разу не выбирал — спросим у браузера. Азербайджанский ставим только если он там прямо есть;
-  // во всех остальных случаях русский, потому что он для обоих понятнее, чем чужой язык.
-  const nav = (navigator.languages || [navigator.language || ""]).join(",").toLowerCase();
-  return /\baz\b|az-/.test(nav) ? "az" : "ru";
+  // Ни разу не выбирал — спросим у браузера, но ПО ПОРЯДКУ. navigator.languages отсортирован по
+  // предпочтению, а здесь стояла проверка «встречается ли „az“ где-нибудь в списке». У человека
+  // со списком «en-US, ru, az-Latn» — а это совершенно обычный набор для Баку — сайт открывался
+  // азербайджанским, хотя русский он поставил выше. Идём по списку и берём первый из двух, какой
+  // встретится; если ни одного, остаётся русский: он понятнее обоим, чем чужой язык.
+  const list = navigator.languages?.length ? navigator.languages : [navigator.language || ""];
+  for (const tag of list) {
+    const code = String(tag).toLowerCase().split("-")[0];
+    if (code === "az") return "az";
+    if (code === "ru") return "ru";
+  }
+  return "ru";
 }
 
 /**
