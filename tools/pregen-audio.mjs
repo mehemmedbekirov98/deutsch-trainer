@@ -79,6 +79,13 @@ function linesOf(level, azOf) {
 
   for (const v of level.vocab || []) {
     de(v.de, RATES.word);
+    // …и то же слово БЕЗ артикля.
+    //
+    // Игры произносят его так намеренно: в «der/die/das» артикль и есть ответ, и назвать его
+    // вслух значит подсказать. Но озвучено было только «das Land», а браузер просит «Land» —
+    // другой текст, другой ключ, и 1284 слова каждый раз шли через синтез с ожиданием.
+    const bare = String(v.de).replace(/^(der|die|das)\s+/i, "");
+    if (bare !== v.de) de(bare, RATES.word);
     de(v.example, RATES.example);
     ru(v.ru, RATES.translation);
     az(v.ru, RATES.translation);

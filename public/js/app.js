@@ -455,7 +455,18 @@ function viewPlacement(v) {
   });
 }
 
+/*
+ * Какая отрисовка сейчас главная.
+ *
+ * route() стал асинхронным — он ждёт словарь урока, — и это открыло гонку: человек нажал «Уроки»,
+ * не дождался и нажал «Мия»; вторая отрисовка успевает первой, а потом приезжает словарь и первая
+ * дорисовывает СВОЙ экран поверх уже показанного. Номер обхода решает спор: всё, что пришло с
+ * устаревшим номером, молча прекращается.
+ */
+let routeSeq = 0;
+
 async function route() {
+  const seq = ++routeSeq;
   cleanup?.();
   cleanup = null;
   speech.stop();
@@ -480,6 +491,7 @@ async function route() {
       // Словарь этого урока — до отрисовки, иначе человек увидит русский текст, который через
       // мгновение подменится. На русском это не стоит ничего: словарей там нет вовсе.
       await loadLevelDict(level.id, level);
+      if (seq !== routeSeq) return;
       if (!store.isUnlocked(level.id)) renderLocked(v, level);
       else if (!c) renderLevel(v, level);
       else {
@@ -489,26 +501,34 @@ async function route() {
         else if (c === "grammar") { focus = false; viewGrammar(v, level); }
         else if (c === "mission") viewMission(v, level, Number(d) || 1);
         else if (c === "dialogue") viewDialogue(v, level);
-        else if (c === "speak") { await loadBrainDict(); viewSpeak(v, level); }
-        else if (c === "oral") { await loadBrainDict(); viewTalk(v, level, "exam"); }
-        else if (c === "chat") { await loadBrainDict(); viewTalk(v, level, "topic"); }
+        else if (c === "speak") { await loadBrainDict(); if (seq !== routeSeq) return; viewSpeak(v, level); }
+        else if (c === "oral") { await loadBrainDict(); if (seq !== routeSeq) return; viewTalk(v, level, "exam"); }
+        else if (c === "chat") { await loadBrainDict(); if (seq !== routeSeq) return; viewTalk(v, level, "topic"); }
         else if (c === "exam") viewExam(v, level);
         else return go(`#/level/${level.id}`);
       }
     // Словарь офлайн-Мии начал грузиться ещё на старте и к этому моменту почти наверняка уже здесь.
     // Ждём его только тут — там, где он действительно нужен.
-    } else if (a === "tutor") { focus = true; await loadBrainDict(); viewTutor(v); }
-    else if (a === "practice") { await loadLevelDicts(LEVELS.filter((l) => store.isUnlocked(l.id))); viewPractice(v); }
+    // Мия говорит о любом выученном слове и о любом правиле — значит ей нужны словари всех
+    // открытых уроков, а не только свой собственный. Иначе офлайн-ответы про слова и
+    // грамматику выходят по-русски посреди азербайджанского экрана.
+    } else if (a === "tutor") {
+      focus = true;
+      await Promise.all([loadBrainDict(), loadLevelDicts(LEVELS.filter((l) => store.isUnlocked(l.id)))]);
+      if (seq !== routeSeq) return;
+      viewTutor(v);
+    }
+    else if (a === "practice") { await loadLevelDicts(LEVELS.filter((l) => store.isUnlocked(l.id))); if (seq !== routeSeq) return; viewPractice(v); }
     else if (a === "board") viewBoard(v);
     else if (a === "login") { focus = true; viewLogin(v); }
     else if (a === "password") { focus = true; renderNewPassword(v, { onDone: () => go("#/profile") }); }
     else if (a === "admin") { routeName = "profile"; viewAdmin(v); }
     else if (a === "test") { focus = true; viewPlacement(v); }
     // Игры, словарь и повторение берут слова из всех открытых уроков — значит и словари нужны всех открытых.
-    else if (a === "games") { await loadLevelDicts(LEVELS.filter((l) => store.isUnlocked(l.id))); viewGames(v, b); }
+    else if (a === "games") { await loadLevelDicts(LEVELS.filter((l) => store.isUnlocked(l.id))); if (seq !== routeSeq) return; viewGames(v, b); }
     else if (a === "shop") renderShop(v);
-    else if (a === "words") { await loadLevelDicts(LEVELS.filter((l) => store.isUnlocked(l.id))); renderWords(v); }
-    else if (a === "review") { focus = true; await loadLevelDicts(LEVELS.filter((l) => store.isUnlocked(l.id))); viewReview(v); }
+    else if (a === "words") { await loadLevelDicts(LEVELS.filter((l) => store.isUnlocked(l.id))); if (seq !== routeSeq) return; renderWords(v); }
+    else if (a === "review") { focus = true; await loadLevelDicts(LEVELS.filter((l) => store.isUnlocked(l.id))); if (seq !== routeSeq) return; viewReview(v); }
     else if (a === "profile") renderProfile(v);
     else return go("#/");
   } catch (e) {
@@ -1569,10 +1589,10 @@ function renderProfile(v) {
         setting("Живой голос Мии", "neural", NEURAL ? "Нейросетевой голос вместо робота из браузера. Нужен интернет." : "Недоступен: сервер не смог загрузить голосовой модуль, используется голос браузера"),
         setting("Авто-микрофон в разговоре", "autoListen", "После реплики Мии микрофон включается сам"),
         setting("Показывать перевод", "showRu", "Русский перевод под репликами Мии и в диалогах"),
-        el("div", { class: "setting" }, el("div", {}, el("div", { class: "setting-label" }, "Голос Мии"), el("div", { class: "muted small" }, NEURAL ? "Нейросетевые голоса звучат как живой человек" : voices.length ? tr`Найдено немецких голосов: ${voices.length}` : "Немецкие голоса не найдены — в Windows добавь язык «Deutsch» в настройках речи")), voiceSel),
-        el("div", { class: "setting" }, el("div", {}, el("div", { class: "setting-label" }, "Скорость речи"), el("div", { class: "muted small" }, "медленнее ← → быстрее")), rate),
+        el("div", { class: "setting" }, el("div", {}, el("div", { class: "setting-label" }, "Голос Мии"), el("div", { class: "muted small" }, NEURAL ? "Каким голосом Мия говорит в разговоре. Уроки озвучены заранее и всегда звучат одинаково — иначе каждое слово пришлось бы ждать." : voices.length ? tr`Найдено немецких голосов: ${voices.length}` : "Немецкие голоса не найдены — в Windows добавь язык «Deutsch» в настройках речи")), voiceSel),
+        el("div", { class: "setting" }, el("div", {}, el("div", { class: "setting-label" }, "Скорость речи Мии"), el("div", { class: "muted small" }, "медленнее ← → быстрее · в разговоре; в уроках скорость своя у каждого типа задания")), rate),
         el("div", { class: "setting tone-setting" },
-          el("div", {}, el("div", { class: "setting-label" }, "Мягкость голоса"), el("div", { class: "muted small" }, "Нажми вариант — Мия сразу скажет фразу этим тембром. Весь курс заранее озвучен «Мягким»: с другим тембром или скоростью каждая фраза будет озвучиваться на ходу — это медленнее.")),
+          el("div", {}, el("div", { class: "setting-label" }, "Мягкость голоса"), el("div", { class: "muted small" }, "Нажми вариант — Мия сразу скажет фразу этим тембром. Меняется везде: и в уроках, и в разговоре.")),
           el("div", { class: "tone-list" }, VOICE_PRESETS.map((t) => {
             // «sanft», а не «warm»: ровно это вернёт presetById() при пустой настройке
             // (VOICE_PRESETS[0]). С «warm» экран подсвечивал один тембр, а голос звучал другим —
@@ -1642,9 +1662,13 @@ function renderProfile(v) {
 function miaNotesCard() {
   const notes = Array.isArray(store.state.miaNotes) ? store.state.miaNotes : [];
   const host = el("div", { class: "notes-list" });
+  // Счётчик рисуется вместе со списком, а не один раз при сборке карточки: иначе после удаления
+  // в шапке остаётся прежнее число, и человек не понимает, сработало ли.
+  const count = el("span", { class: "muted small" }, String(notes.length));
 
   const paint = () => {
     host.innerHTML = "";
+    count.textContent = String((store.state.miaNotes || []).length);
     const cur = Array.isArray(store.state.miaNotes) ? store.state.miaNotes : [];
     if (!cur.length) {
       host.append(el("div", { class: "muted small" }, "Пока ничего. Мия записывает только то, что ты сам рассказал в разговоре."));
@@ -1654,21 +1678,26 @@ function miaNotesCard() {
       el("span", { class: "note-text" }, n),
       el("button", {
         class: "icon-btn tiny", type: "button", title: "Забыть эту заметку",
-        onClick: () => { store.update((s) => { s.miaNotes = (s.miaNotes || []).filter((_, k) => k !== i); }); paint(); },
+        // По ТЕКСТУ, а не по номеру строки.
+        //
+        // Между отрисовкой и нажатием список мог поменяться: соседняя вкладка
+        // прислала свою копию, Мия дописала новую строку. Номер тогда указывает на другую
+        // заметку, и человек стирает не то, что хотел, — причём безвозвратно.
+        onClick: () => { store.forgetNote(n); paint(); },
       }, "✕"),
     )));
   };
   paint();
 
   return el("section", { class: "card" },
-    el("div", { class: "card-head" }, el("h2", {}, "🧠 Что Мия о тебе помнит"), el("span", { class: "muted small" }, String(notes.length))),
+    el("div", { class: "card-head" }, el("h2", {}, "🧠 Что Мия о тебе помнит"), count),
     el("p", { class: "muted small" }, "Эти строки она пишет сама во время разговора и перечитывает перед каждым ответом — поэтому помнит, что у тебя за работа и куда ты переезжаешь. Они уходят в Claude вместе с твоей репликой."),
     host,
     el("button", {
       class: "btn ghost small", type: "button",
       onClick: () => {
         if (!confirm("Стереть всё, что Мия о тебе запомнила?")) return;
-        store.update((s) => { s.miaNotes = []; });
+        for (const n of store.state.miaNotes || []) store.forgetNote(n);
         paint();
         toast("Мия начнёт знакомство заново", { icon: "🧠" });
       },

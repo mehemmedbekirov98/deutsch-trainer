@@ -1,7 +1,7 @@
 // Mia — the voice tutor. AI mode talks to /api/tutor (Claude); offline mode runs the level's script.
 import { t as tr, lang as uiLang, langInfo } from "./i18n.js";
 import { el, normalize, sleep, nextTick, todayKey, personalise } from "./utils.js";
-import { speech, STT_ERRORS, NATIVE_LOCALE } from "./speech.js";
+import { speech, STT_ERRORS, NATIVE_LOCALE, RATES } from "./speech.js";
 import { sfx, confetti, toast, xpFloat } from "./fx.js";
 import { store } from "./store.js";
 import { backend } from "./backend.js";
@@ -280,7 +280,7 @@ export class Tutor {
           intro ? el("div", { class: `scenario-box ${isExam ? "exam-box" : ""}` }, el("div", { class: "scenario-title" }, intro.title), el("div", {}, intro.text)) : null,
           scenario && !isExam ? el("div", { class: "phrases" },
             el("div", { class: "phrases-title" }, "Полезные фразы"),
-            el("div", { class: "phrase-list" }, scenario.phrases.map((p) => el("button", { class: "phrase", type: "button", title: "Прослушать", onClick: () => speech.speak(p.de, { force: true }) }, el("span", { lang: "de" }, p.de), el("span", { class: "phrase-ru" }, p.ru)))),
+            el("div", { class: "phrase-list" }, scenario.phrases.map((p) => el("button", { class: "phrase", type: "button", title: "Прослушать", onClick: () => speech.speak(p.de, { rate: RATES.example, force: true }) }, el("span", { lang: "de" }, p.de), el("span", { class: "phrase-ru" }, p.ru)))),
           ) : null,
           this.useAi ? null : (this.keySlot = el("div", { class: "tutor-key-slot" })),
         ),
@@ -419,7 +419,13 @@ export class Tutor {
       this.history.push({ role: "assistant", content: data.say || data.de || "" });
       // she may have asked to switch into (or out of) German — remember it for the next turn
       if (data.mode === "german" || data.mode === "chat") this.setChatMode(data.mode, true);
-      if (data.memory) {
+      // Заметка, которую человек только что стёр, не должна вернуться.
+      //
+      // Ответ Мии приезжает через секунды после того, как она его начала, — а за это время можно
+      // успеть открыть кабинет и убрать строку. Заметка в ответе всё ещё содержит её (Мия
+      // отвечала, зная старый список), и мы её записывали заново. Человек стирает — она
+      // возвращается сама, и понять почему невозможно.
+      if (data.memory && !store.wasForgotten(String(data.memory).slice(0, 160))) {
         store.update((s) => {
           if (!Array.isArray(s.miaNotes)) s.miaNotes = [];
           const note = String(data.memory).slice(0, 160);

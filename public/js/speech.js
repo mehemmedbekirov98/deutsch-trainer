@@ -266,7 +266,19 @@ class Speech {
     const r = rate ?? this.settings.rate ?? 0.92;
     const isDe = lang.startsWith("de");
     const isAz = lang.startsWith("az");
-    const chosen = voiceName ?? (isDe ? this.settings.voice : null);
+    /*
+     * Выбранный голос звучит там, где речь живая, — и только там.
+     *
+     * Голос входит в ключ кэша наравне с текстом. Пять голосов в кабинете на четыре тембра — это
+     * 176 тысяч клипов вместо 35 тысяч: озвучить столько нельзя ни за какое время. Пока голос
+     * применялся и к курсу, любой выбор кроме Серафины обнулял ВСЮ предгенерацию: каждое слово,
+     * каждый пример, каждая реплика диалога шли через функцию с ожиданием.
+     *
+     * Курс — это запись, сделанная заранее, как в любом языковом курсе; Мия в разговоре говорит
+     * вживую, и там голос ничего не стоит. `secret` как раз и помечает живую речь. Голос,
+     * переданный вызовом напрямую (voiceName), уважается всегда — это прослушивание в кабинете.
+     */
+    const chosen = voiceName ?? (isDe && secret ? this.settings.voice : null);
     const german = isNeural(chosen) ? chosen : MIA_VOICE;
     // The native language keeps Mia's own voice when it is multilingual; Azerbaijani never is.
     const voice = isDe ? german

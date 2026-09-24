@@ -1,6 +1,6 @@
 // Mia's offline brain: understands what Emil said (Russian or German) and decides what she answers,
 // entirely from local data. Used whenever the AI backend is off, so the app is fully usable without a key.
-import { t as tr, lang as uiLang, azOf } from "./i18n.js";
+import { t as tr, lang as uiLang, azOf, dictSize } from "./i18n.js";
 import { normalize, pick, shuffle, stripArticle } from "./utils.js";
 import { LEVELS } from "./levels.js";
 import SMALLTALK from "./brain-data/smalltalk.js";
@@ -45,10 +45,17 @@ const GRAMMAR = LEVELS.flatMap((l) => l.grammar.map((g) => ({ ...g, level: l }))
 let vocabAz = null;
 
 /** Сбросить указатель — для проверки, которая переводит уроки уже после его постройки. */
-export function resetBrainIndex() { vocabAz = null; }
+export function resetBrainIndex() { vocabAz = null; vocabAzAt = 0; }
+
+let vocabAzAt = 0;   // при каком размере словаря указатель был построен
 
 function vocabAzIndex() {
-  if (vocabAz) return vocabAz;
+  // Пересобираем, если словарь с тех пор вырос.
+  //
+  // Словари уроков приезжают по мере надобности: человек открыл экран Мии, имея загруженными два
+  // урока, — указатель собрался по двум и закэшировался навсегда. Дальше он открывает двадцатый
+  // урок, словарь приезжает, а Мия по-прежнему не знает оттуда ни слова и отвечает по-русски.
+  if (vocabAz && dictSize() === vocabAzAt) return vocabAz;
   const map = new Map();
   for (const level of LEVELS) {
     for (const v of level.vocab) {
@@ -67,7 +74,7 @@ function vocabAzIndex() {
     }
   }
   // пока словарь не загружен, карта пустая — не запоминаем её, попробуем на следующем вопросе
-  if (map.size) vocabAz = map;
+  if (map.size) { vocabAz = map; vocabAzAt = dictSize(); }
   return map;
 }
 

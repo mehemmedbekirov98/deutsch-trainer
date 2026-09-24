@@ -8,6 +8,10 @@
 // либо использовать явную нумерацию {0}, {1}.
 
 export default {
+  "Каким голосом Мия говорит в разговоре. Уроки озвучены заранее и всегда звучат одинаково — иначе каждое слово пришлось бы ждать.": "Mia söhbətdə hansı səslə danışır. Dərslər əvvəlcədən səsləndirilib və həmişə eyni səslənir — əks halda hər sözü gözləmək lazım gələrdi.",
+  "Скорость речи Мии": "Mianın nitq sürəti",
+  "медленнее ← → быстрее · в разговоре; в уроках скорость своя у каждого типа задания": "yavaş ← → sürətli · söhbətdə; dərslərdə hər tapşırıq növünün öz sürəti var",
+  "Нажми вариант — Мия сразу скажет фразу этим тембром. Меняется везде: и в уроках, и в разговоре.": "Variantı seç — Mia dərhal həmin tembrlə bir cümlə deyəcək. Hər yerdə dəyişir: həm dərslərdə, həm söhbətdə.",
   "🧠 Что Мия о тебе помнит": "🧠 Mianın sənin haqqında xatırladıqları",
   "Эти строки она пишет сама во время разговора и перечитывает перед каждым ответом — поэтому помнит, что у тебя за работа и куда ты переезжаешь. Они уходят в Claude вместе с твоей репликой.": "Bu sətirləri o, söhbət zamanı özü yazır və hər cavabdan əvvəl yenidən oxuyur — ona görə də işinin nə olduğunu və hara köçdüyünü xatırlayır. Onlar sənin cümlənlə birlikdə Claude-a gedir.",
   "Пока ничего. Мия записывает только то, что ты сам рассказал в разговоре.": "Hələlik heç nə. Mia yalnız söhbətdə özünün danışdıqlarını yazır.",
