@@ -107,6 +107,9 @@ class Speech {
     // Откуда взять токен вошедшего. Ставит app.js при запуске. Модуль озвучки намеренно ничего
     // не знает про аккаунты — иначе речь перестала бы работать там, где нет Supabase.
     this.authToken = null;
+    // Требует ли этот сайт входа для синтеза. Ставит app.js: на сайте без Supabase вход не нужен
+    // никому, и просить его было бы странно.
+    this.needsAuth = false;
     this.serverFailUntil = 0;
     this.micGranted = false;
     this.micError = null;
@@ -321,8 +324,16 @@ class Speech {
         }
       }
       // Кто просит. Синтез стоит денег владельцу и пишет файл в его хранилище, поэтому функция
-      // на сервере спрашивает токен. Гость не остаётся без звука — у него говорит голос браузера.
+      // на сервере спрашивает токен. Гость не остаётся без звука: весь курс озвучен заранее и
+      // читается из хранилища напрямую — этот путь выше, до сюда доходят только новые строки.
       const token = await this.authToken?.().catch(() => null);
+      // …и вот на них гостю идти некуда. Спрашивать сервер, зная, что он откажет, — это две
+      // лишние секунды ожидания и пятнадцать секунд штрафа на голос, который и так работает.
+      if (!token && this.needsAuth) {
+        const e = new Error("tts: guest");   // в лог, не на экран — человек просто слышит голос браузера
+        e.noAuth = true;
+        throw e;
+      }
       const r = await fetch("/api/tts", {
         method: "POST",
         headers: { "Content-Type": "application/json", ...(token ? { authorization: `Bearer ${token}` } : {}) },
@@ -369,6 +380,9 @@ class Speech {
           const aborted = e?.name === "AbortError" || String(e?.message).includes("abort");
           // cancelled on purpose (Emil moved on, or the mic opened) → nothing more to do here
           if (aborted && e?.cancelReason !== "timeout") return "stopped";
+          // Гость на строке, которой нет в хранилище. Сервер тут ни при чём и штрафовать его не
+          // за что: просто читаем голосом браузера, сразу и без повтора.
+          if (e?.noAuth) return false;
           if (attempt === 0) continue; // one quiet retry
           console.warn("[tts] neural voice unreachable, falling back:", e?.message || e);
           this.serverFailUntil = Date.now() + 15_000; // short penalty, then try the good voice again

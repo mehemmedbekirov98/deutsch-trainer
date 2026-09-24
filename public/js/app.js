@@ -1,18 +1,18 @@
 // Lingua Mia — app shell, router and views
 import { $, $$, el, append, nextTick, shuffle, plural, todayKey, articleOf, stripArticle, escapeHtml, sleep, personalise } from "./utils.js";
-import { store, RANKS, ACHIEVEMENTS } from "./store.js";
+import { store, ACHIEVEMENTS } from "./store.js";
 import { speech, NATIVE_LOCALE } from "./speech.js";
-import { sfx, confetti, toast, achievementToast, countUp, startParticles, setSoundEnabled, xpFloat } from "./fx.js";
+import { sfx, confetti, toast, achievementToast, countUp, startParticles, setSoundEnabled } from "./fx.js";
 import { ExerciseSession, ringSvg } from "./exercises.js";
 import { Tutor } from "./tutor.js";
 import { renderFlashcards, buildVocabQuiz, buildReviewQuiz } from "./vocab.js";
 import { renderDialogue } from "./dialogue.js";
 import { renderGames, gameCatalogue } from "./games.js";
 import { LEVELS, LEVEL_BY_ID, missionsOf } from "./levels.js";
-import { SHOP, THEMES, TITLE_NAMES, COINS, priceOf, applyTheme } from "./game.js";
-import { NEURAL_CHOICES, VOICE_PRESETS, presetById, RATES, MIA_VOICE } from "./speech.js";
+import { SHOP, TITLE_NAMES, COINS, priceOf, applyTheme } from "./game.js";
+import { NEURAL_CHOICES, VOICE_PRESETS, RATES } from "./speech.js";
 import { logoSvg } from "./logo.js";
-import { session, renderAuth, renderNewPassword, patchMe, changePassword, requestReset } from "./auth.js";
+import { session, renderAuth, renderNewPassword, patchMe, changePassword } from "./auth.js";
 import { renderPlacement } from "./placement.js";
 import { backend } from "./backend.js";
 import { CEFR, CEFR_TITLE, CEFR_FIRST, CEFR_LAST } from "./store.js";
@@ -48,6 +48,7 @@ async function boot() {
   speech.serverTts = NEURAL;
   // Синтез голоса — платный и пишет в хранилище владельца, поэтому функция спрашивает, кто пришёл.
   speech.authToken = () => backend.token();
+  speech.needsAuth = Boolean(backend.cloud) && !backend.user;
   document.body.dataset.ai = AI ? "1" : "0";
   micState = await speech.micPermission();
   if (micState === "granted") speech.micGranted = true;
