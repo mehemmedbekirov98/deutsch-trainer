@@ -1,9 +1,16 @@
 // Mia's turn. Everything that decides what she says is in lib/tutor.js; this only moves it in and out.
 import { askMia, friendlyError, fallbackReply } from "../../lib/tutor.js";
-import { configured, getSetting, learnerFromRequest } from "../../lib/supa.mjs";
+import { configured, getSetting, learnerFromRequest, takeQuota } from "../../lib/supa.mjs";
 
 const json = (body, status = 200) =>
   new Response(JSON.stringify(body), { status, headers: { "content-type": "application/json; charset=utf-8" } });
+
+// Сколько реплик живой Мии один человек может получить за сутки.
+//
+// Настоящий ученик за занятие говорит два-три десятка раз; 250 — это потолок, до которого он не
+// дойдёт, и одновременно предел, за который не уедет счёт, если аккаунт заведут ради скрипта в
+// цикле. Окно скользящее, считает база — см. take_quota в 0004_limits.sql.
+const DAILY_TURNS = 250;
 
 export default async (req) => {
   if (req.method !== "POST") return json({ error: "POST only" }, 405);
@@ -11,13 +18,27 @@ export default async (req) => {
   let body;
   try { body = await req.json(); } catch { return json({ error: "Не удалось прочитать запрос." }, 400); }
 
-  // Every turn here costs the owner money, so the door is shut to strangers. Guests are not
-  // turned away from Mia — the browser falls back to her offline self, which is free and honest
-  // about what it is. `needsAuth` is what tells it to do that instead of showing an error.
-  if (configured()) {
-    const learner = await learnerFromRequest(req).catch(() => null);
-    if (!learner) return json({ error: "Войди в аккаунт — живая Мия отвечает только своим.", needsAuth: true }, 401);
-    if (learner.blocked) return json({ error: "Аккаунт заблокирован." }, 403);
+  // Дверь заперта по умолчанию, а не при условии.
+  //
+  // Раньше проверка «кто пришёл» стояла ВНУТРИ `if (configured())`. Это не защита, а защита с
+  // выключателем: стоит переменной SUPABASE_SERVICE_ROLE_KEY пропасть или приехать с опечаткой —
+  // и проверка не падает, она молча исчезает, а /api/tutor становится бесплатным Claude для
+  // всего интернета. Сайт при этом выглядит работающим. Поэтому теперь наоборот: не можем
+  // проверить — не отвечаем. Гостя это не обижает: браузер переходит на офлайн-Мию, которая
+  // бесплатна и честно говорит, кто она.
+  if (!configured()) {
+    return json({ error: "Живая Мия сейчас не настроена — поговорим в обычном режиме.", needsAuth: true }, 503);
+  }
+  let learner;
+  try {
+    learner = await learnerFromRequest(req);
+  } catch {
+    return json({ error: "Не получается проверить аккаунт. Попробуй чуть позже." }, 503);
+  }
+  if (!learner) return json({ error: "Войди в аккаунт — живая Мия отвечает только своим.", needsAuth: true }, 401);
+  if (learner.blocked) return json({ error: "Аккаунт заблокирован." }, 403);
+  if (!(await takeQuota(learner.id, "tutor", DAILY_TURNS))) {
+    return json({ error: "На сегодня хватит — живая Мия вернётся завтра. Офлайн-режим работает без ограничений." }, 429);
   }
 
   try {

@@ -30,6 +30,14 @@
   to = "/.netlify/functions/status"
   status = 200
 
+# Админка вызывается тем же способом, что и остальные три. Правила для неё тут не было: работало
+# оно только потому, что Netlify отдаёт функции ещё и по /.netlify/functions/*, а клиент зовёт
+# /api/admin. Одна опечатка в этом запасном пути — и панель владельца молча перестаёт открываться.
+[[redirects]]
+  from = "/api/admin"
+  to = "/.netlify/functions/admin"
+  status = 200
+
 # Single page app: every other path is the app itself, so a reload on #/profile does not 404.
 [[redirects]]
   from = "/*"
@@ -41,9 +49,16 @@
   [headers.values]
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
-    # The app loads Supabase from a CDN and talks to Supabase and the Netlify functions; the audio
-    # comes from Supabase Storage. Nothing else, and no inline scripts.
-    Content-Security-Policy = "default-src 'self'; script-src 'self' https://esm.sh https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' blob: https://*.supabase.co; connect-src 'self' https://*.supabase.co https://esm.sh https://cdn.jsdelivr.net; frame-ancestors 'none'"
+    # Ни одного стороннего скрипта. Supabase теперь лежит в public/vendor/ (см. backend.js), так
+    # что script-src — только 'self': код, исполняющийся рядом с полем пароля, может быть только
+    # нашим. Разговариваем с самим собой, с Supabase и больше ни с кем; звук приходит из Storage.
+    #
+    # base-uri и form-action перечислены отдельно НЕ для красоты: эти две директивы от default-src
+    # не наследуются. Без base-uri внедрённый <base> уводит все относительные адреса — включая
+    # импорт того самого vendor/supabase-js.mjs — на чужой сервер. Без form-action туда же уходит
+    # отправка формы. object-src 'none' закрывает <object>/<embed>, которых на сайте нет.
+    # Шрифты тоже свои (public/fonts), поэтому ни style-src, ни font-src наружу не смотрят.
+    Content-Security-Policy = "default-src 'self'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self' data: blob:; media-src 'self' blob: https://*.supabase.co; connect-src 'self' https://*.supabase.co; base-uri 'self'; form-action 'self'; object-src 'none'; frame-ancestors 'none'"
 
 # Mia's voice never changes once it is synthesised — the cache key contains the text and every
 # voice setting — so it can be cached hard.

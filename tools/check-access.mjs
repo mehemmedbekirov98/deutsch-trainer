@@ -98,6 +98,38 @@ try {
   });
   expect("сделать себя админом", promote.status, 403);
 
+  /* --------------------------------------------- озвучка тоже только для своих */
+  expect("озвучка без токена", (await call("tts.mjs", { text: "Hallo", store: false })).status, 401);
+
+  /* --------------------------------------------- счётчик расходов действительно считает */
+  //
+  // Берём лимит в 1 на выдуманный вид расхода: первый раз проходит, второй обязан упереться.
+  // Если счётчик молча пропускает всё подряд — защита от «скрипт в цикле» не работает, а узнать
+  // об этом по-другому можно только по счёту от Anthropic.
+  {
+    const take = async () => {
+      const r = await service("/rest/v1/rpc/take_quota", {
+        method: "POST",
+        body: JSON.stringify({ p_user: id, p_bucket: "probe", p_limit: 1, p_window: "1 hour" }),
+      });
+      return r.ok ? await r.json() : `HTTP ${r.status}`;
+    };
+    expect("счётчик: первое обращение проходит", await take(), true);
+    expect("счётчик: второе упирается в лимит", await take(), false);
+  }
+
+  /* --------------------------------------------- гигантский сейв база не принимает */
+  {
+    const huge = { xp: 1, ballast: "я".repeat(400_000) };
+    const r = await fetch(`${URL_}/rest/v1/rpc/save_progress`, {
+      method: "POST",
+      headers: { apikey: PUB, authorization: `Bearer ${token}`, "content-type": "application/json" },
+      body: JSON.stringify({ p_data: huge, p_saved_at: Date.now() }),
+    });
+    const text = await r.text();
+    expect("сейв на 400 КБ отвергается", r.status === 400 && /too large/.test(text), true, "(проверяет сама база)");
+  }
+
   /* --------------------------------------------- блокировка действительно блокирует */
   await service(`/rest/v1/profiles?id=eq.${id}`, { method: "PATCH", body: JSON.stringify({ blocked: true }) });
   expect("заблокированный у Мии", (await call("tutor.mjs", { messages: [{ role: "user", content: "salam" }] }, token)).status, 403);
