@@ -1,11 +1,11 @@
 // Offline brain smoke test: does Mia understand and answer sensibly without any API key?
 // usage: node tools/test-brain.mjs
 import { understand, respond, opening, checkGerman, BRAIN_STATS, resetBrainIndex } from "../public/js/brain.js";
-import { loadAz } from "../public/js/i18n.js";
+import { loadAzFull } from "../public/js/i18n.js";
 
 // Азербайджанский указатель слов строится из словаря перевода, а тот грузится динамически.
 // Без этого половина азербайджанских проверок молча прошла бы мимо: слово просто не нашлось бы.
-await loadAz();
+await loadAzFull();
 
 const cases = [
   ["привет", "greeting"],

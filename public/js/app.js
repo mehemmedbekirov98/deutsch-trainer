@@ -1,6 +1,6 @@
 // Lingua Mia — app shell, router and views
 import { $, $$, el, append, nextTick, shuffle, plural, todayKey, articleOf, stripArticle, escapeHtml, sleep, personalise } from "./utils.js";
-import { store, ACHIEVEMENTS } from "./store.js";
+import { store, ACHIEVEMENTS, refuseGuestOffer } from "./store.js";
 import { speech, NATIVE_LOCALE } from "./speech.js";
 import { sfx, confetti, toast, achievementToast, countUp, startParticles, setSoundEnabled } from "./fx.js";
 import { ExerciseSession, ringSvg } from "./exercises.js";
@@ -18,7 +18,7 @@ import { backend } from "./backend.js";
 import { CEFR, CEFR_TITLE, CEFR_FIRST, CEFR_LAST } from "./store.js";
 // t импортируется как tr: в этом файле t уже занято — и переменной под Tutor, и параметром
 // в списке тембров голоса. Молчаливое затенение тега перевода нашлось бы не скоро.
-import { initI18n, translateLevels, setLang, lang, langInfo, LANGS, t as tr } from "./i18n.js";
+import { initI18n, translateLevels, setLang, lang, langInfo, LANGS, t as tr, loadLevelDict, loadLevelDicts, loadBrainDict } from "./i18n.js";
 
 let AI = false;
 let NEURAL = false;
@@ -87,10 +87,50 @@ async function boot() {
   // Перезагрузка посреди теста прежде накрывала его этим оверлеем и ответы пропадали.
   const askedElsewhere = /^#\/(test|login|password)/.test(location.hash);
   if (!store.state.introSeen && !askedElsewhere) showWelcome();
+  else if (store.guestOffer) askGuestTransfer();
   else if (store.dailyBonus) {
     const b = store.dailyBonus;
     setTimeout(() => toast(tr`+${b.coins} монет за ${b.streak}-й день подряд`, { icon: "🪙", title: "Ежедневный бонус" }), 900);
   }
+}
+
+/**
+ * «В этом браузере есть прогресс без аккаунта — перенести?»
+ *
+ * Появляется, когда в аккаунте пусто, а в браузере лежит непустой гостевой сейв. Так бывает
+ * чаще, чем кажется: письмо с подтверждением открывают на телефоне, первый вход происходит там,
+ * на сервере заводится пустая строка — а всё заработанное остаётся на компьютере.
+ *
+ * Именно вопрос, а не тихий перенос: на общем компьютере молчаливое «взять что лежит» отдало бы
+ * чужой прогресс следующему вошедшему. Отказ запоминается — переспрашивать каждый заход хуже,
+ * чем не спросить вовсе.
+ */
+function askGuestTransfer() {
+  const guest = store.guestOffer;
+  if (!guest) return;
+  const who = session.user?.id;
+
+  const close = () => { box.remove(); document.removeEventListener("keydown", onEsc); };
+  const onEsc = (e) => { if (e.key === "Escape") { refuseGuestOffer(who); close(); } };
+
+  const box = el("div", { class: "modal-back" },
+    el("div", { class: "modal-card" },
+      el("h2", {}, "Перенести прогресс в аккаунт?"),
+      el("p", { class: "muted" }, tr`В этом браузере остались занятия без аккаунта: ${guest.xp} XP и ${Object.keys(guest.levels || {}).length} ${plural(Object.keys(guest.levels || {}).length, "урок", "урока", "уроков")}. В самом аккаунте пока пусто.`),
+      el("p", { class: "muted small" }, "Если компьютер общий и это занимался не ты — откажись: чужой прогресс тебе не нужен."),
+      el("div", { class: "row-btns" },
+        el("button", { class: "btn primary", type: "button", onClick: () => {
+          store.adopt(guest);
+          close();
+          toast(tr`Перенесено: ${guest.xp} XP`, { icon: "📥" });
+          route();
+        } }, "Перенести"),
+        el("button", { class: "btn ghost", type: "button", onClick: () => { refuseGuestOffer(who); close(); } }, "Не надо"),
+      ),
+    ),
+  );
+  document.addEventListener("keydown", onEsc);
+  document.body.append(box);
 }
 
 /* ---------------------------------------------------------------- router */
@@ -403,7 +443,7 @@ function viewPlacement(v) {
   });
 }
 
-function route() {
+async function route() {
   cleanup?.();
   cleanup = null;
   speech.stop();
@@ -425,6 +465,9 @@ function route() {
       routeName = "levels";
       const level = LEVEL_BY_ID[Number(b)];
       if (!level) return go("#/levels");
+      // Словарь этого урока — до отрисовки, иначе человек увидит русский текст, который через
+      // мгновение подменится. На русском это не стоит ничего: словарей там нет вовсе.
+      await loadLevelDict(level.id, level);
       if (!store.isUnlocked(level.id)) renderLocked(v, level);
       else if (!c) renderLevel(v, level);
       else {
@@ -434,23 +477,26 @@ function route() {
         else if (c === "grammar") { focus = false; viewGrammar(v, level); }
         else if (c === "mission") viewMission(v, level, Number(d) || 1);
         else if (c === "dialogue") viewDialogue(v, level);
-        else if (c === "speak") viewSpeak(v, level);
-        else if (c === "oral") viewTalk(v, level, "exam");
-        else if (c === "chat") viewTalk(v, level, "topic");
+        else if (c === "speak") { await loadBrainDict(); viewSpeak(v, level); }
+        else if (c === "oral") { await loadBrainDict(); viewTalk(v, level, "exam"); }
+        else if (c === "chat") { await loadBrainDict(); viewTalk(v, level, "topic"); }
         else if (c === "exam") viewExam(v, level);
         else return go(`#/level/${level.id}`);
       }
-    } else if (a === "tutor") { focus = true; viewTutor(v); }
-    else if (a === "practice") viewPractice(v);
+    // Словарь офлайн-Мии начал грузиться ещё на старте и к этому моменту почти наверняка уже здесь.
+    // Ждём его только тут — там, где он действительно нужен.
+    } else if (a === "tutor") { focus = true; await loadBrainDict(); viewTutor(v); }
+    else if (a === "practice") { await loadLevelDicts(LEVELS.filter((l) => store.isUnlocked(l.id))); viewPractice(v); }
     else if (a === "board") viewBoard(v);
     else if (a === "login") { focus = true; viewLogin(v); }
     else if (a === "password") { focus = true; renderNewPassword(v, { onDone: () => go("#/profile") }); }
     else if (a === "admin") { routeName = "profile"; viewAdmin(v); }
     else if (a === "test") { focus = true; viewPlacement(v); }
-    else if (a === "games") viewGames(v, b);
+    // Игры, словарь и повторение берут слова из всех открытых уроков — значит и словари нужны всех открытых.
+    else if (a === "games") { await loadLevelDicts(LEVELS.filter((l) => store.isUnlocked(l.id))); viewGames(v, b); }
     else if (a === "shop") renderShop(v);
-    else if (a === "words") renderWords(v);
-    else if (a === "review") { focus = true; viewReview(v); }
+    else if (a === "words") { await loadLevelDicts(LEVELS.filter((l) => store.isUnlocked(l.id))); renderWords(v); }
+    else if (a === "review") { focus = true; await loadLevelDicts(LEVELS.filter((l) => store.isUnlocked(l.id))); viewReview(v); }
     else if (a === "profile") renderProfile(v);
     else return go("#/");
   } catch (e) {
@@ -1555,6 +1601,7 @@ function renderProfile(v) {
         importInput,
       ),
     ),
+    miaNotesCard(),
     el("section", { class: "card danger" },
       el("div", { class: "card-head" }, el("h2", {}, "Сброс")),
       el("p", { class: "muted" }, "Удалит весь прогресс, XP, монеты и достижения. Отменить нельзя — сначала сохрани файл кнопкой «Экспорт прогресса»."),
@@ -1567,6 +1614,51 @@ function renderProfile(v) {
         el("button", { class: "btn danger", type: "button", onClick: () => askDeleteAccount(session.user.email) }, "Удалить аккаунт навсегда"),
       ) : null,
     ),
+  );
+}
+
+/**
+ * Что Мия о тебе запомнила — и кнопка это стереть.
+ *
+ * Она делает заметки сама («переезжает в Лейпциг», «работает поваром») и присылает их обратно
+ * себе же в каждом следующем разговоре. Это удобно и это же личное: до сих пор посмотреть на
+ * них было негде, а стереть можно было только вместе с аккаунтом. Человек вправе знать, что о
+ * нём записано, и убрать любую строку, не теряя всего остального.
+ */
+function miaNotesCard() {
+  const notes = Array.isArray(store.state.miaNotes) ? store.state.miaNotes : [];
+  const host = el("div", { class: "notes-list" });
+
+  const paint = () => {
+    host.innerHTML = "";
+    const cur = Array.isArray(store.state.miaNotes) ? store.state.miaNotes : [];
+    if (!cur.length) {
+      host.append(el("div", { class: "muted small" }, "Пока ничего. Мия записывает только то, что ты сам рассказал в разговоре."));
+      return;
+    }
+    host.append(...cur.map((n, i) => el("div", { class: "note-row" },
+      el("span", { class: "note-text" }, n),
+      el("button", {
+        class: "icon-btn tiny", type: "button", title: "Забыть эту заметку",
+        onClick: () => { store.update((s) => { s.miaNotes = (s.miaNotes || []).filter((_, k) => k !== i); }); paint(); },
+      }, "✕"),
+    )));
+  };
+  paint();
+
+  return el("section", { class: "card" },
+    el("div", { class: "card-head" }, el("h2", {}, "🧠 Что Мия о тебе помнит"), el("span", { class: "muted small" }, String(notes.length))),
+    el("p", { class: "muted small" }, "Эти строки она пишет сама во время разговора и перечитывает перед каждым ответом — поэтому помнит, что у тебя за работа и куда ты переезжаешь. Они уходят в Claude вместе с твоей репликой."),
+    host,
+    el("button", {
+      class: "btn ghost small", type: "button",
+      onClick: () => {
+        if (!confirm("Стереть всё, что Мия о тебе запомнила?")) return;
+        store.update((s) => { s.miaNotes = []; });
+        paint();
+        toast("Мия начнёт знакомство заново", { icon: "🧠" });
+      },
+    }, "Забыть всё"),
   );
 }
 

@@ -1253,3 +1253,9 @@ a.strip-item:hover { background: var(--card-hover); }
 .danger-part { margin-top: 20px; padding-top: 18px; border-top: 1px solid var(--border); }
 .danger-part h2 { margin: 0 0 6px; font-size: 1.05rem; }
 .danger-part p { margin: 0 0 12px; }
+
+/* Заметки Мии о человеке: список с возможностью убрать любую строку. */
+.notes-list { display: grid; gap: 8px; margin: 12px 0; }
+.note-row { display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px; border-radius: 12px;
+  background: rgba(0, 0, 0, 0.22); border: 1px solid var(--border); }
+.note-text { flex: 1; min-width: 0; font-size: 0.9rem; line-height: 1.45; overflow-wrap: anywhere; }

@@ -10,7 +10,7 @@
 // Поэтому берём те же 36 уроков, прогоняем через translateLevels() ровно так, как это делает
 // браузер, и проверяем каждое задание на решаемость.
 import { LEVELS } from "../public/js/levels.js";
-import { loadAz, setLangForTest, translateLevels } from "../public/js/i18n.js";
+import { loadAzFull, setLangForTest, translateLevels } from "../public/js/i18n.js";
 import { normalize } from "../public/js/utils.js";
 
 const CYR = /[Ѐ-ӿ]/;
@@ -35,7 +35,7 @@ for (const level of LEVELS) {
   snap(level, `L${level.id}`);
 }
 
-await loadAz();
+await loadAzFull();
 setLangForTest("az");
 translateLevels(LEVELS);
 

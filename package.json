@@ -18,7 +18,8 @@
     "vendor": "node tools/vendor-supabase.mjs",
     "audiocheck": "node --env-file=.env tools/check-audio.mjs",
     "db": "node --env-file=.env tools/check-db.mjs",
-    "css": "node tools/check-css.mjs"
+    "css": "node tools/check-css.mjs",
+    "split": "node tools/split-az-content.mjs"
   },
   "engines": {
     "node": ">=20.19"

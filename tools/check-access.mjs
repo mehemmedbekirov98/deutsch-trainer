@@ -124,29 +124,43 @@ try {
     const r = await fetch(`${URL_}/rest/v1/rpc/save_progress`, {
       method: "POST",
       headers: { apikey: PUB, authorization: `Bearer ${token}`, "content-type": "application/json" },
-      body: JSON.stringify({ p_data: huge, p_saved_at: Date.now() }),
+      body: JSON.stringify({ p_data: huge, p_rev: 0 }),
     });
     const text = await r.text();
     expect("сейв на 400 КБ отвергается", r.status === 400 && /too large/.test(text), true, "(проверяет сама база)");
   }
 
-  /* --------------------------------------------- сбитые часы не заклинивают сохранение */
+  /* --------------------------------------------- порядок решает сервер, а не часы */
   //
-  // Сохранение с датой из 2099 года прежде навсегда делало все последующие «устаревшими»: человек
-  // продолжал заниматься, а на сервер больше не попадало ничего. Дата обрезается сутками вперёд,
-  // поэтому следующее честное сохранение обязано пройти.
+  // Версию выдаёт сервер; браузер предъявляет ту, что видел. Устаревшая версия не затирает — в
+  // ответ приходит чужая копия. Часы устройства в этом больше не участвуют вообще.
   {
-    const save = (data, at) => fetch(`${URL_}/rest/v1/rpc/save_progress`, {
+    const rpc = (fn, body) => fetch(`${URL_}/rest/v1/rpc/${fn}`, {
       method: "POST",
       headers: { apikey: PUB, authorization: `Bearer ${token}`, "content-type": "application/json" },
-      body: JSON.stringify({ p_data: data, p_saved_at: at }),
-    });
-    const far = Date.now() + 1000 * 60 * 60 * 24 * 365 * 75;
-    expect("сохранение с датой из будущего", (await save({ xp: 1 }, far)).status, 200);
-    const now = await save({ xp: 2 }, Date.now());
-    expect("следующее честное сохранение проходит", now.status, 200);
-    const row = await service(`/rest/v1/progress?user_id=eq.${id}&select=data`).then((r) => r.json()).catch(() => []);
-    expect("на сервере лежит именно оно", row?.[0]?.data?.xp, 2, "(значит дата была обрезана)");
+      body: JSON.stringify(body),
+    }).then(async (r) => ({ status: r.status, body: await r.json().catch(() => null) }));
+
+    const first = await rpc("save_progress", { p_data: { xp: 10 }, p_rev: 0 });
+    expect("первое сохранение", first.status, 200);
+    expect("сервер выдал версию", Number(first.body?.rev) > 0, true, `(rev=${first.body?.rev})`);
+
+    const rev = Number(first.body.rev);
+    const second = await rpc("save_progress", { p_data: { xp: 20 }, p_rev: rev });
+    expect("сохранение со свежей версией проходит", Number(second.body?.rev), rev + 1);
+
+    // …а с устаревшей — нет, и в ответ приходит то, что лежит
+    const stale = await rpc("save_progress", { p_data: { xp: 999 }, p_rev: rev });
+    expect("устаревшая версия не затирает", stale.body?.stale, true);
+    expect("и в ответ приходит лежащая копия", stale.body?.data?.xp, 20);
+
+    const row = await service(`/rest/v1/progress?user_id=eq.${id}&select=data,saved_at,rev`).then((r) => r.json()).catch(() => []);
+    expect("на сервере осталось верное", row?.[0]?.data?.xp, 20);
+    const drift = Math.abs(Number(row?.[0]?.saved_at || 0) - Date.now());
+    expect("время проставил сервер, а не браузер", drift < 120000, true, `(расхождение ${Math.round(drift / 1000)} с)`);
+
+    const load = await rpc("load_progress", {});
+    expect("чтение отдаёт и данные, и версию", Number(load.body?.rev), rev + 1);
   }
 
   /* --------------------------------------------- удалить можно только себя, и только подтвердив */
@@ -160,7 +174,7 @@ try {
   const save = await fetch(`${URL_}/rest/v1/rpc/save_progress`, {
     method: "POST",
     headers: { apikey: PUB, authorization: `Bearer ${token}`, "content-type": "application/json" },
-    body: JSON.stringify({ p_data: { xp: 1 }, p_saved_at: Date.now() }),
+    body: JSON.stringify({ p_data: { xp: 1 }, p_rev: 0 }),
   });
   expect("заблокированный пишет прогресс", save.status, 400, "(отказывает сама база)");
 

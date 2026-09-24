@@ -8,6 +8,19 @@
 // либо использовать явную нумерацию {0}, {1}.
 
 export default {
+  "🧠 Что Мия о тебе помнит": "🧠 Mianın sənin haqqında xatırladıqları",
+  "Эти строки она пишет сама во время разговора и перечитывает перед каждым ответом — поэтому помнит, что у тебя за работа и куда ты переезжаешь. Они уходят в Claude вместе с твоей репликой.": "Bu sətirləri o, söhbət zamanı özü yazır və hər cavabdan əvvəl yenidən oxuyur — ona görə də işinin nə olduğunu və hara köçdüyünü xatırlayır. Onlar sənin cümlənlə birlikdə Claude-a gedir.",
+  "Пока ничего. Мия записывает только то, что ты сам рассказал в разговоре.": "Hələlik heç nə. Mia yalnız söhbətdə özünün danışdıqlarını yazır.",
+  "Забыть эту заметку": "Bu qeydi unut",
+  "Забыть всё": "Hamısını unut",
+  "Стереть всё, что Мия о тебе запомнила?": "Mianın sənin haqqında xatırladığı hər şey silinsin?",
+  "Мия начнёт знакомство заново": "Mia tanışlığa yenidən başlayacaq",
+  "Перенести прогресс в аккаунт?": "İrəliləyiş hesaba köçürülsün?",
+  "В этом браузере остались занятия без аккаунта: \u0001 XP и \u0001 \u0001. В самом аккаунте пока пусто.": "Bu brauzerdə hesabsız keçilən dərslər qalıb: \u0001 XP və \u0001 \u0001. Hesabın özündə isə hələ boşdur.",
+  "Если компьютер общий и это занимался не ты — откажись: чужой прогресс тебе не нужен.": "Kompüter ortaqdırsa və bunu sən keçməmisənsə — imtina et: özgənin irəliləyişi sənə lazım deyil.",
+  "Перенесено: \u0001 XP": "Köçürüldü: \u0001 XP",
+  "Перенести": "Köçür",
+  "Не надо": "Lazım deyil",
   "Нажми вариант — Мия сразу скажет фразу этим тембром. Весь курс заранее озвучен «Мягким»: с другим тембром или скоростью каждая фраза будет озвучиваться на ходу — это медленнее.": "Variantı seç — Mia dərhal həmin tembrlə bir cümlə deyəcək. Bütün kurs əvvəlcədən «Yumşaq» ilə səsləndirilib: başqa tembr və ya sürətlə hər cümlə anında səsləndiriləcək — bu daha yavaşdır.",
   "Удалить аккаунт": "Hesabı sil",
   "Исчезнет всё: аккаунт, прогресс на сервере, место в рейтинге и то, что Мия о тебе запомнила. Восстановить будет нечего.": "Hər şey yox olacaq: hesab, serverdəki irəliləyiş, reytinqdəki yer və Mianın sənin haqqında yadda saxladıqları. Bərpa etmək mümkün olmayacaq.",

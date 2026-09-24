@@ -101,16 +101,85 @@ function translateDocument(root = typeof document === "undefined" ? null : docum
  * она ищет и по азербайджанскому слову, даже когда интерфейс русский. Второй вызов ничего
  * не делает: словари уже в памяти.
  */
+/**
+ * Словарь офлайн-Мии — 57 КБ, и первой отрисовке он не нужен.
+ *
+ * Нужен он в одном месте: когда Мия отвечает без ключа Claude. До этого экрана человек идёт
+ * секунды, а ждать его на главной приходилось всем. Поэтому загрузка начинается сразу, но её
+ * никто не ждёт; экран разговора ждёт вот это обещание — и к тому моменту оно почти всегда
+ * уже выполнено.
+ */
+let brainLoaded = null;
+// Для проверок: им словарь Мии нужен даже при русском языке — офлайн-Мия ищет по азербайджанскому
+// слову независимо от того, на каком языке интерфейс.
+const loadBrainDictForTools = () => {
+  if (!brainLoaded) brainLoaded = load(() => import("./i18n/az-brain.js"));
+  return brainLoaded;
+};
+
+export function loadBrainDict() {
+  if (current === "ru") return Promise.resolve();
+  if (!brainLoaded) brainLoaded = load(() => import("./i18n/az-brain.js"));
+  return brainLoaded;
+}
+
 let azLoaded = null;
 export function loadAz() {
   if (!azLoaded) {
+    loadBrainDict();          // пошла, но никто её не ждёт
     azLoaded = Promise.all([
       load(() => import("./i18n/az-ui.js")),
-      load(() => import("./i18n/az-brain.js")),
-      load(() => import("./i18n/az-content.js")),
+      // Только названия уроков, темы и цели — 15 КБ вместо 236.
+      //
+      // Весь словарь уроков приезжал ДО первой отрисовки: человек, выбравший азербайджанский,
+      // ждал четверть мегабайта ради главного экрана, где из него нужны 213 строк. Остальное —
+      // слова, грамматика, задания, диалог — грузится по одному уроку, когда урок открывают
+      // (loadLevelDict ниже), и весит около семи килобайт.
+      load(() => import("./i18n/az-content-index.js")),
     ]);
   }
   return azLoaded;
+}
+
+/**
+ * Словарь одного урока: догрузить и перевести этот урок на месте.
+ *
+ * Зовётся перед тем, как показать любой экран урока. На русском не делает ничего — словарей там
+ * нет вовсе. Повторный вызов бесплатен: файл уже в памяти, а перевод идемпотентен (после первого
+ * прохода в данных лежит азербайджанский, и ключом словаря он не является).
+ */
+const levelDicts = new Map();
+export function loadLevelDict(id, level = null) {
+  if (current === "ru") return Promise.resolve();
+  const nn = String(id).padStart(2, "0");
+  if (!levelDicts.has(nn)) {
+    levelDicts.set(nn, load(() => import(`./i18n/az-content-${nn}.js`)).then(() => {
+      if (level) walk(level);
+    }));
+  }
+  return levelDicts.get(nn);
+}
+
+/** То же для нескольких уроков разом: игры и повторение берут слова из всех открытых. */
+export const loadLevelDicts = (levels) =>
+  current === "ru" ? Promise.resolve() : Promise.all(levels.map((l) => loadLevelDict(l.id ?? l, l.id ? l : null)));
+
+/**
+ * Весь словарь сразу — для проверок и предгенерации, не для браузера.
+ *
+ * Сайт грузит словари по мере надобности, и это правильно: человеку не нужен урок 34, пока он на
+ * первом. А вот проверке полноты перевода, предгенерации звука и тесту решаемости нужен весь
+ * текст разом — иначе они будут отчитываться о том, чего не видели.
+ *
+ * Язык при этом НЕ переключается: половине проверок азербайджанский нужен как второй словарь при
+ * русском интерфейсе — так офлайн-Мия ищет по азербайджанскому слову. Кому нужен переключённый
+ * язык, зовёт setLangForTest() сам.
+ */
+export async function loadAzFull(levelCount = 36) {
+  await Promise.all([loadAz(), loadBrainDictForTools()]);
+  const ids = Array.from({ length: levelCount }, (_, i) => String(i + 1).padStart(2, "0"));
+  await Promise.all(ids.map((nn) => load(() => import(`./i18n/az-content-${nn}.js`))));
+  return DICT.size;
 }
 
 /** Перевод независимо от выбранного языка: для тех, кто ищет ПО азербайджанскому тексту. */

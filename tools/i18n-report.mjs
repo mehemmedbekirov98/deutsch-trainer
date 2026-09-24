@@ -166,7 +166,11 @@ for (const f of jsFiles(path.join(ROOT, "content"))) {
 
 // строка может встретиться и в интерфейсе, и в уроке — словарь один, так что достаточно найтись где угодно
 const dict = new Map();
-for (const name of ["az-ui.js", "az-brain.js", "az-content.js"]) {
+// Всё, что лежит в папке, а не три имени списком: словарь уроков теперь разрезан на
+// az-content-NN.js, и жёсткий список тихо пропускал бы тридцать шесть файлов и отчитывался о
+// полноте перевода, которого не видел.
+const dictFiles = fs.readdirSync(path.join(ROOT, "i18n")).filter((f) => /^az-.*.js$/.test(f)).sort();
+for (const name of dictFiles) {
   const file = path.join(ROOT, "i18n", name);
   if (!fs.existsSync(file)) continue;
   const src = fs.readFileSync(file, "utf8");

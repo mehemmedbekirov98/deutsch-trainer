@@ -45,6 +45,26 @@ export const markCarryOver = (email) => {
  * была ровно на один вход. Заодно появился срок: через сутки отметка бессмысленна, письмо
  * подтверждения живёт меньше.
  */
+/** Сейв, заработанный без аккаунта в этом браузере, — если в нём есть что переносить. */
+function readGuestSave() {
+  try {
+    const guest = JSON.parse(localStorage.getItem(BASE_KEY) || "null");
+    return guest && Number.isFinite(guest.xp) && guest.xp > 0 ? guest : null;
+  } catch { return null; }
+}
+
+// «Нет, не переносить» — ответ на всю жизнь аккаунта в этом браузере, а не на один заход.
+const REFUSED_KEY = "lingua-guest-offer-declined";
+const refusedGuestOffer = (id) => {
+  try { return (localStorage.getItem(REFUSED_KEY) || "").split(",").includes(String(id)); } catch { return false; }
+};
+export const refuseGuestOffer = (id) => {
+  try {
+    const was = (localStorage.getItem(REFUSED_KEY) || "").split(",").filter(Boolean);
+    if (!was.includes(String(id))) localStorage.setItem(REFUSED_KEY, [...was, String(id)].join(","));
+  } catch {}
+};
+
 function takeCarryOver(email) {
   try {
     const want = localStorage.getItem(CARRY_KEY);
@@ -140,6 +160,10 @@ function freshLevel() {
 function freshState() {
   return {
     v: 2,
+    // Версия серверной строки, которую этот браузер видел последней. Её увеличивает только
+    // сервер (см. save_progress в 0006_revisions.sql) — ею и решается, чья копия главнее, без
+    // участия часов устройства. Ноль значит «с сервером ещё не говорили».
+    rev: 0,
     // Имя по умолчанию пустое, а не чужое. Раньше здесь стояло «Emil», и каждый новый человек
     // до первой правки профиля назывался чужим именем — в приветствии, в кабинете и в репликах
     // Мии. Пустое сайт умеет: обращение тогда просто не произносится (см. personalise в utils.js).
@@ -212,24 +236,48 @@ class Store {
     // вызывался — а значит и не стирал себя. Чужая почта продолжала лежать в браузере, хотя
     // нужна была ровно на один вход.
     const carried = backend.user ? takeCarryOver(backend.user.email) : false;
-    if (!remote && !local && !this.remoteUnknown && backend.user && carried) {
-      try {
-        const guest = JSON.parse(localStorage.getItem(BASE_KEY) || "null");
-        if (guest && Number.isFinite(guest.xp) && guest.xp > 0) local = guest;
-      } catch {}
-    }
-    // choose the most recently saved copy (falling back to the richer one for saves made before savedAt existed),
-    // so a reset or an import is never resurrected by the other copy
+    const guest = readGuestSave();
+    if (!remote && !local && !this.remoteUnknown && backend.user && carried && guest) local = guest;
+    /*
+     * Какая копия главнее — местная или серверная.
+     *
+     * Сначала по версии, и только потом по времени. `rev` увеличивает сервер, поэтому он
+     * сравним всегда; `savedAt` у местной копии ставит этот браузер, и сравнивать его с
+     * серверным — это сравнивать двое разных часов. Время остаётся запасным правилом для
+     * случая, когда версий нет у обеих (старый сейв, сделанный до этой миграции).
+     *
+     * Равные версии значат, что местная копия — это та же серверная плюс несохранённая работа
+     * этой вкладки. Тогда побеждает местная: на сервере ровно то же, а здесь ещё и свежее.
+     */
     const cands = [local, remote].filter((x) => x && typeof x === "object" && Number.isFinite(x.xp));
     const best = cands.sort((a, b) => {
+      const ra = Number(a.rev) || 0, rb = Number(b.rev) || 0;
+      if (ra !== rb) return rb - ra;
       const ta = Number(a.savedAt) || 0, tb = Number(b.savedAt) || 0;
       if (ta !== tb) return tb - ta;
       return (b.xp || 0) - (a.xp || 0);
     })[0];
     if (best) this.adopt(best, false);
-    // С чем мы начали работу — это и есть точка отсчёта для разрешения конфликта в save().
-    // Ноль значит «ничего не знаем»: тогда новее нас любая непустая копия на сервере.
-    this.baseSavedAt = Number(best?.savedAt) || 0;
+
+    /*
+     * Гостевой прогресс, до которого отметка не доехала.
+     *
+     * Отметка «перенести» лежит в том браузере, где нажали «Создать аккаунт». Но письмо с
+     * подтверждением человек часто открывает на телефоне — и первый вход происходит ТАМ, создавая
+     * на сервере пустую строку. Возвращается он за компьютер, где всё заработанное и лежит, — а
+     * условие выше уже ложно: серверная копия есть, просто она пустая.
+     *
+     * Тихо перетаскивать нельзя: на общем компьютере это отдало бы чужой прогресс следующему
+     * вошедшему. Поэтому спрашиваем — и только когда спрашивать есть о чём: в аккаунте пусто, а
+     * в браузере лежит непустой гостевой сейв. Отказ запоминается, чтобы не переспрашивать.
+     */
+    this.guestOffer = null;
+    if (backend.user && guest && !(this.state.xp > 0) && !refusedGuestOffer(backend.user.id)) {
+      this.guestOffer = guest;
+    }
+    // Версия, с которой мы начали работу: ею save() докажет серверу, что не затирает чужое.
+    // Ноль значит «ничего не читали» — тогда любая строка в базе новее нас.
+    this.rev = Number(best?.rev) || 0;
     this.touchStreak();
     this.save();
     if (this.remoteUnknown) this.emit("save-offline");
@@ -263,9 +311,9 @@ class Store {
    * would land in an orphan and the passed exam would pay out but never be recorded.
    */
   adopt(data, save = true) {
-    // Приняли чужую копию — значит теперь знаем её отметку. Без этого следующая проверка
-    // конфликта сравнивала бы новое состояние со старой точкой отсчёта.
-    this.baseSavedAt = Number(data?.savedAt) || 0;
+    // Приняли чужую копию — значит теперь знаем её версию. Без этого следующее сохранение
+    // предъявило бы серверу устаревшую и получило бы отказ на собственную же работу.
+    if (Number.isFinite(Number(data?.rev))) this.rev = Number(data.rev) || 0;
     const f = freshState();
     const incomingLevels = data.levels && typeof data.levels === "object" ? data.levels : {};
     const liveLevels = this.state?.levels;
@@ -405,10 +453,9 @@ class Store {
           // состояние. Человек заходил с нового телефона, первое чтение срывалось, и весь его
           // опыт, уровни и словарь затирались нулями молча и необратимо.
           //
-          // `baseSavedAt` — отметка того состояния, с которым мы начали работу. Ноль означает
-          // «мы не знаем ничего», и тогда новее нас любая непустая копия.
-          const base = Number(this.baseSavedAt) || 0;
-          if (current && Number.isFinite(current.xp) && (Number(current.savedAt) || 0) > base) {
+          // Теперь сравниваются версии, а не времена: `this.rev` — та, с которой мы начали.
+          // Ноль означает «мы не читали ничего», и тогда новее нас любая строка в базе.
+          if (current && Number.isFinite(current.xp) && (Number(current.rev) || 0) > (Number(this.rev) || 0)) {
             this.adopt(current, false);
             this.emit();
           }
@@ -419,7 +466,7 @@ class Store {
         // собираемся ноль, — не пишем ничего. Локальная копия уже на диске, а следующая попытка
         // снова начнётся с чтения.
         if (this.remoteUnknown && !(this.state.xp > 0)) { this.saveFails = 0; return; }
-        const r = await backend.saveProgress(this.state);
+        const r = await backend.saveProgress(this.state, this.rev);
         // Nobody is signed in: the copy in this browser is the only one there is, and it is
         // already written. Not a failure, so the warning must not appear.
         if (r?.skipped) { this.saveFails = 0; return; }
@@ -428,6 +475,11 @@ class Store {
         if (r?.stale && r.current && Number.isFinite(r.current.xp)) {
           this.adopt(r.current, false);
           this.emit();
+        } else if (r?.rev) {
+          // Записали — запоминаем выданную сервером версию. Без этого следующее сохранение
+          // предъявит устаревшую и получит «stale» на собственную же запись.
+          this.rev = Number(r.rev) || this.rev;
+          this.state.rev = this.rev;
         }
         this.saveFails = 0;
         this.serverOk = true;

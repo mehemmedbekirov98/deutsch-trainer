@@ -137,9 +137,12 @@ export const backend = {
    */
   async loadProgress() {
     if (!this.sb || !this.user) return null;
-    const { data, error } = await this.sb.from("progress").select("data").eq("user_id", this.user.id).maybeSingle();
+    // Через функцию, а не прямым select: нужна ещё и версия строки. Браузер обязан помнить, какую
+    // версию он видел, — именно ею он потом доказывает серверу, что не затирает чужую работу.
+    const { data, error } = await this.sb.rpc("load_progress");
     if (error) throw new Error(error.message);
-    return data?.data || null;
+    if (!data?.data) return null;
+    return { ...data.data, rev: Number(data.rev) || 0 };
   },
 
   /**
@@ -148,14 +151,25 @@ export const backend = {
    * The database decides, in one statement — see save_progress() in the migration. What comes back
    * is the other tab's state, which the store adopts instead of overwriting.
    */
-  async saveProgress(state) {
+  /**
+   * Save, unless the stored copy is newer.
+   *
+   * The database decides, in one statement — see save_progress() in the migration. What comes back
+   * is the other tab's state, which the store adopts instead of overwriting.
+   *
+   * Спорят версиями, а не временем. `rev` увеличивает только сервер; браузер присылает ту,
+   * которую видел, когда читал. Часы устройства в этом больше не участвуют — раньше «новее»
+   * означало «у кого часы убежали дальше».
+   */
+  async saveProgress(state, rev = 0) {
     if (!this.sb || !this.user) return { skipped: true };
     const { data, error } = await this.sb.rpc("save_progress", {
       p_data: state,
-      p_saved_at: Number(state.savedAt) || 0,
+      p_rev: Number(rev) || 0,
     });
     if (error) throw new Error(error.message);
-    return data ? { stale: true, current: data } : { ok: true };
+    if (data?.stale) return { stale: true, current: { ...data.data, rev: Number(data.rev) || 0 }, rev: Number(data.rev) || 0 };
+    return { ok: true, rev: Number(data?.rev) || 0 };
   },
 
   /** The access token Supabase already gave this browser, for the functions that check callers. */

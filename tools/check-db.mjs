@@ -111,7 +111,7 @@ const service = (p, init = {}) => fetch(`${URL_}${p}`, {
   // функция security invoker: служебной ролью auth.uid() пуст, так что до размера дело не дойдёт.
   // Проверяем иначе — что новая версия функции на месте, по тексту её ошибки.
   const r = await service("/rest/v1/rpc/save_progress", {
-    method: "POST", body: JSON.stringify({ p_data: { xp: 1 }, p_saved_at: 1 }),
+    method: "POST", body: JSON.stringify({ p_data: { xp: 1 }, p_rev: 0 }),
   });
   const text = await r.text();
   ok("save_progress отвергает запрос без входа", !r.ok && /not signed in/.test(text), `${r.status}`);

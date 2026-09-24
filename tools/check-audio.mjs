@@ -16,7 +16,7 @@ Object.defineProperty(globalThis, "navigator", { value: { language: "ru-RU", use
 globalThis.localStorage = { getItem: () => null, setItem() {}, removeItem() {} };
 
 const { LEVELS } = await import("../public/js/levels.js");
-const { loadAz, azOf } = await import("../public/js/i18n.js");
+const { loadAzFull, azOf } = await import("../public/js/i18n.js");
 const { cacheKey, publicUrl } = await import("../lib/tts.mjs");
 // Скорости и тембр берём ИЗ БРАУЗЕРНОГО модуля, а не переписываем сюда. Ровно эти числа входят
 // в ключ кэша; продублируй их здесь — и проверка начнёт подтверждать сама себя, а не сайт.
@@ -32,7 +32,7 @@ const DE_VOICE = MIA_VOICE;
 const RU_VOICE = MIA_VOICE;       // Серафина многоязычна и читает русский сама
 const AZ_VOICE = FALLBACK_VOICE_AZ;
 
-await loadAz();
+await loadAzFull();
 
 const jobs = [];
 for (const level of LEVELS) {
