@@ -35,7 +35,7 @@ export default {
   "Озвучка сейчас не настроена.": "Səsləndirmə hazırda qurulmayıb.",
   "Слишком много новых реплик за сегодня. Голос вернётся завтра.": "Bu gün üçün çox yeni cümlə oldu. Səs sabah qayıdacaq.",
   "Имя": "Ad",
-  "На сегодня хватит — живая Мия вернётся завтра. Офлайн-режим работает без ограничений.": "Bu günlük bu qudər — canlı Mia sabah qayıdacaq. Oflayn rejim məhdudiyyətsiz işləyir.",
+  "На сегодня хватит — живая Мия вернётся завтра. Офлайн-режим работает без ограничений.": "Bu günlük bu qədər — canlı Mia sabah qayıdacaq. Oflayn rejim məhdudiyyətsiz işləyir.",
   "Прогресс сейчас сохраняется только в этом браузере — нет связи с сервером. Как появится интернет, он догонит сам.": "Hazırda irəliləyiş yalnız bu brauzerdə saxlanılır — serverlə əlaqə yoxdur. İnternet qayıdan kimi özü sinxronlaşacaq.",
   "Сохранение": "Yaddaş",
   "+\u0001 монет за \u0001-й день подряд": "+\u0001 sikkə — ardıcıl \u0001-ci gün",

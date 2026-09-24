@@ -95,6 +95,19 @@ console.log(`\nпроверено ${picked.length} строк из ${jobs.length
 for (const [kind, n] of [...byKind].sort()) {
   console.log(`  ${kind.padEnd(16)} есть ${String(n.ok).padStart(3)}   нет ${String(n.no).padStart(3)}   неясно ${n["?"]}`);
 }
+// Проверка, которая ничего не проверила, обязана сказать об этом, а не отрапортовать «всё
+// хорошо». Раньше при недоступном хранилище все ответы становились «неясно», missing оставался
+// нулём — и вывод был «всё уже лежит», хотя не подтвердилась ни одна строка.
+const confirmed = picked.length - missing - unknown;
 if (unknown) console.log(`\n${unknown} ответов не получено (хранилище отказывало по нагрузке) — это не «нет»`);
-console.log(missing ? `\n${missing} строк не озвучено — запусти npm run audio` : "\nвсё, что попросит браузер, уже лежит в хранилище");
-process.exit(missing ? 1 : 0);
+
+if (missing) {
+  console.log(`\n${missing} строк не озвучено — запусти npm run audio`);
+  process.exit(1);
+}
+if (confirmed < picked.length * 0.8) {
+  console.log(`\nподтверждено всего ${confirmed} из ${picked.length} — хранилище почти не отвечало, проверка НЕ состоялась`);
+  process.exit(1);
+}
+console.log(`\nвсё, что попросит браузер, уже лежит в хранилище (подтверждено ${confirmed} из ${picked.length})`);
+process.exit(0);

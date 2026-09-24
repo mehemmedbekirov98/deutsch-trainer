@@ -12,6 +12,7 @@
 //
 // Лицензия обоих шрифтов — SIL Open Font License 1.1: класть к себе и раздавать можно.
 import fs from "node:fs";
+import { createHash } from "node:crypto";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -37,6 +38,7 @@ const css = await fetch(CSS_URL, { headers: { "user-agent": UA } }).then((r) => 
 let out = [];
 let count = 0;
 let bytes = 0;
+const grabbed = [];
 
 // Греческий и вьетнамский нам не нужны: сайт объясняет по-русски и по-азербайджански, а учит
 // немецкому. Азербайджанские ə, ğ, ı, ş живут в latin-ext, так что этих четырёх хватает на всё.
@@ -53,21 +55,45 @@ for (const m of css.matchAll(/\/\*\s*([a-z0-9-]+)\s*\*\/\s*@font-face\s*\{([^}]*
   const url = (block.match(/url\((https:[^)]+\.woff2)\)/) || [])[1];
   if (!url) continue;
 
-  const name = `${family.toLowerCase().replace(/\s+/g, "-")}-${weight}-${subset}.woff2`;
   const buf = Buffer.from(await fetch(url, { headers: { "user-agent": UA } }).then((r) => r.arrayBuffer()));
-  fs.writeFileSync(path.join(OUT, name), buf);
-  count++;
-  bytes += buf.length;
-
   const unicodeRange = (block.match(/unicode-range:\s*([^;}]+)/) || [])[1];
+  grabbed.push({ family, weight: Number(weight), style, subset, buf, unicodeRange });
+}
+
+/*
+ * Один файл на поддиапазон, а не на каждое начертание.
+ *
+ * Manrope и Inter — вариативные шрифты: один файл содержит ВСЕ веса сразу, и Google отдаёт на
+ * все пять правил @font-face один и тот же адрес. Первая версия этого скрипта называла файлы по
+ * весу и сохраняла одни и те же байты пять раз — тридцать два файла вместо восьми. Хуже того,
+ * браузер честно качал их все: главный экран тянул 184 КБ шрифтов вместо 53.
+ *
+ * Поэтому складываем по содержимому: одинаковые байты — один файл, а веса объединяются в
+ * диапазон `font-weight: 400 800`, как вариативному шрифту и положено.
+ */
+const byContent = new Map();
+for (const g of grabbed) {
+  const hash = createHash("sha1").update(g.buf).digest("hex").slice(0, 8);
+  const key = `${g.family}|${g.style}|${g.subset}|${hash}`;
+  if (!byContent.has(key)) byContent.set(key, { ...g, weights: [] });
+  byContent.get(key).weights.push(g.weight);
+}
+
+for (const g of byContent.values()) {
+  const name = `${g.family.toLowerCase().replace(/\s+/g, "-")}-${g.subset}.woff2`;
+  fs.writeFileSync(path.join(OUT, name), g.buf);
+  count++;
+  bytes += g.buf.length;
+
+  const lo = Math.min(...g.weights), hi = Math.max(...g.weights);
   out.push([
     "@font-face {",
-    `  font-family: '${family}';`,
-    `  font-style: ${style};`,
-    `  font-weight: ${weight};`,
+    `  font-family: '${g.family}';`,
+    `  font-style: ${g.style};`,
+    `  font-weight: ${lo === hi ? lo : `${lo} ${hi}`};`,
     "  font-display: swap;",
     `  src: url('../fonts/${name}') format('woff2');`,
-    unicodeRange ? `  unicode-range: ${unicodeRange.trim()};` : null,
+    g.unicodeRange ? `  unicode-range: ${g.unicodeRange.trim()};` : null,
     "}",
   ].filter(Boolean).join("\n"));
 }

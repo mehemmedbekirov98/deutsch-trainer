@@ -221,6 +221,9 @@ class Store {
       return (b.xp || 0) - (a.xp || 0);
     })[0];
     if (best) this.adopt(best, false);
+    // С чем мы начали работу — это и есть точка отсчёта для разрешения конфликта в save().
+    // Ноль значит «ничего не знаем»: тогда новее нас любая непустая копия на сервере.
+    this.baseSavedAt = Number(best?.savedAt) || 0;
     this.touchStreak();
     this.save();
     if (this.remoteUnknown) this.emit("save-offline");
@@ -254,6 +257,9 @@ class Store {
    * would land in an orphan and the passed exam would pay out but never be recorded.
    */
   adopt(data, save = true) {
+    // Приняли чужую копию — значит теперь знаем её отметку. Без этого следующая проверка
+    // конфликта сравнивала бы новое состояние со старой точкой отсчёта.
+    this.baseSavedAt = Number(data?.savedAt) || 0;
     const f = freshState();
     const incomingLevels = data.levels && typeof data.levels === "object" ? data.levels : {};
     const liveLevels = this.state?.levels;
@@ -379,11 +385,28 @@ class Store {
         if (this.remoteUnknown) {
           const current = await backend.loadProgress();
           this.remoteUnknown = false;
-          if (current && Number.isFinite(current.xp) && (Number(current.savedAt) || 0) > (Number(this.state.savedAt) || 0)) {
+          // Сравнивать надо с тем, что мы ЗНАЛИ, а не с тем, что только что проставили.
+          //
+          // Здесь стояло `> this.state.savedAt`, а save() первой же строкой пишет туда Date.now().
+          // Значит настоящая вчерашняя копия никогда не оказывалась «новее» — условие не могло
+          // стать истинным вообще никогда, — и следующей строкой на сервер уезжало пустое
+          // состояние. Человек заходил с нового телефона, первое чтение срывалось, и весь его
+          // опыт, уровни и словарь затирались нулями молча и необратимо.
+          //
+          // `baseSavedAt` — отметка того состояния, с которым мы начали работу. Ноль означает
+          // «мы не знаем ничего», и тогда новее нас любая непустая копия.
+          const base = Number(this.baseSavedAt) || 0;
+          if (current && Number.isFinite(current.xp) && (Number(current.savedAt) || 0) > base) {
             this.adopt(current, false);
             this.emit();
           }
         }
+        // Пустое состояние поверх неизвестного — это не сохранение, это потеря.
+        //
+        // Второй замок на тот же случай: если прочитать облако так и не удалось, а писать мы
+        // собираемся ноль, — не пишем ничего. Локальная копия уже на диске, а следующая попытка
+        // снова начнётся с чтения.
+        if (this.remoteUnknown && !(this.state.xp > 0)) { this.saveFails = 0; return; }
         const r = await backend.saveProgress(this.state);
         // Nobody is signed in: the copy in this browser is the only one there is, and it is
         // already written. Not a failure, so the warning must not appear.

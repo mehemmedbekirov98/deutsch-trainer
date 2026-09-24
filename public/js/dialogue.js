@@ -37,8 +37,15 @@ export function renderDialogue({ container, level, onDone, onExit }) {
     ),
   );
 
-  const playBtn = el("button", { class: "btn primary big", type: "button", onClick: () => playAll() }, "▶ Прослушать диалог");
-  const roleBtn = el("button", { class: "btn ghost", type: "button", onClick: () => setMode("play") }, "🎭 Сыграть роль Эмиля");
+  // Без onClick здесь — и это важно.
+  //
+  // el() вешает onClick через addEventListener, а setMode() ниже присваивает .onclick — это ДВА
+  // разных обработчика, и на каждом нажатии срабатывали оба. Первый запускал диалог и ставил
+  // playing = true, второй тут же видел playing и останавливал его. Кнопка гасила сама себя —
+  // во всех 36 уроках. Обработчики ставит setMode(), и он зовётся при сборке экрана: см.
+  // setMode("listen") в конце файла.
+  const playBtn = el("button", { class: "btn primary big", type: "button" }, "▶ Прослушать диалог");
+  const roleBtn = el("button", { class: "btn ghost", type: "button" }, "🎭 Сыграть роль Эмиля");
   // The stage must never dead-end: the mic can be denied, missing or the recogniser offline.
   // The button is always present but only offered once Emil has actually listened to the dialogue.
   const noMicBtn = el("button", { class: "btn", hidden: true, type: "button", onClick: () => {

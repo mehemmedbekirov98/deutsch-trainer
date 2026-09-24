@@ -104,6 +104,7 @@ const stripArticleLower = (de) => String(de).replace(/^(der|die|das)\s+/i, "").t
 // Язык реплики → локаль для голоса. Немецкий — пустая строка: это родной язык голоса Мии, ему пометка
 // не нужна (см. plan() в speech.js).
 const LOCALE_OF = { ru: "ru-RU", az: "az-AZ", de: "" };
+const LANGS = new Set(["ru", "az", "de"]);
 
 /**
  * Чьё это сообщение — подпись над пузырём собственной реплики.
@@ -135,16 +136,37 @@ const meLabel = () => store.state.name || "Ты";
  */
 const mine = (s) => personalise(tr(String(s || "")), store.state.name);
 
-function normalizeReply(r) {
+/**
+ * Немецкий не трогаем вообще.
+ *
+ * Немецкий — это предмет, а не оболочка вокруг него, и на нём держится озвучка: ключ кэша — хеш
+ * от самого текста, так что изменённая на одну букву фраза навсегда теряет заранее
+ * синтезированный клип. А в курсе тридцать реплик вида «Woher kommst du, Emil?» — это диалог,
+ * который человек разыгрывает, играя роль Эмиля, и подменять там имя незачем и вредно.
+ *
+ * Подстановка нужна там, где Мия обращается к человеку от себя, — и это всегда родной язык.
+ */
+const mineNative = (s, lang) => (lang === "de" ? tr(String(s || "")) : mine(s));
+
+export function normalizeReply(r) {
   const base = {
     translation: "", explain: "",
     correction: r.correction ? { ...r.correction, explanationRu: mine(r.correction.explanationRu) } : null,
     tip: mine(r.tip), done: Boolean(r.done),
   };
   if (typeof r.say === "string") {
-    return { ...base, say: mine(r.say), lang: r.lang === "de" ? "de" : "ru", translation: mine(r.translation) };
+    // Три языка, а не два.
+    //
+    // Здесь стояло `r.lang === "de" ? "de" : "ru"` — и «az» превращался в «ru» ещё до того, как
+    // кто-нибудь смотрел на язык. Из-за этого LOCALE_OF выше оставался мёртвым кодом: ветка
+    // az: "az-AZ" не выполнялась ни разу, и азербайджанскую реплику Мии читал русский голос по
+    // русским правилам чтения. Проверка на сервере этого не видела — askMia возвращает «az»
+    // честно, ломалось уже в браузере.
+    const lang = LANGS.has(r.lang) ? r.lang : "ru";
+    return { ...base, say: mineNative(r.say, lang), lang, translation: mineNative(r.translation, lang === "de" ? "ru" : "de") };
   }
-  return { ...base, say: mine(r.de), lang: "de", translation: mine(r.ru), explain: mine(r.explainRu) };
+  // Форма {de, ru}: сценарии уровней и офлайн-Мия. `de` — немецкая реплика курса, её не трогаем.
+  return { ...base, say: tr(String(r.de || "")), lang: "de", translation: mine(r.ru), explain: mine(r.explainRu) };
 }
 
 export class Tutor {
@@ -419,11 +441,12 @@ export class Tutor {
       // …кроме «умного режима на этом сайте просто нет»: пробовать каждую реплику бессмысленно,
       // ответ не изменится. Сервер сообщает это через needsAuth при 503.
       const notConfigured = e?.status === 503 && e?.needsAuth;
-      const permanent = e?.status === 401 || e?.status === 403 || notConfigured;
-      const transient = !permanent;
-      // 429 — это не «сломалось», это «на сегодня хватит». Отдельными словами, иначе человек
-      // будет ждать, что вот-вот заработает.
+      // 429 — это не «сломалось», это «на сегодня хватит». Пробовать снова каждую реплику
+      // бессмысленно: до полуночи ответ не изменится, а предупреждение будет всплывать после
+      // каждого сообщения. Поэтому до конца разговора — офлайн-Мия, и сказано об этом словами.
       const outOfTurns = e?.status === 429;
+      const permanent = e?.status === 401 || e?.status === 403 || notConfigured || outOfTurns;
+      const transient = !permanent;
       if (!this.stopped) {
         toast(outOfTurns
           ? (e.message || "На сегодня лимит живой Мии исчерпан — она продолжит в обычном режиме.")
@@ -463,7 +486,9 @@ export class Tutor {
     const voice = LOCALE_OF[reply.lang] ? { lang: LOCALE_OF[reply.lang] } : {};
     // Подстрочник под репликой всегда на другом языке: к немецкой фразе — родной, к родной — немецкий.
     const other = reply.lang === "de" ? { lang: NATIVE_LOCALE } : {};
-    const bubble = el("div", { class: `bubble mia ${reply.lang === "ru" ? "mia-ru" : ""}` },
+    // «Родная речь» — это всё, что не немецкое: теперь сюда попадает и азербайджанский, который
+    // раньше до этой строки просто не доходил.
+    const bubble = el("div", { class: `bubble mia ${reply.lang === "de" ? "" : "mia-ru"}` },
       el("div", { class: "bubble-name" }, "Мия"),
       el("div", { class: "bubble-de", lang: reply.lang }, reply.say,
         el("button", { class: "icon-btn tiny", type: "button", title: "Прослушать", onClick: () => speech.speak(reply.say, { ...voice, force: true, secret: true }) }, "🔊")),
@@ -826,7 +851,10 @@ export class Tutor {
     // narration the "звук выключен" switch turns off. Same rate as she used, so it comes straight
     // out of the cache instead of being synthesised a second time.
     const r = this.lastReply;
-    if (r) speech.speak(r.say, { ...(r.lang === "de" ? {} : { lang: NATIVE_LOCALE }), rate: store.state.settings.rate, force: true, secret: true });
+    // Тем же голосом, что и в первый раз. NATIVE_LOCALE здесь давал русский голос для
+    // азербайджанской реплики и, заодно, ДРУГОЙ ключ кэша — то есть «прослушать ещё раз»
+    // синтезировало и оплачивало ту же самую фразу заново.
+    if (r) speech.speak(r.say, { ...(LOCALE_OF[r.lang] ? { lang: LOCALE_OF[r.lang] } : {}), rate: store.state.settings.rate, force: true, secret: true });
   }
 
   showHint() {

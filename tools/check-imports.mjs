@@ -105,7 +105,10 @@ function codeOnly(src) {
         if (src[j] === c) break;
         j++;
       }
-      out += blank(src.slice(i, j + 1));
+      // Сама кавычка остаётся, вырезается только содержимое. Это нужно тегированным шаблонам:
+      // из tr`Урок ${n}` должно остаться «tr`», иначе не видно, что `tr` вообще использовали.
+      // Ложных срабатываний это не добавляет — текст внутри по-прежнему стёрт.
+      out += c + blank(src.slice(i + 1, j + 1));
       i = j + 1;
       continue;
     }
@@ -126,6 +129,28 @@ for (const f of files) {
   for (const name of exportsOf(src)) {
     if (!EXPORTS.has(name)) EXPORTS.set(name, []);
     EXPORTS.get(name).push(rel);
+  }
+}
+
+// …и то, под каким именем модули друг друга зовут.
+//
+// Одних экспортов мало: `import { t as tr }` даёт локальное имя `tr`, которого ни один модуль не
+// экспортирует. Из-за этого удаление ровно этой строки проверку не роняло — а `tr` в проекте
+// почти в каждом файле, и без него экран падает на первой же надписи. Поэтому имена-псевдонимы
+// собираются со всего проекта: если двадцать файлов ввозят `t as tr`, то `tr` в двадцать первом
+// без импорта — забытый импорт, а не случайное совпадение.
+for (const f of files) {
+  const src = sources.get(f);
+  for (const m of src.matchAll(/^import\s+([\s\S]*?)\s+from\s+["']([^"']+)["']/gm)) {
+    for (const b of m[1].matchAll(/\{([\s\S]*?)\}/g)) {
+      for (const part of b[1].split(",")) {
+        const as = part.split(/\bas\b/);
+        if (as.length < 2) continue;                       // без `as` имя и так есть в EXPORTS
+        const alias = as[1].trim();
+        if (!/^[A-Za-z_$][\w$]*$/.test(alias)) continue;
+        if (!EXPORTS.has(alias)) EXPORTS.set(alias, [m[2]]);
+      }
+    }
   }
 }
 
@@ -154,9 +179,13 @@ for (const f of files) {
   const have = new Set([...importedBy(src), ...declaredIn(code), ...GLOBALS]);
   const selfExports = exportsOf(src);
 
-  // Имя считается использованным, если за ним идёт `.` или `(` — то есть с ним что-то делают.
+  // Имя считается использованным, если за ним идёт `.`, `(` или обратная кавычка.
+  //
+  // Обратная кавычка тут не мелочь: `tr` в этом проекте почти всегда тегированный шаблон —
+  // tr`Урок ${n}`. Без неё можно было удалить `tr` из импортов, и вся проверка осталась бы
+  // зелёной, хотя каждый такой вызов падает ReferenceError на первом же отрисованном экране.
   const used = new Map();
-  for (const m of code.matchAll(/(^|[^\w$.?])([A-Za-z_$][\w$]*)\s*[.(]/g)) {
+  for (const m of code.matchAll(/(^|[^\w$.?])([A-Za-z_$][\w$]*)\s*[.(`]/g)) {
     const name = m[2];
     if (!EXPORTS.has(name)) continue;
     if (have.has(name) || selfExports.has(name)) continue;
@@ -169,6 +198,86 @@ for (const f of files) {
     if (/^\s*(\/\/|\*|\/\*)/.test(text)) continue;
     failed++;
     console.log(`ПРОВАЛ ${rel}:${line}\n       «${name}» используется, но не импортирован (есть в ${EXPORTS.get(name).join(", ")})\n       ${text.trim().slice(0, 100)}`);
+  }
+}
+
+/* --------------------------------------------- файл, из которого ввозят, должен существовать
+ *
+ * Имя проверено, а путь — нет: `import { createClient } from "../vendor/supabase-js.js"` с
+ * опечаткой или удалённым файлом проходил все проверки. В браузере это 404 и мёртвый модуль,
+ * причём у самого входа в аккаунт. Здесь же и адреса шрифтов из таблиц стилей — по той же
+ * причине: файла нет, ошибки нет, просто системный шрифт вместо нашего.
+ */
+{
+  const seenPaths = new Set();
+  const all = [...files];
+  const vendorDir = path.join(ROOT, "public", "vendor");
+  if (fs.existsSync(vendorDir)) for (const f of fs.readdirSync(vendorDir)) if (f.endsWith(".js")) all.push(path.join(vendorDir, f));
+
+  for (const f of all) {
+    const src = fs.readFileSync(f, "utf8");
+    const rel = path.relative(ROOT, f).replace(/\\/g, "/");
+    // `import\s*` без обязательного пробела: вендоренные файлы минифицированы, и там `import{…}`
+    // да `from"./x.js"` — без единого пробела и всё в одной строке.
+    for (const m of src.matchAll(/(?:\bimport\s*[{*\w][\s\S]{0,300}?\bfrom\s*|\bimport\s*\(?\s*)["'](\.[^"']+)["']/g)) {
+      const target = path.resolve(path.dirname(f), m[1]);
+      const key = rel + "→" + m[1];
+      if (seenPaths.has(key) || fs.existsSync(target)) { seenPaths.add(key); continue; }
+      seenPaths.add(key);
+      failed++;
+      console.log(`ПРОВАЛ ${rel}\n       импортирует «${m[1]}», а такого файла нет`);
+    }
+
+    // Путь может лежать и в переменной: `const SUPABASE_LIB = "../vendor/supabase-js.js"`, а
+    // ниже `await import(SUPABASE_LIB)`. Литерала рядом с `import` тогда нет, и предыдущая
+    // проверка его не видит — а файл при этом ровно такой же обязательный.
+    for (const m of src.matchAll(/["'](\.{1,2}\/[\w./-]+\.(?:js|mjs))["']/g)) {
+      const target = path.resolve(path.dirname(f), m[1]);
+      const key = rel + "→" + m[1];
+      if (seenPaths.has(key) || fs.existsSync(target)) { seenPaths.add(key); continue; }
+      seenPaths.add(key);
+      failed++;
+      console.log(`ПРОВАЛ ${rel}\n       ссылается на модуль «${m[1]}», а такого файла нет`);
+    }
+  }
+
+  // …и то же самое для шрифтов: url('../fonts/…') в наших таблицах стилей
+  const cssDir = path.join(ROOT, "public", "css");
+  for (const f of fs.existsSync(cssDir) ? fs.readdirSync(cssDir) : []) {
+    if (!f.endsWith(".css")) continue;
+    const p = path.join(cssDir, f);
+    for (const m of fs.readFileSync(p, "utf8").matchAll(/url\(['"]?(\.[^'")]+)['"]?\)/g)) {
+      const target = path.resolve(path.dirname(p), m[1]);
+      if (fs.existsSync(target)) continue;
+      failed++;
+      console.log(`ПРОВАЛ public/css/${f}\n       ссылается на «${m[1]}», а такого файла нет`);
+    }
+  }
+}
+
+/* --------------------------------------------- два обработчика на одном нажатии
+ *
+ * el() вешает onClick через addEventListener. Если тому же элементу потом присвоить .onclick,
+ * обработчиков станет ДВА и сработают оба — присваивание не заменяет слушателя, а добавляется к
+ * нему. На кнопке «Прослушать диалог» это выглядело так: первый обработчик запускал диалог,
+ * второй немедленно его останавливал. Кнопка гасила сама себя во всех 36 уроках, и заметить это
+ * можно было только открыв урок и нажав.
+ */
+{
+  for (const f of files) {
+    const code = codeOnly(sources.get(f));
+    const rel = path.relative(ROOT, f).replace(/\\/g, "/");
+    // имя = el(…onClick…) — запоминаем, кому обработчик уже повешен
+    const withOnClick = new Set();
+    for (const m of code.matchAll(/(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*el\(([\s\S]{0,400}?)\)\s*[;,]/g)) {
+      if (/\bonClick\s*:/.test(m[2])) withOnClick.add(m[1]);
+    }
+    for (const m of code.matchAll(/([A-Za-z_$][\w$]*)\.onclick\s*=/g)) {
+      if (!withOnClick.has(m[1])) continue;
+      failed++;
+      const line = code.slice(0, m.index).split("\n").length;
+      console.log(`ПРОВАЛ ${rel}:${line}\n       «${m[1]}» создан с onClick в el() и получает ещё и .onclick — сработают ОБА\n       убери onClick из el() или перестань присваивать .onclick`);
+    }
   }
 }
 

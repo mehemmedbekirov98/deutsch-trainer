@@ -1301,8 +1301,8 @@ function boardSetting() {
 function askNewPassword() {
   // Supabase already knows who is signed in, so changing a password does not need the old one —
   // and asking for something it will not check would be theatre.
-  const p1 = el("input", { class: "input", type: "password", autocomplete: "new-password", placeholder: "Новый пароль" });
-  const p2 = el("input", { class: "input", type: "password", autocomplete: "new-password", placeholder: "Ещё раз" });
+  const p1 = el("input", { class: "auth-input", type: "password", autocomplete: "new-password", placeholder: "Новый пароль" });
+  const p2 = el("input", { class: "auth-input", type: "password", autocomplete: "new-password", placeholder: "Ещё раз" });
   const msg = el("div", { class: "muted small" }, "Минимум 8 символов.");
   const save = el("button", { class: "btn primary", type: "submit" }, "Сменить пароль");
 
@@ -1577,7 +1577,7 @@ function renderProfile(v) {
  * Набрать свой адрес — три секунды, и они отделяют «хочу уйти» от «промахнулся по кнопке».
  */
 function askDeleteAccount(email) {
-  const field = el("input", { class: "input", type: "email", autocomplete: "off", placeholder: email || "твоя почта" });
+  const field = el("input", { class: "auth-input", type: "email", autocomplete: "off", placeholder: email || "твоя почта" });
   const msg = el("div", { class: "muted small" }, tr`Набери ${email}, чтобы подтвердить.`);
   const go_ = el("button", { class: "btn danger", type: "submit" }, "Удалить навсегда");
 
