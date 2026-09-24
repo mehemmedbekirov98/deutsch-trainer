@@ -790,7 +790,7 @@ function showWelcome() {
       langSwitch({ compact: true }),
       el("div", { class: "prologue-emoji" }, "🎓"),
       el("div", { class: "prologue-kicker" }, "Lingua Mia"),
-      el("h1", {}, "Сколько немецкого у тебя уже есть?"),
+      el("h1", {}, "Насколько хорошо ты уже знаешь немецкий?"),
       el("p", { class: "welcome-text" }, "От этого зависит, с какого урока начать — и как Мия будет с тобой говорить. Поменять можно в любой момент в кабинете."),
       el("div", { class: "level-choice" },
         [["A1", "Совсем с нуля", "Не знаю ни одного слова или помню пару фраз."],
@@ -850,7 +850,7 @@ function renderHome(v) {
         el("h1", {}, `${greeting()}${name ? ", " + name : ""}! `, el("span", { class: "wave" }, "👋")),
         el("p", { class: "hero-sub" }, s.streak.count > 1
           ? tr`${s.streak.count} ${plural(s.streak.count, "день", "дня", "дней")} подряд — не бросай.`
-          : "Пятнадцать минут сегодня — это уже много."),
+          : "Пятнадцать минут — и день не зря."),
       ),
       el("div", { class: "home-level" },
         el("div", { class: "cefr-badge", title: "Твой уровень немецкого" }, band.band),

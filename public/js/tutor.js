@@ -5,7 +5,7 @@ import { speech, STT_ERRORS, NATIVE_LOCALE, RATES } from "./speech.js";
 import { sfx, confetti, toast } from "./fx.js";
 import { store } from "./store.js";
 import { backend } from "./backend.js";
-import { understand, respond, opening } from "./brain.js";
+import { understand, respond, opening, langOf } from "./brain.js";
 import { check as moderate } from "./moderation.js";
 
 const PRAISE = ["Super, Emil!", "Sehr gut!", "Genau so!", "Prima!", "Das klingt gut!", "Richtig!", "Klasse gemacht!"];
@@ -162,7 +162,9 @@ export function normalizeReply(r) {
     // az: "az-AZ" не выполнялась ни разу, и азербайджанскую реплику Мии читал русский голос по
     // русским правилам чтения. Проверка на сервере этого не видела — askMia возвращает «az»
     // честно, ломалось уже в браузере.
-    const lang = LANGS.has(r.lang) ? r.lang : "ru";
+    // Откат — язык сайта, а не жёсткий русский. На азербайджанском сайте текст приходил
+    // азербайджанский, а метка ставилась «ru» — и читал его русский голос. Так же делает сервер (lib/tutor.js).
+    const lang = LANGS.has(r.lang) ? r.lang : uiLang();
     return { ...base, say: mineNative(r.say, lang), lang, translation: mineNative(r.translation, lang === "de" ? "ru" : "de") };
   }
   // Форма {de, ru}: сценарии уровней и офлайн-Мия. `de` — немецкая реплика курса, её не трогаем.
@@ -599,7 +601,9 @@ export class Tutor {
     this.relisten = false;
     this.listening = true;
     sfx.mic();
-    this.setState("listening", this.micLang().startsWith("ru") ? "Слушаю… говори по-русски" : "Слушаю… говори по-немецки");
+    // Проверяем немецкий, а не русский: при startsWith("ru") азербайджанский микрофон
+    // давал ответ false, и человеку писало «говори по-немецки», пока микрофон слушал азербайджанский.
+    this.setState("listening", this.micLang().startsWith("de") ? "Слушаю… говори по-немецки" : "Слушаю… говори по-русски");
     const live = el("div", { class: "bubble ali live" }, el("div", { class: "bubble-name" }, meLabel()), el("div", { class: "bubble-de" }, "…"));
     this.chat.append(live);
     this.scrollChat();
@@ -672,7 +676,7 @@ export class Tutor {
     this.chat.querySelector(".tutor-idle")?.remove(); // the "Мия слушает" placeholder has served its purpose
     // he may well have said this in Russian — marking it lang="de" would have the browser and the
     // replay button pronounce Russian words with a German mouth
-    const said = /[а-яё]/i.test(text) ? "ru" : "de";
+    const said = langOf(text);
     const bubble = el("div", { class: "bubble ali" }, el("div", { class: "bubble-name" }, meLabel()), el("div", { class: "bubble-de", lang: said }, text));
     this.chat.append(bubble);
     nextTick(() => bubble.classList.add("show"));
@@ -744,7 +748,7 @@ export class Tutor {
     // Offline she still thinks in German, but answering a Russian sentence with a German one is
     // the thing Emil asked me to stop doing. When he wrote in Russian and she has something real to
     // say in Russian, that is the answer; her German line becomes the 💡 suggestion beside it.
-    const leadRu = this.chatMode !== "german" && u.lang === "ru" && reply.explainRu;
+    const leadRu = this.chatMode !== "german" && u.lang !== "de" && reply.explainRu;
     if (leadRu) {
       return this.miaSays({
         // Тоже uiLang(): explainRu уходит в mine(), а mine() переводит его на язык сайта.

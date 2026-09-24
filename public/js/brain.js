@@ -192,6 +192,23 @@ const RU_STOPWORDS = new Set([
 
 const RU_LETTERS = /[а-яё]/i;
 const isRussian = (s) => RU_LETTERS.test(s);
+/**
+ * На каком языке к Мие обратились — три языка, а не два.
+ *
+ * Здесь было `isRussian(raw) ? "ru" : "de"`. Азербайджанская фраза пишется латиницей и
+ * потому попадала в «de» — Мия отвечала так, будто человек упражняется в немецком.
+ * Ветки «открытый вопрос» и «рассказ о себе» для него не срабатывали ни разу.
+ *
+ * Различаем по буквам, которых нет в немецком: ə, ğ, ı, ş, ç. В азербайджанском они
+ * настолько частые, что фраза без них — редкость; на такой случай рядом список ходовых слов.
+ * ö и ü сюда нарочно не входят: они есть и в немецком.
+ *
+ * Граница слова здесь задана через просмотр вокруг: штатная проверка границы в JS
+ * знает только латинские буквы и после «ə» не срабатывает.
+ */
+const AZ_LETTERS = /[əğışçƏĞİŞÇ]/;
+const AZ_WORDS = /(?<![\p{L}\p{N}])(mən|sən|bu|nə|var|yox|yaxşı|necə|salam|bəli|deyil|istəyirəm|bilmirəm)(?![\p{L}\p{N}])/iu;
+export const langOf = (s) => (isRussian(s) ? "ru" : AZ_LETTERS.test(s) || AZ_WORDS.test(s) ? "az" : "de");
 
 /** Whole-word test, so "hi" never matches inside "hier" and "да" never inside "даже". */
 const hasWord = (text, words) => {
@@ -251,7 +268,10 @@ const ABOUT_SITE = ["сайт", "приложение", "программа", "�
  */
 export function understand(raw) {
   const text = normalize(raw);
-  const lang = isRussian(raw) ? "ru" : "de";
+  const lang = langOf(raw);
+  // «Родной» — это любой ненемецкий. Ветки ниже делят мир на «изучаемый» и «свой»,
+  // а не на русский и всё остальное.
+  const native = lang !== "de";
   const out = (intent, payload) => ({ intent, payload, lang, raw });
 
   if (!text) return out("empty");
@@ -332,10 +352,10 @@ export function understand(raw) {
   // that is exactly what he just did — so answer with the honest site-help fallback instead.
   if (asking && has(text, ABOUT_SITE)) return out("site", { ru: SITEHELP.fallback });
   // normalize() strips punctuation, so the question mark has to be read off the raw input
-  if (lang === "ru" && (/\?\s*$/.test(String(raw)) || QUESTIONY.test(text))) return out("openQuestion");
+  if (native && (/\?\s*$/.test(String(raw)) || QUESTIONY.test(text))) return out("openQuestion");
   // A Russian statement deserves a Russian answer. Carry the content words so respond() can look
   // them up in the vocabulary Emil has already met and turn what he said into a German phrase.
-  if (lang === "ru") {
+  if (native) {
     const words = text.split(" ").filter((w) => w.length >= 4 && !RU_STOPWORDS.has(w));
     if (words.length) return out("ruStatement", { words });
   }

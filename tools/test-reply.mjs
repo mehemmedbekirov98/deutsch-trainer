@@ -19,6 +19,7 @@ globalThis.localStorage = { getItem: () => null, setItem() {}, removeItem() {} }
 globalThis.requestAnimationFrame = (fn) => setTimeout(fn, 0);
 
 const { normalizeReply } = await import("../public/js/tutor.js");
+const { lang: uiLang } = await import("../public/js/i18n.js");
 
 let failed = 0;
 const fail = (msg) => { failed++; console.log("ПРОВАЛ " + msg); };
@@ -31,8 +32,11 @@ for (const lang of ["ru", "az", "de"]) {
 }
 
 // мусор в поле языка не должен ронять экран
-eq(normalizeReply({ say: "x", lang: "tr" }).lang, "ru", "незнакомый язык откатывается к родному");
-eq(normalizeReply({ say: "x" }).lang, "ru", "язык не пришёл вовсе");
+// Откат — именно язык САЙТА, а не жёсткий русский: на азербайджанском сайте текст приходит
+// азербайджанский, и метка "ru" отдавала его русскому голосу. В Node uiLang() — русский,
+// так что сравниваем с ним самим — проверка останется верной и если язык сайта будет другим.
+eq(normalizeReply({ say: "x", lang: "tr" }).lang, uiLang(), "незнакомый язык откатывается к языку сайта");
+eq(normalizeReply({ say: "x" }).lang, uiLang(), "язык не пришёл вовсе");
 
 /* ------------------------------------------------- старая форма (офлайн-Мия и сценарии) */
 {
