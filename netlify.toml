@@ -38,6 +38,11 @@
   to = "/.netlify/functions/admin"
   status = 200
 
+[[redirects]]
+  from = "/api/account"
+  to = "/.netlify/functions/account"
+  status = 200
+
 # Single page app: every other path is the app itself, so a reload on #/profile does not 404.
 [[redirects]]
   from = "/*"

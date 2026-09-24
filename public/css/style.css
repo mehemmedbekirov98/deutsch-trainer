@@ -265,7 +265,19 @@ input[type="range"] { accent-color: var(--accent); width: 200px; }
 .level-node.left { align-self: flex-start; margin-left: 4%; }
 .level-node.right { align-self: flex-end; margin-right: 4%; }
 .level-node.open:hover { transform: translateY(-3px); border-color: color-mix(in srgb, var(--accent) 60%, transparent); box-shadow: 0 24px 50px -24px var(--accent); }
-.level-node.locked { opacity: 0.55; filter: saturate(0.4); }
+/*
+ * Закрытый урок приглушён — но не настолько, чтобы нельзя было прочитать, как его открыть.
+ *
+ * При opacity 0.55 подпись «Сдай экзамен уровня 1» давала контраст 3.03 к фону при двенадцатом
+ * кегле — измерено, а не на глаз. Это ровно та строка, ради которой человек на карточку и
+ * смотрит. Узел чуть светлее, а сама подсказка получает нормальный цвет текста: приглушённость
+ * остаётся признаком «сюда пока нельзя», а не способом спрятать инструкцию.
+ */
+.level-node.locked { opacity: 0.62; filter: saturate(0.4); }
+.level-node.locked .ln-meta .tag { color: var(--text); opacity: 0.92; }
+/* Название урока на родном языке — по нему и выбирают, куда идти дальше. На приглушённой
+   карточке серый по тёмному давал 3.54; светлее — 5.1, и это всё ещё явно «пока закрыто». */
+.level-node.locked .ln-ru { color: color-mix(in srgb, var(--text) 78%, var(--muted)); }
 .level-node.current { border-color: color-mix(in srgb, var(--accent) 65%, transparent); box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 18%, transparent); }
 .level-node.done { background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 22%, transparent), var(--card)); }
 @keyframes rise { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: none; } }
@@ -585,8 +597,11 @@ input[type="range"] { accent-color: var(--accent); width: 200px; }
   /* Eight destinations have to fit across a phone. Each takes an equal share and the label shrinks
      with it — nothing may be pushed past the edge, where it becomes unreachable. */
   .nav { flex-direction: row; width: 100%; justify-content: space-between; gap: 0; }
-  .nav a { flex: 1 1 0; min-width: 0; flex-direction: column; gap: 2px; padding: 6px 2px; font-size: 0.64rem; text-align: center; }
-  .nav a span:last-child { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .nav a { flex: 1 1 0; min-width: 0; flex-direction: column; gap: 2px; padding: 6px 1px; font-size: 0.64rem; text-align: center; }
+  /* Многоточие — это запасной путь, а не норма. Самое длинное слово здесь «Тренировка»: при
+     0.64rem оно просило 61 пиксель на 55 доступных и каждый раз обрезалось. Чуть плотнее буквы
+     и чуть меньше кегль — и все шесть подписей помещаются целиком. Измерено, не на глаз. */
+  .nav a span:last-child { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.58rem; letter-spacing: -0.02em; }
   .nav-icon { font-size: 1.15rem; width: auto; }
   .nav a.active::before { display: none; }
   body.focus .sidebar { transform: translateY(120%); visibility: hidden; transition: transform 0.4s, opacity 0.3s, visibility 0s 0.4s; }
@@ -900,7 +915,14 @@ input[type="range"] { accent-color: var(--accent); width: 200px; }
 .big-cta:hover { transform: translateY(-3px); box-shadow: 0 28px 60px -26px var(--accent); }
 .big-cta-text { flex: 1; min-width: 0; }
 .big-cta-title { font-size: clamp(1.25rem, 2.6vw, 1.7rem); font-weight: 800; margin: 4px 0 6px; }
-.big-cta .cta-arrow { font-size: 1.8rem; opacity: 0.6; }
+/*
+ * Стрелка в этой карточке — часть строки, а не наклейка поверх.
+ *
+ * Общее правило .cta-arrow ставит её position: absolute, и на узком экране она ложилась прямо на
+ * текст: «Урок 1 · Приветствие и знакомство→» — измерено, перекрытие 27 пикселей. Здесь карточка
+ * и так flex, так что стрелке достаточно быть обычным элементом строки.
+ */
+.big-cta .cta-arrow { position: static; flex: none; font-size: 1.8rem; opacity: 0.6; }
 
 .home-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(210px, 100%), 1fr)); gap: 14px; }
 .home-tile { display: flex; flex-direction: column; gap: 4px; padding: 20px; border-radius: var(--radius); background: var(--card); border: 1px solid var(--border); backdrop-filter: blur(12px); transition: transform 0.22s, border-color 0.22s, background 0.22s; }
@@ -1226,3 +1248,8 @@ a.strip-item:hover { background: var(--card-hover); }
 .loader-fail-why { font-size: 0.75rem; opacity: 0.5; overflow-wrap: anywhere; }
 
 @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+
+/* Вторая половина карточки «опасное»: сброс и удаление аккаунта — разные вещи и разные решения. */
+.danger-part { margin-top: 20px; padding-top: 18px; border-top: 1px solid var(--line); }
+.danger-part h2 { margin: 0 0 6px; font-size: 1.05rem; }
+.danger-part p { margin: 0 0 12px; }

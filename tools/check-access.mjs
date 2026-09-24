@@ -130,6 +130,29 @@ try {
     expect("сейв на 400 КБ отвергается", r.status === 400 && /too large/.test(text), true, "(проверяет сама база)");
   }
 
+  /* --------------------------------------------- сбитые часы не заклинивают сохранение */
+  //
+  // Сохранение с датой из 2099 года прежде навсегда делало все последующие «устаревшими»: человек
+  // продолжал заниматься, а на сервер больше не попадало ничего. Дата обрезается сутками вперёд,
+  // поэтому следующее честное сохранение обязано пройти.
+  {
+    const save = (data, at) => fetch(`${URL_}/rest/v1/rpc/save_progress`, {
+      method: "POST",
+      headers: { apikey: PUB, authorization: `Bearer ${token}`, "content-type": "application/json" },
+      body: JSON.stringify({ p_data: data, p_saved_at: at }),
+    });
+    const far = Date.now() + 1000 * 60 * 60 * 24 * 365 * 75;
+    expect("сохранение с датой из будущего", (await save({ xp: 1 }, far)).status, 200);
+    const now = await save({ xp: 2 }, Date.now());
+    expect("следующее честное сохранение проходит", now.status, 200);
+    const row = await service(`/rest/v1/progress?user_id=eq.${id}&select=data`).then((r) => r.json()).catch(() => []);
+    expect("на сервере лежит именно оно", row?.[0]?.data?.xp, 2, "(значит дата была обрезана)");
+  }
+
+  /* --------------------------------------------- удалить можно только себя, и только подтвердив */
+  expect("удаление аккаунта без токена", (await call("account.mjs", { action: "delete", confirmEmail: email })).status, 401);
+  expect("удаление с чужой почтой", (await call("account.mjs", { action: "delete", confirmEmail: "someone-else@example.com" }, token)).status, 400);
+
   /* --------------------------------------------- блокировка действительно блокирует */
   await service(`/rest/v1/profiles?id=eq.${id}`, { method: "PATCH", body: JSON.stringify({ blocked: true }) });
   expect("заблокированный у Мии", (await call("tutor.mjs", { messages: [{ role: "user", content: "salam" }] }, token)).status, 403);
@@ -140,6 +163,19 @@ try {
     body: JSON.stringify({ p_data: { xp: 1 }, p_saved_at: Date.now() }),
   });
   expect("заблокированный пишет прогресс", save.status, 400, "(отказывает сама база)");
+
+  /* --------------------------------------------- …а со своей почтой аккаунт действительно исчезает */
+  //
+  // Последней: после неё аккаунта уже нет. Проверяем не ответ функции, а саму базу — исчезла ли
+  // строка. Удаление, которое отвечает «ок» и ничего не удаляет, хуже отсутствующей кнопки.
+  await service(`/rest/v1/profiles?id=eq.${id}`, { method: "PATCH", body: JSON.stringify({ blocked: false }) });
+  const gone = await call("account.mjs", { action: "delete", confirmEmail: email }, token);
+  expect("удаление своего аккаунта", gone.status, 200);
+  const left = await service(`/auth/v1/admin/users/${id}`).then((r) => r.status);
+  expect("учётной записи больше нет", left === 404 || left === 400, true, `(ответ базы ${left})`);
+  const rows = await service(`/rest/v1/progress?user_id=eq.${id}&select=user_id`).then((r) => r.json()).catch(() => []);
+  expect("прогресс удалённого тоже исчез", Array.isArray(rows) && rows.length === 0, true);
+  if (gone.status === 200) id = null; // убирать за собой уже нечего
 } finally {
   if (id) {
     await service(`/auth/v1/admin/users/${id}`, { method: "DELETE" });

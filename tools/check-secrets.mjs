@@ -39,6 +39,12 @@ const ALLOW = [
 
 const isAllowed = (line) => ALLOW.some((re) => re.test(line));
 
+// Чужой минифицированный код: там своих строк со словом token сколько угодно, и ни одна из них
+// не наша. Проверять его на наши утечки бессмысленно — секреты туда попасть не могут, файл
+// приходит из сети готовым. Что в нём ЛЕЖИТ — вопрос доверия к источнику, а не к этой проверке;
+// на него отвечает public/vendor/README.md.
+const isVendor = (p) => /^public\/vendor\//.test(p.replace(/\\/g, "/")) || /public[\\/]vendor[\\/]/.test(p);
+
 let failed = 0;
 const hit = (where, what, line) => {
   failed++;
@@ -49,6 +55,7 @@ const hit = (where, what, line) => {
 /* ------------------------------------------------- 1. что лежит в рабочей копии и под git */
 const tracked = git("ls-files", "-z").split("\0").filter(Boolean);
 for (const rel of tracked) {
+  if (isVendor(rel)) continue;
   const p = path.join(ROOT, rel);
   let src;
   try { src = fs.readFileSync(p, "utf8"); } catch { continue; }
@@ -70,6 +77,7 @@ for (const line of objects) {
   const sha = line.slice(0, sp);
   const name = line.slice(sp + 1);
   if (/\.(png|jpg|jpeg|gif|webp|mp3|mp4|woff2?|ttf|ico|zip|pdf)$/i.test(name)) continue;
+  if (isVendor(name)) continue;
   blobs.push([sha, name]);
 }
 

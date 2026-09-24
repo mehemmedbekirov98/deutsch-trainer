@@ -185,6 +185,28 @@ export const backend = {
     return out;
   },
 
+  /**
+   * Удалить свой аккаунт насовсем.
+   *
+   * Уходит на сервер, потому что строка в auth.users браузеру недоступна — но удаляется ровно
+   * тот, чей токен предъявлен: идентификатор функция берёт из токена, а не из запроса.
+   * Почта — подтверждение того, что человек понимает, что нажимает; отменить это нельзя.
+   */
+  async deleteAccount(confirmEmail) {
+    if (!this.sb) throw new Error("База не подключена.");
+    const token = await this.token();
+    if (!token) throw new Error("Нужно войти.");
+    const r = await fetch("/api/account", {
+      method: "POST",
+      headers: { "content-type": "application/json", authorization: `Bearer ${token}` },
+      body: JSON.stringify({ action: "delete", confirmEmail }),
+    });
+    const out = await r.json().catch(() => ({}));
+    if (!r.ok) throw new Error(out.error || "Не получилось удалить аккаунт.");
+    await this.signOut().catch(() => {});
+    return out;
+  },
+
   /* ----------------------------------------------------------- leaderboard */
 
   async leaderboard() {

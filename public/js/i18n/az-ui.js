@@ -8,6 +8,17 @@
 // либо использовать явную нумерацию {0}, {1}.
 
 export default {
+  "Удалить аккаунт": "Hesabı sil",
+  "Исчезнет всё: аккаунт, прогресс на сервере, место в рейтинге и то, что Мия о тебе запомнила. Восстановить будет нечего.": "Hər şey yox olacaq: hesab, serverdəki irəliləyiş, reytinqdəki yer və Mianın sənin haqqında yadda saxladıqları. Bərpa etmək mümkün olmayacaq.",
+  "Удалить аккаунт навсегда": "Hesabı həmişəlik sil",
+  "твоя почта": "sənin poçtun",
+  "Набери \u0001, чтобы подтвердить.": "Təsdiq üçün \u0001 yaz.",
+  "Удалить навсегда": "Həmişəlik sil",
+  "Удаляю…": "Silirəm…",
+  "Не получилось удалить аккаунт.": "Hesabı silmək alınmadı.",
+  "Почта не совпала — аккаунт не тронут.": "Poçt uyğun gəlmədi — hesaba toxunulmadı.",
+  "База не подключена к этому сайту.": "Baza bu sayta qoşulmayıb.",
+  "Не получилось удалить аккаунт. Попробуй ещё раз.": "Hesabı silmək alınmadı. Bir daha cəhd et.",
   "Без имени": "Adsız",
   "Ты": "Sən",
   "Минимум 8 символов.": "Ən azı 8 simvol.",

@@ -1555,8 +1555,56 @@ function renderProfile(v) {
       el("div", { class: "card-head" }, el("h2", {}, "Сброс")),
       el("p", { class: "muted" }, "Удалит весь прогресс, XP, монеты и достижения. Отменить нельзя — сначала сохрани файл кнопкой «Экспорт прогресса»."),
       el("button", { class: "btn danger", type: "button", onClick: () => { if (confirm("Точно сбросить весь прогресс?")) { store.reset(); applyTheme("nacht"); toast("Прогресс сброшен", { icon: "🗑️" }); go("#/"); } } }, "Сбросить прогресс"),
+      // Завести аккаунт было можно, уйти — нельзя: кнопки не было нигде. Для сайта, который
+      // хранит почту, имя, весь прогресс и заметки Мии о человеке, это неправильно.
+      session.user ? el("div", { class: "danger-part" },
+        el("h2", {}, "Удалить аккаунт"),
+        el("p", { class: "muted" }, "Исчезнет всё: аккаунт, прогресс на сервере, место в рейтинге и то, что Мия о тебе запомнила. Восстановить будет нечего."),
+        el("button", { class: "btn danger", type: "button", onClick: () => askDeleteAccount(session.user.email) }, "Удалить аккаунт навсегда"),
+      ) : null,
     ),
   );
+}
+
+/**
+ * Удаление аккаунта: подтверждение собственной почтой.
+ *
+ * Не confirm() с одной кнопкой: отменить это нельзя ничем, и промах здесь стоит всего сразу.
+ * Набрать свой адрес — три секунды, и они отделяют «хочу уйти» от «промахнулся по кнопке».
+ */
+function askDeleteAccount(email) {
+  const field = el("input", { class: "input", type: "email", autocomplete: "off", placeholder: email || "твоя почта" });
+  const msg = el("div", { class: "muted small" }, tr`Набери ${email}, чтобы подтвердить.`);
+  const go_ = el("button", { class: "btn danger", type: "submit" }, "Удалить навсегда");
+
+  const form = el("form", { class: "auth-form pass-form" }, field, msg,
+    el("div", { class: "row-btns" }, go_, el("button", { class: "btn ghost", type: "button", onClick: () => close() }, "Отмена")));
+  const box = el("div", { class: "modal-back", onClick: (e) => { if (e.target === box) close(); } },
+    el("div", { class: "modal-card" }, el("h2", {}, "Удалить аккаунт"), form));
+  const close = () => { box.remove(); document.removeEventListener("keydown", onEsc); };
+  const onEsc = (e) => { if (e.key === "Escape") close(); };
+  document.addEventListener("keydown", onEsc);
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    go_.disabled = true;
+    go_.textContent = tr("Удаляю…");
+    try {
+      await backend.deleteAccount(field.value.trim());
+      // Сервер удалил всё своё; местная копия сейва принадлежала этому же аккаунту.
+      store.reset();
+      close();
+      location.href = location.pathname;
+    } catch (err) {
+      msg.className = "auth-msg bad";
+      msg.textContent = tr(err.message);
+      go_.disabled = false;
+      go_.textContent = tr("Удалить навсегда");
+    }
+  });
+
+  document.body.append(box);
+  nextTick(() => field.focus());
 }
 
 /**
