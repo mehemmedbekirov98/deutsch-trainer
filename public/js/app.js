@@ -236,7 +236,11 @@ function viewBoard(v) {
   const paint = (data) => {
     tabsRow.innerHTML = "";
     const games = gameCatalogue().map((g) => ({
-      id: `game:${g.id}`, title: g.name.replace(/^[^ ]+ /, ""), icon: g.icon,
+      // Без .replace(). Он срезал всё до первого пробела — писался, когда эмодзи стояло в самом
+      // названии («🧩 Память»), но эмодзи давно живёт в отдельном поле icon. Из пяти названий
+      // пробелы есть ровно у одного — «der · die · das», — и на вкладке рейтинга от него
+      // оставалось «· die · das».
+      id: `game:${g.id}`, title: g.name, icon: g.icon,
       value: (r) => Number(r.games?.[g.id]?.best) || 0,
       fmt: (n) => `${n}${typeof g.unit === "function" ? g.unit(n) : g.unit}`,
     }));
@@ -382,7 +386,7 @@ function viewAdmin(v) {
         el("div", { class: "account-actions" },
           save,
           d.hasKey ? el("button", { class: "btn ghost small", type: "button", onClick: async () => {
-            if (!confirm("Убрать ключ? Мия вернётся к офлайн-словарю.")) return;
+            if (!confirm(tr("Убрать ключ? Мия вернётся к офлайн-словарю."))) return;
             await backend.admin("clearKey").catch(() => {});
             load();
           } }, "Убрать ключ") : null),
@@ -414,7 +418,10 @@ function viewAdmin(v) {
               u.isAdmin ? el("span", { class: "board-you" }, "админ") : null,
               u.blocked ? el("span", { class: "board-you", style: { background: "rgba(251,113,133,.3)" } }, "заблокирован") : null),
             el("div", { class: "board-sub muted small" },
-              `${u.cefr} · ${u.xp} XP · ${u.levels} ${plural(u.levels, "урок", "урока", "уроков")} · ${u.lastSeen ? "был " + new Date(u.lastSeen).toLocaleDateString(langInfo().speech) : "ещё не занимался"}`)),
+              // plural() переводит сам, а вот «был» и «ещё не занимался» приклеивались к строке
+              // сырыми: склеенный текст уникален из-за даты, ключом словаря быть не может, и
+              // el() его не переводил. Переводим эти два куска до склейки.
+              `${u.cefr} · ${u.xp} XP · ${u.levels} ${plural(u.levels, "урок", "урока", "уроков")} · ${u.lastSeen ? tr`был ${new Date(u.lastSeen).toLocaleDateString(langInfo().speech)}` : tr("ещё не занимался")}`)),
           el("div", { class: "account-actions" },
             u.id === session.user?.id ? el("span", { class: "muted small" }, "это ты") : el("button",
               { class: "btn ghost small", type: "button", onClick: act({ blocked: !u.blocked }, u.blocked ? "Разблокирован" : "Заблокирован") },
@@ -1639,7 +1646,7 @@ function renderProfile(v) {
     el("section", { class: "card danger" },
       el("div", { class: "card-head" }, el("h2", {}, "Сброс")),
       el("p", { class: "muted" }, "Удалит весь прогресс, XP, монеты и достижения. Отменить нельзя — сначала сохрани файл кнопкой «Экспорт прогресса»."),
-      el("button", { class: "btn danger", type: "button", onClick: () => { if (confirm("Точно сбросить весь прогресс?")) { store.reset(); applyTheme("nacht"); toast("Прогресс сброшен", { icon: "🗑️" }); go("#/"); } } }, "Сбросить прогресс"),
+      el("button", { class: "btn danger", type: "button", onClick: () => { if (confirm(tr("Точно сбросить весь прогресс?"))) { store.reset(); applyTheme("nacht"); toast("Прогресс сброшен", { icon: "🗑️" }); go("#/"); } } }, "Сбросить прогресс"),
       // Завести аккаунт было можно, уйти — нельзя: кнопки не было нигде. Для сайта, который
       // хранит почту, имя, весь прогресс и заметки Мии о человеке, это неправильно.
       session.user ? el("div", { class: "danger-part" },
@@ -1696,7 +1703,7 @@ function miaNotesCard() {
     el("button", {
       class: "btn ghost small", type: "button",
       onClick: () => {
-        if (!confirm("Стереть всё, что Мия о тебе запомнила?")) return;
+        if (!confirm(tr("Стереть всё, что Мия о тебе запомнила?"))) return;
         for (const n of store.state.miaNotes || []) store.forgetNote(n);
         paint();
         toast("Мия начнёт знакомство заново", { icon: "🧠" });

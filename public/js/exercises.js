@@ -634,7 +634,7 @@ function translateRenderer(ex, api) {
   const node = el("div", { class: "ex ex-translate" },
     // флаг родного языка, а не всегда русский: сайт бывает и азербайджанским
     el("div", { class: "dir-badge" }, toDe ? `${langInfo().flag} → 🇩🇪` : `🇩🇪 → ${langInfo().flag}`),
-    el("div", { class: "ex-sentence", lang: toDe ? "ru" : "de" }, ex.text, !toDe ? speakBtn(ex.text) : null),
+    el("div", { class: "ex-sentence", lang: toDe ? uiLang() : "de" }, ex.text, !toDe ? speakBtn(ex.text) : null),
     input,
     toDe ? umlautBar(input) : null,
     hintBtn,
@@ -702,7 +702,7 @@ function matchRenderer(ex, api) {
   const right = shuffle(ex.pairs.map((p, i) => ({ t: p.ru, i })));
   let selL = null, selR = null, errors = 0, done = 0, locked = false;
   const mk = (side, item) => {
-    const b = el("button", { class: "match-item", type: "button", lang: side === "L" ? "de" : "ru" }, item.t);
+    const b = el("button", { class: "match-item", type: "button", lang: side === "L" ? "de" : uiLang() }, item.t);
     b.addEventListener("click", () => {
       if (locked || b.classList.contains("locked")) return;
       sfx.pop();

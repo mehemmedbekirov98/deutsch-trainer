@@ -499,7 +499,7 @@ export class Tutor {
       el("div", { class: "bubble-de", lang: reply.lang }, reply.say,
         el("button", { class: "icon-btn tiny", type: "button", title: "Прослушать", onClick: () => speech.speak(reply.say, { ...voice, force: true, secret: true }) }, "🔊")),
       // the other language, small and quiet — there to be read, not recited at him
-      reply.translation ? el("div", { class: "bubble-ru", lang: reply.lang === "de" ? "ru" : "de" }, reply.translation,
+      reply.translation ? el("div", { class: "bubble-ru", lang: reply.lang === "de" ? uiLang() : "de" }, reply.translation,
         el("button", { class: "icon-btn tiny", type: "button", title: "Прослушать", onClick: () => speech.speak(reply.translation, { ...other, force: true, secret: true }) }, "🔊")) : null,
       reply.explain ? el("div", { class: "explain-ru" }, el("span", { class: "explain-icon" }, langInfo().flag), el("span", {}, reply.explain), el("button", { class: "icon-btn tiny", type: "button", title: "Прослушать перевод", onClick: () => speech.speak(reply.explain, { lang: NATIVE_LOCALE, force: true, secret: true }) }, "🔊")) : null,
       reply.correction && reply.correction.corrected ? el("div", { class: "correction" },
@@ -683,7 +683,11 @@ export class Tutor {
       store.update((s) => { s.stats.tutorTurns += 1; });
       const seqBlocked = ++this.seq;
       this.busy = false;
-      this.miaSays({ say: verdict.reply, lang: "ru" }, gen, seqBlocked);
+      // uiLang(), а не "ru". moderate() выше получает uiLang() и возвращает ответ уже на языке
+      // сайта — в азербайджанском режиме это азербайджанский текст. Метка "ru" отправляла его
+      // русским голосом (LOCALE_OF), и азербайджанскую фразу читали по русским правилам чтения.
+      // Здесь это дороже, чем где-либо: среди этих ответов — строка про линию поддержки.
+      this.miaSays({ say: verdict.reply, lang: uiLang() }, gen, seqBlocked);
       return true;
     }
     this.turns++;
@@ -739,7 +743,9 @@ export class Tutor {
     const leadRu = this.chatMode !== "german" && u.lang === "ru" && reply.explainRu;
     if (leadRu) {
       return this.miaSays({
-        say: reply.explainRu, lang: "ru", translation: "",
+        // Тоже uiLang(): explainRu уходит в mine(), а mine() переводит его на язык сайта.
+        // На экране оказывался азербайджанский текст с меткой "ru" — и его читал русский голос.
+        say: reply.explainRu, lang: uiLang(), translation: "",
         tip: reply.de ? tr`По-немецки это звучит так: ${reply.de}` : reply.tip || "",
         correction: reply.correction, done: reply.done,
       }, gen, seq);
@@ -798,7 +804,11 @@ export class Tutor {
       const echoes = aside.intent === "confused" || aside.intent === "repeat";
       return this.miaSays({
         de: echoes ? answer.de : `${answer.de} ${turn.say}`.trim(),
-        ru: echoes ? answer.ru : `${answer.ru} ${turn.sayRu}`.trim(),
+        // tr`…`, а не голая склейка: обе половинки есть в словаре по отдельности (ответ Мии — в
+        // az-brain.js, вопрос сценария — в az-content), а склеенной строки там нет и быть не
+        // может. Шаблонный вызов переводит подстановки поштучно, и подстрочник перестаёт быть
+        // наполовину русским.
+        ru: echoes ? answer.ru : tr`${answer.ru} ${turn.sayRu}`.trim(),
         explainRu: answer.explainRu || "",
         tip: answer.tip || "",
       }, gen, seq);
@@ -814,7 +824,10 @@ export class Tutor {
       const next = this.script[this.scriptIndex];
       if (!next || wasLast) return this.miaSays({ de: "Bis bald, Emil!", ru: "До скорого, Эмиль!", done: true }, gen, seq);
       const i = Math.floor(Math.random() * PRAISE.length);
-      return this.miaSays({ de: `${passed ? PRAISE[i] : "Okay, weiter!"} ${next.say}`, ru: `${passed ? PRAISE_RU[i] : "Хорошо, идём дальше!"} ${next.sayRu}`, tip: !passed ? tr`Можно было сказать так: ${turn.hint}` : "" }, gen, seq);
+      // Тот же случай, но этот путь проходят после КАЖДОГО верного ответа в сценарии: похвала
+      // плюс следующий вопрос. Немецкую сторону склеиваем как раньше — её не переводят; русскую
+      // собираем через tr`…`, чтобы похвала и вопрос перевелись каждая по своему ключу.
+      return this.miaSays({ de: `${passed ? PRAISE[i] : "Okay, weiter!"} ${next.say}`, ru: tr`${passed ? PRAISE_RU[i] : "Хорошо, идём дальше!"} ${next.sayRu}`, tip: !passed ? tr`Можно было сказать так: ${turn.hint}` : "" }, gen, seq);
     }
     if (meaningful) this.scriptFails++;
     return this.miaSays({
@@ -841,7 +854,9 @@ export class Tutor {
       this.modeBtn.classList.toggle("de", next === "german");
     }
     if (this.input) {
-      this.input.lang = next === "german" ? "de" : "ru";
+      // Подсказка клавиатуре и проверке орфографии: в «разговоре» человек пишет на своём языке,
+      // а он не обязательно русский.
+      this.input.lang = next === "german" ? "de" : uiLang();
       this.input.placeholder = tr(next === "german"
         ? "Пиши по-немецки — Мия поправит…"
         : "Говори или пиши на любом языке…");

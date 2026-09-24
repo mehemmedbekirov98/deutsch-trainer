@@ -2,7 +2,7 @@
 // or three minutes each — so they work as a warm-up before a level or as something to do when he
 // does not feel like a full lesson. All of them pay a little XP and a few coins, far less than a
 // real lesson, so playing is a break and never a shortcut past the levels.
-import { t as tr } from "./i18n.js";
+import { t as tr, lang as uiLang } from "./i18n.js";
 import { el, shuffle, pick, normalize, stripArticle, sleep, plural } from "./utils.js";
 import { sfx, confetti, toast, xpFloat } from "./fx.js";
 import { store } from "./store.js";
@@ -57,7 +57,11 @@ function payout({ xp, coins, anchor, label }) {
   const parts = [];
   if (xp) parts.push(`+${Math.round(xp * store.xpMultiplier())} XP`);
   if (gainedCoins) parts.push(`+${gainedCoins} 🪙`);
-  if (parts.length) toast(`${label}: ${parts.join(" · ")}`, { icon: "🎮" });
+  // tr(label), а не голая подстановка: строка склеивается здесь, до того как её увидит el(), —
+  // а переводится в el() только то, что дошло до него целым ключом. Склеенного «Память: +12 XP»
+  // в словаре нет и быть не может, так что в азербайджанском режиме название игры оставалось
+  // русским во всех пяти играх. Переводим саму метку — она-то в словаре есть.
+  if (parts.length) toast(`${tr(label)}: ${parts.join(" · ")}`, { icon: "🎮" });
 }
 
 /** Remember the best result of a game so there is something to beat. */
@@ -137,7 +141,20 @@ function shell({ container, title, subtitle, onExit }) {
 function playMemory({ container, onExit, onAgain }) {
   const PAIRS = 6;
   const pool = wordPool();
-  const words = shuffle(pool).slice(0, PAIRS);
+  // Переводы должны быть разными, иначе игра становится нечестной: в словаре есть пары вроде
+  // «der Ort» и «der Platz» с одним переводом, и когда обе попадают на поле, две карточки
+  // выглядят одинаково. Человек кладёт немецкое слово к «правильной» надписи, а она от другой
+  // пары — это засчитывается промахом и портит точность. Берём по одному, пропуская кандидата,
+  // чей перевод уже занят.
+  const takenRu = new Set();
+  const words = [];
+  for (const w of shuffle(pool)) {
+    if (words.length >= PAIRS) break;
+    const key = normalize(w.ru);
+    if (takenRu.has(key)) continue;
+    takenRu.add(key);
+    words.push(w);
+  }
   const ui = shell({ container, title: "🧩 Память", subtitle: "найди пары", onExit });
 
   const cards = shuffle(words.flatMap((w, i) => [
@@ -154,7 +171,10 @@ function playMemory({ container, onExit, onAgain }) {
 
   const grid = el("div", { class: "memo-grid" });
   const nodes = cards.map((c) => {
-    const face = el("div", { class: "memo-face", lang: c.side === "de" ? "de" : "ru" }, c.text);
+    // uiLang(), а не "ru": на этой стороне карточки родной язык человека, и в азербайджанском
+    // режиме это азербайджанский. Жёсткое "ru" объявляло азербайджанский текст русским —
+    // экранный диктор читал его русским голосом, а переносы шли по русским правилам.
+    const face = el("div", { class: "memo-face", lang: c.side === "de" ? "de" : uiLang() }, c.text);
     const node = el("button", { class: "memo-card", type: "button", "aria-label": "Карточка рубашкой вверх" },
       el("div", { class: "memo-back" }), face);
     node.addEventListener("click", () => turn(c, node));
@@ -191,7 +211,10 @@ function playMemory({ container, onExit, onAgain }) {
       b.node.classList.add("miss");
       await sleep(750);
       if (!ui.alive) return;
-      [a, b].forEach((x) => { x.node.classList.remove("open", "miss"); x.node.setAttribute("aria-label", "Карточка рубашкой вверх"); });
+      // tr(...) обязателен: setAttribute идёт мимо el(), а перевод подписей живёт именно в el().
+      // Перевод в словаре есть — просто до него не доходило, и после первого же промаха карточки
+      // получали русскую подпись обратно.
+      [a, b].forEach((x) => { x.node.classList.remove("open", "miss"); x.node.setAttribute("aria-label", tr("Карточка рубашкой вверх")); });
       open = [];
       locked = false;
     }
@@ -547,7 +570,6 @@ function playHangman({ container, onExit, onAgain }) {
   const hearts = el("div", { class: "hang-lives" }, "");
   const wordEl = el("div", { class: "hang-word", lang: "de" }, "");
   const clue = el("div", { class: "scr-clue" }, item.ru);
-  const note = el("div", { class: "art-hint" }, "");
   const keys = el("div", { class: "hang-keys" });
 
   ALPHABET.forEach((ch) => {
@@ -555,7 +577,9 @@ function playHangman({ container, onExit, onAgain }) {
     b.addEventListener("click", () => guess(ch, b));
     keys.append(b);
   });
-  ui.body.append(el("div", { class: "hang-stage" }, hearts, clue, wordEl, note, keys));
+  // Без note: в «Виселице» в него никогда ничего не писали, а .art-hint держит min-height 1.6em —
+  // между словом и клавиатурой стояла пустая полоса, на телефоне зря сдвигавшая буквы вниз.
+  ui.body.append(el("div", { class: "hang-stage" }, hearts, clue, wordEl, keys));
   ui.foot.append(el("div", { class: "muted small" }, "Можно нажимать буквы прямо на клавиатуре. ä, ö, ü и ß — отдельные кнопки, они не заменяются на ae, oe, ue, ss."));
 
   // Typing is faster than hunting for the letter with a mouse, and a physical keyboard has ä/ö/ü/ß

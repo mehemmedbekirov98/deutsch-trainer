@@ -14,7 +14,7 @@
 import { pathToFileURL } from "node:url";
 import path from "node:path";
 import fs from "node:fs";
-import { cacheKey, synthesise, putClip, hasClip } from "../lib/tts.mjs";
+import { cacheKey, synthesise, putClip, hasClip, listClips } from "../lib/tts.mjs";
 
 const MIA_VOICE = "de-DE-SeraphinaMultilingualNeural";
 const RU_VOICE = "de-DE-SeraphinaMultilingualNeural"; // multilingual: the same person reads Russian
@@ -144,6 +144,22 @@ if (dry) process.exit(0);
 
 let made = 0, skipped = 0, failed = 0;
 const entries = [...jobs.entries()];
+
+// Что уже есть — узнаём одним списком, а не 37 408 отдельными вопросами.
+//
+// Поштучная проверка стоила около 600 мс, то есть больше пяти часов на полный прогон, — и почти
+// всё это время уходило на ответы «да, есть». Список даёт то же знание примерно за минуту.
+// Если список не дался (нет служебного ключа, другой проект), молча возвращаемся к поштучной
+// проверке: медленно — это неприятно, а неверно — недопустимо.
+let have = null;
+try {
+  process.stdout.write("Смотрю, что уже озвучено… ");
+  have = await listClips(url, serviceKey);
+  console.log(`в хранилище ${have.size} клипов.`);
+} catch (e) {
+  console.log(`список не дался (${e?.message || e}) — проверяю поштучно, это дольше.`);
+}
+const already = async (key) => (have ? have.has(key) : hasClip(url, key));
 // A handful at a time: the endpoint throttles, and a burst is how you get empty audio back.
 //
 // Two is not timidity. At four lanes Supabase Storage starts answering 429 "too_many_connections"
@@ -157,11 +173,14 @@ await Promise.all(Array.from({ length: LANES }, async (_, lane) => {
   for (let i = lane; i < entries.length; i += LANES) {
     const [key, job] = entries[i];
     try {
-      if (await hasClip(url, key)) { skipped++; continue; }
+      if (await already(key)) { skipped++; continue; }
       const audio = await synthesise(job);   // тембр уже внутри job: rate, pitch, volume
       await putClip(url, serviceKey, key, audio);
       made++;
-      if ((made + skipped) % 50 === 0) console.log(`  …${made + skipped} / ${entries.length}`);
+      // Считаем созданные, а не пройденные: пропуск теперь ничего не стоит и пролетает мгновенно,
+      // так что «6350 / 37408» говорило бы только о скорости чтения множества. Интересно другое —
+      // сколько клипов реально сделано.
+      if (made % 50 === 0) console.log(`  …озвучено ${made}, уже было ${skipped}, всего ${entries.length}`);
     } catch (e) {
       failed++;
       console.warn(`  не вышло: «${job.text.slice(0, 40)}…» — ${e?.message || e}`);

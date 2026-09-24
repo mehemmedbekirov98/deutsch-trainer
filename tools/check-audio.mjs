@@ -46,6 +46,13 @@ for (const tone of TONES) {
   for (const level of LEVELS) {
     for (const v of level.vocab || []) {
       jobs.push({ what: `слово (de) · ${tone.id}`, text: v.de, voice: DE_VOICE, locale: "", rate: pct(RATES.word), tone });
+      // …и то же слово БЕЗ артикля. «der/die/das» произносит сначала голое существительное
+      // (артикль там и есть ответ, называть его заранее нельзя — см. say() в games.js), так что
+      // это отдельный клип с отдельным ключом. Предгенерация его делает, а проверка не видела:
+      // здесь стояло только v.de, и целая категория из 537 слов × 4 тембра считалась покрытой,
+      // ни разу не будучи проверенной.
+      const bare = String(v.de).replace(/^(der|die|das)\s+/i, "");
+      if (bare !== v.de) jobs.push({ what: `слово без артикля (de) · ${tone.id}`, text: bare, voice: DE_VOICE, locale: "", rate: pct(RATES.word), tone });
       jobs.push({ what: `перевод (ru) · ${tone.id}`, text: v.ru, voice: RU_VOICE, locale: "ru-RU", rate: pct(RATES.translation), tone });
       const az = azOf(String(v.ru));
       if (az) jobs.push({ what: `перевод (az) · ${tone.id}`, text: az, voice: AZ_VOICE, locale: "az-AZ", rate: pct(RATES.translation), tone });
