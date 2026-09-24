@@ -402,6 +402,14 @@ class Store {
       levels, // the live container, reused so views holding store.level(id) keep writing to it
     };
     for (const k of ["owned", "achievements", "miaNotes"]) if (!Array.isArray(this.state[k])) this.state[k] = [];
+    // Стёртая заметка не возвращается с чужой копией.
+    //
+    // Принять серверное состояние можно по многим поводам: конфликт сохранения, соседняя вкладка,
+    // повторное чтение облака. В любом из них там лежит список заметок ДО удаления — и строка,
+    // которую человек только что убрал из кабинета, молча появлялась снова.
+    if (this._forgotten?.size) {
+      this.state.miaNotes = this.state.miaNotes.filter((n) => !this._forgotten.has(String(n)));
+    }
     for (const k of ["xp", "coins", "coinsEarned", "purchases", "dailyGoal", "boostUntil"]) if (!Number.isFinite(this.state[k])) this.state[k] = f[k];
     if (!THEME_IDS.includes(this.state.theme)) this.state.theme = "nacht";
     if (save) this.save();
