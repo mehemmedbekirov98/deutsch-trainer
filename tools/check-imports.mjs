@@ -255,6 +255,48 @@ for (const f of files) {
   }
 }
 
+/* --------------------------------------------- сама страница: на что ссылается index.html
+ *
+ * Ни одна проверка сюда не смотрела — и это была дыра размером с сайт. Опечатка в
+ * `<script src="js/app.js">` или в адресе таблицы стилей даёт пустой чёрный экран, при котором
+ * ВСЕ проверки зелёные: файлы на месте, тесты проходят, переводы полны. Ровно так однажды и
+ * вышло — подменённые адреса прожили до ручного открытия страницы.
+ */
+{
+  const html = fs.readFileSync(path.join(ROOT, "public", "index.html"), "utf8");
+  const pub = path.join(ROOT, "public");
+
+  // локальные адреса: src=, href=, url() — кроме data:, http(s): и якорей
+  for (const m of html.matchAll(/(?:src|href)="([^"#]+)"/g)) {
+    const ref = m[1];
+    if (/^(https?:|data:|mailto:|#|\/\/)/.test(ref)) continue;
+    const target = path.join(pub, ref.replace(/^\//, ""));
+    if (fs.existsSync(target)) continue;
+    failed++;
+    console.log(`ПРОВАЛ public/index.html\n       ссылается на «${ref}», а такого файла нет — страница откроется пустой`);
+  }
+
+  // без этих двух страница мертва, как бы ни выглядел остальной вывод
+  for (const [what, re] of [
+    ["точка входа js/app.js", /<script[^>]+src="js\/app\.js"/],
+    ["таблица стилей css/style.css", /<link[^>]+href="css\/style\.css"/],
+    ["контейнер приложения", /id="app"/],
+    ["заставка загрузки", /id="loader"/],
+  ]) {
+    if (re.test(html)) continue;
+    failed++;
+    console.log(`ПРОВАЛ public/index.html\n       не найдено: ${what}`);
+  }
+
+  // пункты меню: data-route должен совпадать с тем, что понимает роутер
+  const routes = new Set(["home", "levels", "tutor", "practice", "board", "profile"]);
+  for (const m of html.matchAll(/data-route="([^"]+)"/g)) {
+    if (routes.has(m[1])) continue;
+    failed++;
+    console.log(`ПРОВАЛ public/index.html\n       пункт меню data-route="${m[1]}" роутер не знает — подсветка раздела не сработает`);
+  }
+}
+
 /* --------------------------------------------- два обработчика на одном нажатии
  *
  * el() вешает onClick через addEventListener. Если тому же элементу потом присвоить .onclick,

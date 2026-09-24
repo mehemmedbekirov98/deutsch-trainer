@@ -29,6 +29,27 @@ Object.defineProperty(globalThis, "navigator", { value: { language: "ru-RU", use
 const { backend } = await import("../public/js/backend.js");
 const { store } = await import("../public/js/store.js");
 
+/**
+ * Состояние между блоками не течёт.
+ *
+ * store — синглтон: xp, rev, guestOffer и таймер сохранения живут в нём между проверками. Пока
+ * блоки не сбрасывали его, два из них не проверяли ничего — они видели то, что осталось от
+ * соседа сверху, и проходили по случайности. Поэтому каждый блок начинается с чистого листа.
+ */
+const fresh = () => {
+  mem.clear();
+  clearTimeout(store._saveTimer);
+  // Через adopt(), а не вручную: он достраивает состояние из настоящего freshState(), и
+  // проверка не начинает жить в выдуманной форме данных, которой в приложении не бывает.
+  store.adopt({ xp: 0 }, false);
+  store.rev = 0;
+  store.guestOffer = null;
+  store.remoteUnknown = false;
+  store.saveFails = 0;
+  backend.user = null;
+  backend.sb = null;
+};
+
 let failed = 0;
 const fail = (m) => { failed++; console.log("ПРОВАЛ " + m); };
 const eq = (got, want, what) => { if (got !== want) fail(`${what}: получили ${JSON.stringify(got)}, ждали ${JSON.stringify(want)}`); };
@@ -68,7 +89,7 @@ const settle = () => new Promise((r) => setTimeout(r, 700)); // save() откл�
 
 /* ============================================ 1. сорванное чтение не затирает облако */
 {
-  mem.clear();
+  fresh();
   const real = { xp: 4200, coins: 300, savedAt: Date.now() - 86400000, levels: { 1: { examBest: 90 } } };
   const srv = fakeBackend({ stored: real, failReads: 1 });
 
@@ -84,7 +105,7 @@ const settle = () => new Promise((r) => setTimeout(r, 700)); // save() откл�
 
 /* ============================================ 2. обычный случай не сломан */
 {
-  mem.clear();
+  fresh();
   const real = { xp: 900, coins: 10, savedAt: Date.now() - 1000, levels: {} };
   const srv = fakeBackend({ stored: real, failReads: 0 });
 
@@ -97,7 +118,7 @@ const settle = () => new Promise((r) => setTimeout(r, 700)); // save() откл�
 
 /* ============================================ 3. совсем новый аккаунт всё-таки сохраняется */
 {
-  mem.clear();
+  fresh();
   const srv = fakeBackend({ stored: null, failReads: 0 });
 
   await store.init();
@@ -109,7 +130,7 @@ const settle = () => new Promise((r) => setTimeout(r, 700)); // save() откл�
 
 /* ============================================ 4. читать не удалось совсем — не пишем пустоту */
 {
-  mem.clear();
+  fresh();
   const real = { xp: 7000, savedAt: Date.now() - 5000, levels: {} };
   const srv = fakeBackend({ stored: real, failReads: 99 });   // не прочитается никогда
 
@@ -122,7 +143,7 @@ const settle = () => new Promise((r) => setTimeout(r, 700)); // save() откл�
 
 /* ============================================ 5. локальная копия переживает недоступное облако */
 {
-  mem.clear();
+  fresh();
   const mine = { v: 2, xp: 1500, coins: 40, savedAt: Date.now() - 2000, levels: {}, settings: {}, stats: {}, streak: {}, inventory: {}, daily: {}, games: {}, words: {} };
   mem.set("deutsch-ali-v1:u1", JSON.stringify(mine));
   fakeBackend({ stored: null, failReads: 99 });
@@ -139,7 +160,7 @@ const settle = () => new Promise((r) => setTimeout(r, 700)); // save() откл�
 // больше, значит «новее». Теперь спорят версиями, которые выдаёт сервер, и сбитые часы не дают
 // никакого преимущества.
 {
-  mem.clear();
+  fresh();
   const серверная = { xp: 5000, savedAt: Date.now() - 60000, levels: {} };   // сохранена минуту назад
   const srv = fakeBackend({ stored: серверная, rev: 9, failReads: 0 });
 
@@ -161,7 +182,7 @@ const settle = () => new Promise((r) => setTimeout(r, 700)); // save() откл�
 // Другая вкладка или другое устройство сохранили, пока мы держали экран открытым. Наша версия
 // устарела — сервер обязан отказать и вернуть их копию, а мы обязаны её принять.
 {
-  mem.clear();
+  fresh();
   const srv = fakeBackend({ stored: { xp: 100, savedAt: Date.now(), levels: {} }, rev: 3, failReads: 0 });
 
   await store.init();
@@ -189,7 +210,7 @@ const settle = () => new Promise((r) => setTimeout(r, 700)); // save() откл�
 // пустая строка. Человек возвращается за компьютер, где лежит всё заработанное, — и раньше видел
 // ноль, потому что условие переноса требовало «серверной копии нет вовсе». Теперь предлагается.
 {
-  mem.clear();
+  fresh();
   mem.set("deutsch-ali-v1", JSON.stringify({ v: 2, xp: 2600, coins: 55, levels: { 1: {}, 2: {} }, savedAt: Date.now() - 1000 }));
   fakeBackend({ stored: { xp: 0, levels: {}, savedAt: Date.now() }, rev: 1, failReads: 0 });
 
@@ -202,20 +223,38 @@ const settle = () => new Promise((r) => setTimeout(r, 700)); // save() откл�
 }
 
 /* ============================================ 9. …и не предлагается, когда предлагать нечего */
+//
+// Правило — «в браузере БОЛЬШЕ, чем в аккаунте». Если в аккаунте столько же или больше, переносить
+// нечего и спрашивать не о чем.
 {
-  mem.clear();
-  mem.set("deutsch-ali-v1", JSON.stringify({ v: 2, xp: 2600, levels: {}, savedAt: Date.now() - 1000 }));
-  fakeBackend({ stored: { xp: 900, levels: {}, savedAt: Date.now() }, rev: 4, failReads: 0 });
+  fresh();
+  mem.set("deutsch-ali-v1", JSON.stringify({ v: 2, xp: 900, levels: {}, savedAt: Date.now() - 1000 }));
+  fakeBackend({ stored: { xp: 2600, levels: {}, savedAt: Date.now() }, rev: 4, failReads: 0 });
 
   await store.init();
   await settle();
 
-  if (store.guestOffer) fail("в аккаунте есть прогресс, а перенос всё равно предложен");
+  if (store.guestOffer) fail("в аккаунте прогресса больше, а перенос всё равно предложен");
+}
+
+/* ============================================ 9б. …но предлагается, если человек уже начал */
+//
+// С прежним условием «в аккаунте ровно ноль» предложение исчезало навсегда после первого же
+// решённого задания — и всё, наработанное до регистрации, пропадало молча.
+{
+  fresh();
+  mem.set("deutsch-ali-v1", JSON.stringify({ v: 2, xp: 3000, levels: {}, savedAt: Date.now() - 1000 }));
+  fakeBackend({ stored: { xp: 40, levels: {}, savedAt: Date.now() }, rev: 2, failReads: 0 });
+
+  await store.init();
+  await settle();
+
+  eq(store.guestOffer?.xp, 3000, "человек успел решить задание — перенос всё равно предложен");
 }
 
 /* ============================================ 10. отказ запоминается */
 {
-  mem.clear();
+  fresh();
   mem.set("deutsch-ali-v1", JSON.stringify({ v: 2, xp: 300, levels: {}, savedAt: Date.now() - 1000 }));
   fakeBackend({ stored: { xp: 0, levels: {}, savedAt: Date.now() }, rev: 1, failReads: 0 });
 
@@ -231,5 +270,142 @@ const settle = () => new Promise((r) => setTimeout(r, 700)); // save() откл�
   if (store.guestOffer) fail("отказались — а спрашивают снова");
 }
 
-console.log(failed ? `\n${failed} FAILURES` : "Прогресс не теряется: сорванное чтение, недоступное облако, чужая запись, сбитые часы, гостевой перенос");
+/* ============================================ 11. перенос действительно доезжает до сервера */
+//
+// Самая злая из найденных: версию выдаёт сервер, а у гостевого сейва её нет — там ноль. adopt()
+// брал ноль себе, следующее сохранение предъявляло его серверу, сервер отвечал «устарело» и
+// возвращал ПУСТУЮ строку аккаунта, а мы её принимали. Человек видел «Перенесено: 2400 XP» и
+// через полсекунды ноль. Причём отказ не записывался — и обман повторялся при каждом заходе.
+{
+  fresh();
+  mem.set("deutsch-ali-v1", JSON.stringify({ v: 2, rev: 0, xp: 2400, coins: 70, levels: { 1: {}, 2: {} }, savedAt: Date.now() - 5000 }));
+  const srv = fakeBackend({ stored: { xp: 0, levels: {}, savedAt: Date.now() }, rev: 3, failReads: 0 });
+
+  await store.init();
+  await settle();
+  if (!store.guestOffer) fail("перенос не предложен");
+
+  store.adopt(store.guestOffer);          // ровно то, что делает кнопка «Перенести»
+  await settle();
+
+  eq(store.state.xp, 2400, "после переноса опыт остался на экране, а не откатился");
+  const onServer = srv.saved[srv.saved.length - 1];
+  eq(onServer?.xp, 2400, "и уехал на сервер");
+}
+
+/* ============================================ 12. вторая вкладка не откатывает работу первой */
+//
+// localStorage пишется ДО сетевого запроса, значит в нём версия на шаг позади. Соседняя вкладка
+// читала этот блоб и ПОНИЖАЛА себе версию, после чего её собственное сохранение получало отказ и
+// она принимала серверную копию — стирая всё, что человек только что сделал именно в ней.
+{
+  fresh();
+  const srv = fakeBackend({ stored: { xp: 1000, levels: {}, savedAt: Date.now() - 1000 }, rev: 5, failReads: 0 });
+
+  await store.init();
+  await settle();
+  const было = store.rev;
+
+  // соседняя вкладка прислала свой блоб — с версией на шаг позади, как оно и бывает
+  store.adopt({ ...store.state, xp: 1000, rev: было - 1 }, false);
+  eq(store.rev, было, "версия не понизилась от блоба соседней вкладки");
+
+  store.grantXp(50);
+  await settle();
+
+  eq(store.state.xp >= 1050, true, `заработанное осталось (${store.state.xp} XP)`);
+  const last = srv.saved[srv.saved.length - 1];
+  eq(last?.xp >= 1050, true, `и уехало на сервер (${last?.xp} XP)`);
+}
+
+/* ============================================ 13. импорт из файла доезжает до сервера */
+//
+// У выгруженного файла версии нет вовсе (или она старая — файл сохранён неделю назад). Если
+// принять её как свою, сервер ответит «устарело» и вернёт то, что лежит, — импорт отменится сам
+// через полсекунды, и человек об этом даже не узнает.
+{
+  fresh();
+  const srv = fakeBackend({ stored: { xp: 500, levels: {}, savedAt: Date.now() }, rev: 9, failReads: 0 });
+  await store.init();
+  await settle();
+
+  store.adopt({ v: 2, xp: 7777, coins: 12, levels: {}, savedAt: Date.now() - 999999, rev: 2 });
+  await settle();
+
+  eq(store.state.xp, 7777, "импортированный прогресс остался");
+  eq(srv.saved[srv.saved.length - 1]?.xp, 7777, "и уехал на сервер");
+}
+
+/* ============================================ 14. сброс не воскресает после перезагрузки */
+//
+// «Сбросить прогресс» — необратимое действие по замыслу. Если сброс не доедет до сервера,
+// первая же перезагрузка вернёт всё обратно, и кнопка окажется обманом.
+{
+  fresh();
+  const srv = fakeBackend({ stored: { xp: 3000, levels: { 1: {}, 2: {} }, savedAt: Date.now() }, rev: 4, failReads: 0 });
+  await store.init();
+  await settle();
+
+  store.reset();
+  await settle();
+
+  eq(store.state.xp, 0, "после сброса на экране ноль");
+  eq(srv.saved[srv.saved.length - 1]?.xp, 0, "и на сервере ноль — сброс доехал");
+}
+
+/* ============================================ 15. строка, созданная до миграции версий */
+//
+// У строк, лежавших в базе до 0006, rev равен нулю — как и у того, кто ещё ничего не читал. По
+// одним версиям такая строка не считается новее, и настоящий прогресс был бы затёрт. Запасное
+// правило — опыт: он только растёт, так что больше опыта значит больше сделанной работы.
+{
+  fresh();
+  const srv = fakeBackend({ stored: { xp: 6100, levels: { 1: {} }, savedAt: Date.now() - 86400000 }, rev: 0, failReads: 1 });
+
+  await store.init();
+  await settle();
+
+  eq(store.state.xp, 6100, "старая строка без версии не потерялась");
+  const wrote = srv.saved.filter((s) => (s.xp || 0) === 0);
+  if (wrote.length) fail("поверх старой строки ушёл ноль");
+}
+
+/* ============================================ 16. гостевой сейв не раздаётся следующему */
+//
+// После переноса гостевая копия должна исчезнуть. Иначе она предлагается каждому, кто войдёт в
+// этом браузере дальше, — а галочка «перенести» при регистрации включена по умолчанию. На общем
+// компьютере это раздача чужого прогресса всем подряд.
+{
+  fresh();
+  mem.set("deutsch-ali-v1", JSON.stringify({ v: 2, rev: 0, xp: 1200, levels: {}, savedAt: Date.now() - 1000 }));
+  fakeBackend({ stored: { xp: 0, levels: {}, savedAt: Date.now() }, rev: 2, failReads: 0 });
+
+  await store.init();
+  await settle();
+  store.adopt(store.guestOffer);
+  store.clearGuestSave();
+  await settle();
+
+  eq(mem.get("deutsch-ali-v1"), undefined, "гостевой сейв убран после переноса");
+
+  // следующий человек в том же браузере
+  backend.user = { id: "u2", email: "other@example.com", name: "Другой" };
+  await store.init();
+  await settle();
+  if (store.guestOffer) fail("следующему аккаунту предложили чужой прогресс");
+}
+
+/* ============================================ 17. удаление аккаунта не трогает гостевой сейв */
+{
+  fresh();
+  mem.set("deutsch-ali-v1", JSON.stringify({ v: 2, rev: 0, xp: 800, levels: {}, savedAt: Date.now() }));
+  mem.set("deutsch-ali-v1:u1", JSON.stringify({ v: 2, rev: 3, xp: 5000, levels: {}, savedAt: Date.now() }));
+
+  store.forgetAccountSave("u1");
+
+  eq(mem.get("deutsch-ali-v1:u1"), undefined, "копия удалённого аккаунта убрана");
+  eq(JSON.parse(mem.get("deutsch-ali-v1") || "{}").xp, 800, "а гостевой прогресс чужого человека цел");
+}
+
+console.log(failed ? `\n${failed} FAILURES` : "Прогресс не теряется: чтение, облако, чужая запись, часы, перенос, вкладки, импорт, сброс, старая строка, чужой гость");
 process.exit(failed ? 1 : 0);

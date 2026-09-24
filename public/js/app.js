@@ -86,6 +86,13 @@ async function boot() {
   // …но не поверх экранов, на которые человек пришёл осознанно: тест уровня, вход, новый пароль.
   // Перезагрузка посреди теста прежде накрывала его этим оверлеем и ответы пропадали.
   const askedElsewhere = /^#\/(test|login|password)/.test(location.hash);
+  // Предложение перенести прогресс нельзя «съесть» приветствием.
+  //
+  // Раньше это была одна цепочка else if: у нового человека сперва показывался выбор уровня, а
+  // предложение — нет. После выбора introSeen становился true, опыт оставался нулевым, и на
+  // следующем заходе условие вроде бы снова срабатывало… но только если человек не начал
+  // заниматься. Начал — xp стал больше нуля, и всё заработанное без аккаунта пропадало навсегда.
+  // Теперь приветствие само зовёт предложение, когда закончится.
   if (!store.state.introSeen && !askedElsewhere) showWelcome();
   else if (store.guestOffer) askGuestTransfer();
   else if (store.dailyBonus) {
@@ -111,7 +118,9 @@ function askGuestTransfer() {
   const who = session.user?.id;
 
   const close = () => { box.remove(); document.removeEventListener("keydown", onEsc); };
-  const onEsc = (e) => { if (e.key === "Escape") { refuseGuestOffer(who); close(); } };
+  // Escape закрывает окно, но НЕ считается отказом: случайное нажатие не должно
+  // навсегда лишать человека его же прогресса. Отказ — это только кнопка «Не надо».
+  const onEsc = (e) => { if (e.key === "Escape") close(); };
 
   const box = el("div", { class: "modal-back" },
     el("div", { class: "modal-card" },
@@ -121,6 +130,9 @@ function askGuestTransfer() {
       el("div", { class: "row-btns" },
         el("button", { class: "btn primary", type: "button", onClick: () => {
           store.adopt(guest);
+          // И убираем гостевой сейв: он уже в аккаунте. Оставшись лежать, он предлагался бы
+          // каждому следующему, кто войдёт в этом браузере.
+          store.clearGuestSave();
           close();
           toast(tr`Перенесено: ${guest.xp} XP`, { icon: "📥" });
           route();
@@ -737,6 +749,8 @@ function showWelcome() {
     setTimeout(() => overlay.remove(), 600);
     sfx.levelUp();
     route();
+    // …и теперь очередь предложения перенести прогресс, если оно есть.
+    if (store.guestOffer) setTimeout(() => askGuestTransfer(), 700);
     toast(band === "A1"
       ? "Начинаем с самого начала. Первый урок открыт!"
       : tr`Открыл уроки с уровня ${band}. Передумаешь — поменяешь в кабинете.`, { icon: "🎓", ms: 5000 });
@@ -1686,9 +1700,14 @@ function askDeleteAccount(email) {
     go_.disabled = true;
     go_.textContent = tr("Удаляю…");
     try {
+      // Кого именно удаляем — запоминаем ДО выхода из аккаунта.
+      //
+      // deleteAccount() в конце выходит, и после этого keyFor() указывает уже на ГОСТЕВОЙ сейв.
+      // Стоявший здесь store.reset() обнулял прогресс того, кто занимался в этом браузере без
+      // аккаунта, — человека, который ничего не удалял.
+      const who = session.user?.id;
       await backend.deleteAccount(field.value.trim());
-      // Сервер удалил всё своё; местная копия сейва принадлежала этому же аккаунту.
-      store.reset();
+      store.forgetAccountSave(who);
       close();
       location.href = location.pathname;
     } catch (err) {

@@ -10,8 +10,8 @@
     "audio": "node --env-file-if-exists=.env tools/pregen-audio.mjs",
     "validate": "node tools/validate-content.mjs",
     "test": "node tools/test-answers.mjs && node tools/test-brain.mjs && node tools/test-translated.mjs && node tools/test-voices.mjs && node tools/test-personalise.mjs && node tools/test-reply.mjs && node tools/test-store.mjs",
-    "check": "npm run validate && npm test && npm run i18n && npm run imports && npm run css && npm run secrets",
-    "i18n": "node tools/i18n-report.mjs",
+    "check": "npm run validate && npm test && npm run i18n && npm run split:check && npm run imports && npm run css && npm run secrets",
+    "i18n": "node tools/i18n-report.mjs --strict",
     "access": "node --env-file=.env tools/check-access.mjs",
     "imports": "node tools/check-imports.mjs",
     "secrets": "node tools/check-secrets.mjs",
@@ -19,7 +19,8 @@
     "audiocheck": "node --env-file=.env tools/check-audio.mjs",
     "db": "node --env-file=.env tools/check-db.mjs",
     "css": "node tools/check-css.mjs",
-    "split": "node tools/split-az-content.mjs"
+    "split": "node tools/split-az-content.mjs",
+    "split:check": "node tools/split-az-content.mjs --check"
   },
   "engines": {
     "node": ">=20.19"
