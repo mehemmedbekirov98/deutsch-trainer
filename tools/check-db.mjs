@@ -117,5 +117,30 @@ const service = (p, init = {}) => fetch(`${URL_}${p}`, {
   ok("save_progress отвергает запрос без входа", !r.ok && /not signed in/.test(text), `${r.status}`);
 }
 
+/* ------------------------------------------------ подтверждение почты включено */
+//
+// Единственная настройка отсюда, которой нет в миграциях: она живёт в панели Supabase
+// (Authentication → Sign In / Providers → Confirm email). Выключенная, она превращает
+// регистрацию в бесплатный способ завести тысячу аккаунтов скриптом — а каждый аккаунт это
+// доступ к платной Мии. Проверить можно только одним способом: попробовать зарегистрироваться
+// и посмотреть, даёт ли сервер сессию сразу.
+//
+// Адрес заведомо ничей: домен example.com зарезервирован стандартом и почту не принимает.
+{
+  const email = `confirm-probe-${Date.now().toString(36)}@example.com`;
+  const r = await fetch(`${URL_}/auth/v1/signup`, {
+    method: "POST",
+    headers: { apikey: PUB, "content-type": "application/json" },
+    body: JSON.stringify({ email, password: "Pr0be-" + "q".repeat(14) }),
+  });
+  const body = await r.json().catch(() => ({}));
+  const gotSession = Boolean(body?.access_token);
+  ok("подтверждение почты включено", !gotSession, gotSession ? "(сессия выдана сразу — ВЫКЛЮЧЕНО)" : "(сессии сразу нет)");
+
+  // убираем за собой в любом случае
+  const id = body?.user?.id || body?.id;
+  if (id) await service(`/auth/v1/admin/users/${id}`, { method: "DELETE" }).catch(() => {});
+}
+
 console.log(failed ? `\n${failed} ПРОВАЛОВ — база не та, что в миграциях` : "\nживая база совпадает с миграциями");
 process.exit(failed ? 1 : 0);
