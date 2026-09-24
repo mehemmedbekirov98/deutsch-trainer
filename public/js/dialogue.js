@@ -117,9 +117,9 @@ export function renderDialogue({ container, level, onDone, onExit }) {
         xpFloat(playBtn, Math.round(15 * store.xpMultiplier()));
       }
       if (!store.level(level.id).dialogueDone) noMicBtn.hidden = false;
-      root_msg.textContent = tr(speech.sttSupported)
+      root_msg.textContent = tr(speech.sttSupported
         ? "Отлично! Теперь попробуй сыграть роль Эмиля 🎭 Если микрофон не работает, отметь диалог кнопкой слева."
-        : "Отлично! Микрофон недоступен, поэтому отметь диалог кнопкой слева, когда прочитаешь реплики Эмиля вслух.";
+        : "Отлично! Микрофон недоступен, поэтому отметь диалог кнопкой слева, когда прочитаешь реплики Эмиля вслух.");
     }
   }
 

@@ -152,6 +152,14 @@ export function setLang(next) {
  */
 export function t(input, ...values) {
   if (typeof input === "string") return current === "ru" ? input : DICT.get(input) || input;
+  // Вызов не строкой и не шаблоном. Так писать не надо — но раньше это была не опечатка, а падение:
+  // `input.raw` у числа undefined, и строка `node.textContent = tr(счёт)` роняла весь кадр анимации.
+  // Из-за одной такой на экране итогов всегда горело «0 XP», а переключатель языка у Мии
+  // срабатывал наполовину. Цена этой ветки — ноль, цена её отсутствия — молчаливо сломанный экран.
+  if (!input || !Array.isArray(input.raw)) {
+    const s = String(input ?? "");
+    return current === "ru" ? s : DICT.get(s) || s;
+  }
   if (current === "ru") return join(input.raw, values);
 
   // Подставляемые значения тоже проходят через словарь. Половина из них — не числа и не имена, а

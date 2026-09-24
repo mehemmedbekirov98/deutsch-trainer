@@ -557,7 +557,6 @@ input[type="range"] { accent-color: var(--accent); width: 200px; }
 .wr-ru { grid-column: 1; font-size: 0.88rem; }
 
 /* ---------- profile ---------- */
-.avatar { width: 92px; height: 92px; border-radius: 30px; display: grid; place-items: center; font-size: 2.4rem; font-weight: 800; background: linear-gradient(135deg, var(--accent), var(--accent2)); box-shadow: 0 16px 40px -14px var(--accent); flex-shrink: 0; }
 .ach-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
 .ach { padding: 14px 10px; border-radius: 16px; border: 1px solid var(--border); background: rgba(0, 0, 0, 0.2); text-align: center; opacity: 0.45; transition: 0.2s; }
 .ach.got { opacity: 1; background: linear-gradient(135deg, rgba(251, 191, 36, 0.18), var(--card)); border-color: rgba(251, 191, 36, 0.45); }
@@ -937,7 +936,7 @@ a.strip-item:hover { background: var(--card-hover); }
 .board-row.me { border-color: var(--accent); background: var(--acc-12); }
 .board-place { width: 40px; text-align: center; font-size: 1.2rem; font-weight: 800; color: var(--muted); }
 .board-who { flex: 1; min-width: 0; }
-.board-name { font-weight: 700; display: flex; align-items: center; gap: 8px; }
+.board-name { font-weight: 700; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; min-width: 0; overflow-wrap: anywhere; }
 .board-you { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; padding: 2px 8px; border-radius: 999px; background: var(--acc-35); color: var(--text); }
 .board-val { font-weight: 800; font-variant-numeric: tabular-nums; }
 .cta-join { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 16px; }
@@ -1201,3 +1200,29 @@ a.strip-item:hover { background: var(--card-hover); }
  * убирает. Мелочь, которая читается как дрожь. Обрезаем по горизонтали: вертикальная прокрутка
  * страницы при этом не трогается (clip, а не hidden — hidden на body ломает position: sticky). */
 .app { overflow-x: clip; }
+
+/* ---------- окно «новый пароль» и экран «сайт не запустился» ---------- */
+/*
+ * Оба появляются редко и оба раньше были заглушками браузера: пароль спрашивал prompt(), а
+ * неудачный запуск не показывал ничего. Собственная разметка нужна им не ради красоты — prompt()
+ * показывает пароль открытым текстом и не даёт его повторить, а пустая заставка не объясняет
+ * человеку ничего.
+ */
+.modal-back { position: fixed; inset: 0; z-index: 120; display: grid; place-items: center; padding: 20px;
+  background: rgba(3, 6, 16, 0.72); backdrop-filter: blur(6px); animation: fade-in 0.18s ease-out; }
+.modal-card { width: min(420px, 100%); background: var(--card); border: 1px solid var(--line); border-radius: 22px;
+  padding: 24px; box-shadow: 0 30px 70px -20px rgba(0, 0, 0, 0.7); }
+.modal-card h2 { margin: 0 0 14px; font-size: 1.15rem; }
+.pass-form { display: grid; gap: 10px; }
+.row-btns { display: flex; gap: 10px; flex-wrap: wrap; }
+.row-btns .btn { flex: 1 1 auto; }
+
+.loader-fail { max-width: 460px; padding: 0 20px; text-align: center; display: grid; gap: 10px; justify-items: center; }
+.loader-fail-icon { font-size: 2.6rem; }
+.loader-fail h1 { margin: 0; font-size: 1.3rem; }
+.loader-fail p { margin: 0; color: var(--muted); line-height: 1.5; }
+.loader-fail-az { font-size: 0.92rem; opacity: 0.8; }
+.loader-fail .btn { margin-top: 8px; }
+.loader-fail-why { font-size: 0.75rem; opacity: 0.5; overflow-wrap: anywhere; }
+
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }

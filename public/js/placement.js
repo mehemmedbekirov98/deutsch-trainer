@@ -106,7 +106,10 @@ export function renderPlacement(container, { onDone, onExit } = {}) {
         b.disabled = true;
         if (b.dataset.right === "1") b.classList.add("correct");
       });
-      if (!opt.right) buttons.find((b) => b.textContent === opt.text)?.classList.add("wrong");
+      // По НОМЕРУ, а не по тексту. el() уже перевёл подпись на кнопке, а opt.text остался
+      // русским исходником — на азербайджанском они не совпадали ни разу, и неверный ответ
+      // просто не подсвечивался: человек видел правильный и не понимал, что ошибся.
+      if (!opt.right) buttons[q.order.indexOf(opt)]?.classList.add("wrong");
       feedback.textContent = tr(q.why);
       feedback.classList.add("show");
       next.hidden = false;

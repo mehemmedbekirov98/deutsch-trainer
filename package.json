@@ -9,10 +9,13 @@
     "preview": "node tools/dev.mjs",
     "audio": "node --env-file-if-exists=.env tools/pregen-audio.mjs",
     "validate": "node tools/validate-content.mjs",
-    "test": "node tools/test-answers.mjs && node tools/test-brain.mjs",
-    "check": "npm run validate && npm test && npm run i18n",
+    "test": "node tools/test-answers.mjs && node tools/test-brain.mjs && node tools/test-translated.mjs && node tools/test-voices.mjs",
+    "check": "npm run validate && npm test && npm run i18n && npm run imports && npm run secrets",
     "i18n": "node tools/i18n-report.mjs",
-    "access": "node --env-file=.env tools/check-access.mjs"
+    "access": "node --env-file=.env tools/check-access.mjs",
+    "imports": "node tools/check-imports.mjs",
+    "secrets": "node tools/check-secrets.mjs",
+    "vendor": "node tools/vendor-supabase.mjs"
   },
   "engines": {
     "node": ">=20.19"

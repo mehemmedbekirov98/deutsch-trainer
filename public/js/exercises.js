@@ -627,7 +627,8 @@ function fillRenderer(ex, api) {
 function translateRenderer(ex, api) {
   const toDe = ex.dir === "ru-de";
   const input = textInput(toDe ? "Напиши по-немецки…" : "Напиши по-русски…", api);
-  if (!toDe) input.lang = "ru";
+  // подсказка браузеру, каким словарём проверять орфографию: родной язык, а не всегда русский
+  if (!toDe) input.lang = uiLang();
   let hintShown = false;
   const hintBtn = ex.hint ? el("button", { class: "btn ghost small", type: "button", onClick: () => { hintShown = true; hintBtn.replaceWith(el("div", { class: "hint-box" }, "💡 ", ex.hint)); } }, "Подсказка") : null;
   const node = el("div", { class: "ex ex-translate" },

@@ -104,6 +104,9 @@ class Speech {
     this.audio = null;
     this.fetchCtrl = null;
     this.serverTts = null; // null = unknown; app sets it from /api/status at boot
+    // Откуда взять токен вошедшего. Ставит app.js при запуске. Модуль озвучки намеренно ничего
+    // не знает про аккаунты — иначе речь перестала бы работать там, где нет Supabase.
+    this.authToken = null;
     this.serverFailUntil = 0;
     this.micGranted = false;
     this.micError = null;
@@ -182,7 +185,7 @@ class Speech {
    * Speak text. Resolves when finished (or stopped). Uses the neural server voice when available,
    * otherwise the browser voice. `force` ignores the "TTS off" setting (profile preview).
    */
-  async speak(text, { rate = null, pitch = 1, gender = "f", voiceName = null, lang = "de-DE", force = false } = {}) {
+  async speak(text, { rate = null, pitch = 1, gender = "f", voiceName = null, lang = "de-DE", force = false, secret = false } = {}) {
     if (!text) return false;
     if (!force && this.settings.tts === false) return false;
     this.stop();
@@ -194,7 +197,7 @@ class Speech {
     // pauses between chunks of a long Russian line make Mia sound like she is breaking up.
     const parts = splitForSpeech(text);
     if (parts.length > 1) {
-      const plans = parts.map((t) => this.plan(t, { rate, voiceName, lang }));
+      const plans = parts.map((t) => this.plan(t, { rate, voiceName, lang, secret }));
       if (plans.every((p) => p.server)) {
         for (let n = 0; n < plans.length; n++) {
           if (run !== this.speakRun) return true;
@@ -208,7 +211,7 @@ class Speech {
       }
     }
 
-    const plan = this.plan(text, { rate, voiceName, lang });
+    const plan = this.plan(text, { rate, voiceName, lang, secret });
     if (plan.server) {
       const ok = await this.speakServer(plan);
       if (ok !== false) return true;
@@ -220,16 +223,25 @@ class Speech {
     return spoke;
   }
 
-  /** Tell Emil once per session that the voice is unavailable, and why. */
+  /**
+   * Сказать один раз за сеанс, что голоса нет, — и про ТОТ язык, который не зазвучал.
+   *
+   * Веток было две: «русский» и «всё остальное». Азербайджанец, у которого отвалился сервер
+   * озвучки, получал объяснение про женский немецкий голос — притом что молчал у него
+   * азербайджанский, которого в системе нет почти ни у кого, так что запасного пути у него нет
+   * вовсе. Сообщение про чужой язык в такой момент — это не мелочь: человек идёт искать в
+   * настройках немецкий голос, которого ему не нужно.
+   */
   warnNoVoice(lang) {
     if (this._warnedNoVoice) return;
     this._warnedNoVoice = true;
-    const ru = String(lang).startsWith("ru");
-    import("./fx.js").then(({ toast }) => toast(
-      ru ? "Русский голос сейчас недоступен — читай текст, он весь на экране."
-         : "Голос Мии сейчас недоступен: нет связи с сервисом озвучки или в системе нет женского немецкого голоса. Текст весь на экране.",
-      { icon: "🔇", kind: "warn", ms: 7000 },
-    )).catch(() => {});
+    const l = String(lang || "");
+    const text = l.startsWith("az")
+      ? "Азербайджанский голос сейчас недоступен: нет связи с сервисом озвучки, а в системе азербайджанского голоса нет. Текст весь на экране."
+      : l.startsWith("ru")
+        ? "Русский голос сейчас недоступен — читай текст, он весь на экране."
+        : "Голос Мии сейчас недоступен: нет связи с сервисом озвучки или в системе нет женского немецкого голоса. Текст весь на экране.";
+    import("./fx.js").then(({ toast }) => toast(text, { icon: "🔇", kind: "warn", ms: 7000 })).catch(() => {});
   }
 
   /**
@@ -237,17 +249,17 @@ class Speech {
    * current one is still playing, so her German and Russian run together instead of leaving a
    * silent gap that makes her sound like she is stuttering.
    */
-  async prefetch(text, { rate = null, voiceName = null, lang = "de-DE" } = {}) {
+  async prefetch(text, { rate = null, voiceName = null, lang = "de-DE", secret = false } = {}) {
     if (!text || this.settings.tts === false) return;
     for (const part of splitForSpeech(text)) {
-      const plan = this.plan(part, { rate, voiceName, lang });
+      const plan = this.plan(part, { rate, voiceName, lang, secret });
       if (!plan.server || this.cache.has(plan.key)) continue;
       try { await this.fetchAudio(plan, { cancellable: false }); } catch { return; }
     }
   }
 
   /** Work out which voice, locale and prosody a line should use. */
-  plan(text, { rate = null, voiceName = null, lang = "de-DE" } = {}) {
+  plan(text, { rate = null, voiceName = null, lang = "de-DE", secret = false } = {}) {
     const r = rate ?? this.settings.rate ?? 0.92;
     const isDe = lang.startsWith("de");
     const isAz = lang.startsWith("az");
@@ -262,7 +274,7 @@ class Speech {
     const ratePct = Math.round(p.rate + (r - 0.92) * 100);
     const server = this.settings.neural !== false && this.serverTts !== false && Date.now() > this.serverFailUntil && (!chosen || isNeural(chosen));
     return {
-      text, voice, locale, rate: r, ratePct, pitch: p.pitch, volume: p.volume, server,
+      text, voice, locale, rate: r, ratePct, pitch: p.pitch, volume: p.volume, server, secret,
       browserVoice: isNeural(chosen) ? null : chosen,
       key: `${voice}|${locale}|${ratePct}|${p.pitch}|${p.volume}|${text}`,
     };
@@ -299,7 +311,8 @@ class Speech {
     try {
       // The CDN first. A hit is a plain URL — no blob, no object URL to revoke, and the browser
       // caches it across sessions the way it caches any other file.
-      const cdn = await this.cdnUrl(plan);
+      // Личную реплику в общем хранилище не ищем и туда не кладём: см. `secret` ниже.
+      const cdn = plan.secret ? null : await this.cdnUrl(plan);
       if (cdn) {
         const head = await fetch(cdn, { method: "HEAD", signal: ctrl.signal }).catch(() => null);
         if (head?.ok) {
@@ -307,10 +320,16 @@ class Speech {
           return cdn;
         }
       }
+      // Кто просит. Синтез стоит денег владельцу и пишет файл в его хранилище, поэтому функция
+      // на сервере спрашивает токен. Гость не остаётся без звука — у него говорит голос браузера.
+      const token = await this.authToken?.().catch(() => null);
       const r = await fetch("/api/tts", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: plan.text, voice: plan.voice, rate: plan.ratePct, pitch: plan.pitch, volume: plan.volume, locale: plan.locale }),
+        headers: { "Content-Type": "application/json", ...(token ? { authorization: `Bearer ${token}` } : {}) },
+        // `store: false` — это разговор, а не курс. Реплика Мии, сказанная одному человеку, не
+        // должна навсегда лечь в общий бакет: повторно её никто не попросит, а лежать она будет
+        // вечно и рядом со всем остальным.
+        body: JSON.stringify({ text: plan.text, voice: plan.voice, rate: plan.ratePct, pitch: plan.pitch, volume: plan.volume, locale: plan.locale, store: !plan.secret }),
         signal: ctrl.signal,
       });
       if (!r.ok) throw new Error("tts " + r.status);

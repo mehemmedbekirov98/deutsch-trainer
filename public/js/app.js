@@ -1,5 +1,5 @@
 // Lingua Mia — app shell, router and views
-import { $, $$, el, append, nextTick, shuffle, plural, todayKey, articleOf, stripArticle, escapeHtml, sleep } from "./utils.js";
+import { $, $$, el, append, nextTick, shuffle, plural, todayKey, articleOf, stripArticle, escapeHtml, sleep, personalise } from "./utils.js";
 import { store, RANKS, ACHIEVEMENTS } from "./store.js";
 import { speech, NATIVE_LOCALE } from "./speech.js";
 import { sfx, confetti, toast, achievementToast, countUp, startParticles, setSoundEnabled, xpFloat } from "./fx.js";
@@ -46,6 +46,8 @@ async function boot() {
   AI = Boolean(backend.config.ai) && (!backend.cloud || Boolean(backend.user));
   NEURAL = Boolean(backend.config.tts);
   speech.serverTts = NEURAL;
+  // Синтез голоса — платный и пишет в хранилище владельца, поэтому функция спрашивает, кто пришёл.
+  speech.authToken = () => backend.token();
   document.body.dataset.ai = AI ? "1" : "0";
   micState = await speech.micPermission();
   if (micState === "granted") speech.micGranted = true;
@@ -202,10 +204,13 @@ function viewBoard(v) {
     }
     host.append(el("div", { class: "board-list" }, rows.map((r, i) => {
       const medal = i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : String(i + 1);
-      return el("div", { class: `board-row ${r.id === data.me ? "me" : ""}` },
+      // `r.id` приходит только у твоей строки — у остальных он null. Сравнивать голым `===`
+      // нельзя: у гостя `data.me` тоже null, и «это ты» загоралось бы у всех сразу.
+      const mine = Boolean(r.id) && r.id === data.me;
+      return el("div", { class: `board-row ${mine ? "me" : ""}` },
         el("div", { class: "board-place" }, medal),
         el("div", { class: "board-who" },
-          el("div", { class: "board-name" }, r.name, r.id === data.me ? el("span", { class: "board-you" }, "это ты") : null),
+          el("div", { class: "board-name" }, r.name, mine ? el("span", { class: "board-you" }, "это ты") : null),
           el("div", { class: "board-sub muted small" }, `${r.cefr} · ${r.levels} ${plural(r.levels, "урок", "урока", "уроков")}`),
         ),
         el("div", { class: "board-val" }, t.fmt(r.v)),
@@ -747,12 +752,14 @@ function renderHome(v) {
   const band = store.cefrProgress();
   const due = store.dueCount(LEVELS.filter((l) => store.isUnlocked(l.id)).flatMap((l) => l.vocab));
   const title = s.title ? TITLE_NAMES[s.title] : null;
-  const name = session.user?.name || s.name || "Emil";
+  const name = session.user?.name || s.name || "";
 
   append(v,
     el("section", { class: "home-hero" },
       el("div", {},
-        el("h1", {}, `${greeting()}, ${name}! `, el("span", { class: "wave" }, "👋")),
+        // Имя может быть пустым — гость, который его не вводил. Тогда и запятая не нужна:
+        // «Guten Tag, !» выглядит как поломка, потому что это она и есть.
+        el("h1", {}, `${greeting()}${name ? ", " + name : ""}! `, el("span", { class: "wave" }, "👋")),
         el("p", { class: "hero-sub" }, s.streak.count > 1
           ? tr`${s.streak.count} ${plural(s.streak.count, "день", "дня", "дней")} подряд — не бросай.`
           : "Пятнадцать минут сегодня — это уже много."),
@@ -1282,15 +1289,53 @@ function boardSetting() {
     el("span", { class: "toggle" }, toggle, el("span", { class: "toggle-track" }, el("span", { class: "toggle-thumb" }))));
 }
 
+/**
+ * Новый пароль — в настоящем поле, а не в prompt() браузера.
+ *
+ * prompt() показывает набранное открытым текстом: пароль видит каждый, кто смотрит на экран, и
+ * он же попадает в историю подсказок браузера. Менеджер паролей такое окно не видит, повторить
+ * ввод нельзя, опечатку не поймать — а пароль после этого настоящий. Здесь обычная форма:
+ * type="password", подтверждение и понятные ошибки.
+ */
 function askNewPassword() {
   // Supabase already knows who is signed in, so changing a password does not need the old one —
   // and asking for something it will not check would be theatre.
-  const newP = prompt("Новый пароль (минимум 8 символов):");
-  if (!newP) return;
-  if (String(newP).length < 8) return toast("Пароль — минимум 8 символов.", { icon: "⚠️", kind: "warn" });
-  changePassword(newP)
-    .then(() => toast("Пароль изменён.", { icon: "🔒" }))
-    .catch((e) => toast(e.message, { icon: "⚠️", kind: "warn", ms: 5000 }));
+  const p1 = el("input", { class: "input", type: "password", autocomplete: "new-password", placeholder: "Новый пароль" });
+  const p2 = el("input", { class: "input", type: "password", autocomplete: "new-password", placeholder: "Ещё раз" });
+  const msg = el("div", { class: "muted small" }, "Минимум 8 символов.");
+  const save = el("button", { class: "btn primary", type: "submit" }, "Сменить пароль");
+
+  const form = el("form", { class: "auth-form pass-form" }, p1, p2, msg, el("div", { class: "row-btns" }, save,
+    el("button", { class: "btn ghost", type: "button", onClick: () => close() }, "Отмена")));
+
+  const box = el("div", { class: "modal-back", onClick: (e) => { if (e.target === box) close(); } },
+    el("div", { class: "modal-card" }, el("h2", {}, "Новый пароль"), form));
+
+  const close = () => { box.remove(); document.removeEventListener("keydown", onEsc); };
+  const onEsc = (e) => { if (e.key === "Escape") close(); };
+  document.addEventListener("keydown", onEsc);
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const value = String(p1.value);
+    if (value.length < 8) { msg.className = "auth-msg bad"; msg.textContent = tr("Пароль — минимум 8 символов."); return; }
+    if (value !== String(p2.value)) { msg.className = "auth-msg bad"; msg.textContent = tr("Пароли не совпали — проверь второе поле."); return; }
+    save.disabled = true;
+    save.textContent = tr("Меняю…");
+    try {
+      await changePassword(value);
+      close();
+      toast("Пароль изменён.", { icon: "🔒" });
+    } catch (err) {
+      msg.className = "auth-msg bad";
+      msg.textContent = tr(err.message);
+      save.disabled = false;
+      save.textContent = tr("Сменить пароль");
+    }
+  });
+
+  document.body.append(box);
+  nextTick(() => p1.focus());
 }
 
 /**
@@ -1369,10 +1414,10 @@ function renderProfile(v) {
   );
   voiceSel.addEventListener("change", () => {
     store.update((st) => (st.settings.voice = voiceSel.value || null));
-    speech.speak("Hallo Emil! Ich bin Mia. Schön, dass du Deutsch lernst.", { voiceName: voiceSel.value || null, force: true });
+    speech.speak(personalise("Hallo Emil! Ich bin Mia. Schön, dass du Deutsch lernst.", store.state.name), { voiceName: voiceSel.value || null, force: true });
   });
   const rate = el("input", { type: "range", min: "0.6", max: "1.2", step: "0.05", value: String(settings.rate) });
-  rate.addEventListener("change", () => { store.update((st) => (st.settings.rate = Number(rate.value))); speech.speak("Guten Tag, Emil. Wie geht es dir?", { rate: Number(rate.value), force: true }); });
+  rate.addEventListener("change", () => { store.update((st) => (st.settings.rate = Number(rate.value))); speech.speak(personalise("Guten Tag, Emil. Wie geht es dir?", store.state.name), { rate: Number(rate.value), force: true }); });
   const goal = el("input", { type: "range", min: "20", max: "200", step: "10", value: String(s.dailyGoal) });
   const goalVal = el("span", { class: "muted" }, `${s.dailyGoal} XP`);
   goal.addEventListener("input", () => (goalVal.textContent = tr(`${goal.value} XP`)));
@@ -1382,8 +1427,17 @@ function renderProfile(v) {
     const f = importInput.files?.[0];
     if (!f) return;
     try {
-      const data = JSON.parse(await f.text());
-      if (!data || typeof data !== "object" || !Number.isFinite(data.xp)) throw new Error("bad");
+      // `__proto__` из файла — не поле, а команда сменить прототип.
+      //
+      // JSON.parse кладёт его обычным собственным свойством, но дальше adopt() делает
+      // Object.assign, а тот пишет через сеттер — и прототип объекта уезжает. Файл человек
+      // выбирает сам, так что это не чужая атака, а скорее «скачал непонятно что и открыл»;
+      // стоит проверка один reviver, поэтому она здесь и стоит.
+      const data = JSON.parse(await f.text(), function (key, value) {
+        if (key === "__proto__" || key === "constructor" || key === "prototype") return undefined;
+        return value;
+      });
+      if (!data || typeof data !== "object" || Array.isArray(data) || !Number.isFinite(data.xp)) throw new Error("bad");
       if (!confirm(tr`Импортировать прогресс (${data.xp} XP, ${data.coins || 0} монет)? Текущий будет заменён.`)) return;
       store.adopt(data); // fills in any missing fields so an old/partial file cannot break the app
       applyTheme(store.state.theme);
@@ -1395,14 +1449,15 @@ function renderProfile(v) {
   });
 
   const band = store.cefrProgress();
-  const who = session.user?.name || s.name || "Emil";
+  const who = session.user?.name || s.name || "";
   append(v,
     el("section", { class: "cabinet-hero" },
       el("div", { class: "cabinet-glow" }),
       el("div", { class: "cabinet-top" },
-        el("div", { class: "cabinet-avatar" }, who.slice(0, 1).toUpperCase()),
+        // Имя может быть не задано: тогда в кружке смайл, а не пустота.
+        el("div", { class: "cabinet-avatar" }, who ? who.slice(0, 1).toUpperCase() : "🙂"),
         el("div", { class: "cabinet-who" },
-          el("h1", {}, who, title ? el("span", { class: "title-chip" }, title) : null),
+          el("h1", {}, who || "Без имени", title ? el("span", { class: "title-chip" }, title) : null),
           el("div", { class: "muted small" }, session.user ? session.user.email : "без аккаунта — прогресс в этом браузере"),
         ),
         el("div", { class: "cabinet-level" },
@@ -1463,7 +1518,7 @@ function renderProfile(v) {
               store.update((st) => (st.settings.tone = t.id));
               $$(".tone-btn").forEach((b) => b.classList.remove("active"));
               e.currentTarget.classList.add("active");
-              await speech.speak("Hallo Emil! Schön, dass du da bist.", { force: true });
+              await speech.speak(personalise("Hallo Emil! Schön, dass du da bist.", store.state.name), { force: true });
               await speech.speak(tr("А по-русски я звучу вот так. Если что-то непонятно — просто спроси."), { lang: NATIVE_LOCALE, force: true });
             } }, el("span", { class: "tone-name" }, t.label), el("span", { class: "tone-desc muted" }, t.desc));
           })),
@@ -1504,4 +1559,33 @@ function renderProfile(v) {
   );
 }
 
-boot();
+/**
+ * Запуск без аварийного выхода — это чёрный экран навсегда.
+ *
+ * boot() асинхронный и ждёт четыре внешние вещи: словарь языка, Supabase с чужого CDN, чтение
+ * прогресса и разрешение на микрофон. Любая из них может не ответить — чужой Wi-Fi, вырубленный
+ * провайдером CDN, блокировщик рекламы. Раньше в этом случае не происходило ничего: заставка
+ * «Lade… Загружаю» оставалась на экране навсегда, без единого слова о том, что случилось, и
+ * человек видел мёртвый сайт.
+ *
+ * Поэтому запуск обёрнут: заставка уходит в любом случае, а вместо неё — понятная причина и
+ * кнопка «Обновить». На двух языках, потому что до словаря дело могло и не дойти.
+ */
+boot().catch((e) => {
+  console.error("[boot]", e);
+  const loader = document.querySelector("#loader");
+  if (loader) {
+    loader.classList.remove("hide");
+    loader.innerHTML = "";
+    loader.append(
+      el("div", { class: "loader-fail" },
+        el("div", { class: "loader-fail-icon" }, "⚠️"),
+        el("h1", {}, "Сайт не смог запуститься"),
+        el("p", {}, "Скорее всего пропала связь. Проверь интернет и обнови страницу."),
+        el("p", { class: "loader-fail-az" }, "Sayt işə düşə bilmədi. İnterneti yoxla və səhifəni yenilə."),
+        el("button", { class: "btn primary", type: "button", onClick: () => location.reload() }, "Обновить · Yenilə"),
+        el("p", { class: "loader-fail-why" }, String(e?.message || e || "").slice(0, 200)),
+      ),
+    );
+  }
+});

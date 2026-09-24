@@ -1,9 +1,10 @@
 // Mia — the voice tutor. AI mode talks to /api/tutor (Claude); offline mode runs the level's script.
 import { t as tr, lang as uiLang, langInfo } from "./i18n.js";
-import { el, normalize, sleep, nextTick, todayKey } from "./utils.js";
+import { el, normalize, sleep, nextTick, todayKey, personalise } from "./utils.js";
 import { speech, STT_ERRORS, NATIVE_LOCALE } from "./speech.js";
 import { sfx, confetti, toast, xpFloat } from "./fx.js";
 import { store } from "./store.js";
+import { backend } from "./backend.js";
 import { understand, respond, opening } from "./brain.js";
 import { check as moderate } from "./moderation.js";
 
@@ -100,6 +101,18 @@ function buildLevelScript(level, talkMode) {
 
 const stripArticleLower = (de) => String(de).replace(/^(der|die|das)\s+/i, "").toLowerCase();
 
+// Язык реплики → локаль для голоса. Немецкий — пустая строка: это родной язык голоса Мии, ему пометка
+// не нужна (см. plan() в speech.js).
+const LOCALE_OF = { ru: "ru-RU", az: "az-AZ", de: "" };
+
+/**
+ * Чьё это сообщение — подпись над пузырём собственной реплики.
+ *
+ * Здесь стояло слово «Эмиль», одно на всех. Человек с любым другим именем видел над своими же
+ * словами чужое. Берём имя из профиля; если его нет — «Ты», это всегда правда.
+ */
+const meLabel = () => store.state.name || "Ты";
+
 /**
  * One shape for everything Mia says: what she says, in which language, and an optional quiet
  * translation underneath.
@@ -109,12 +122,29 @@ const stripArticleLower = (de) => String(de).replace(/^(der|die|das)\s+/i, "").t
  * "German line + Russian translation + Russian explanation", which is exactly right for a
  * role-play, so they are adapted here rather than rewritten.
  */
+/**
+ * Одна воронка для всего, что Мия говорит, — и единственное место, где подставляется имя.
+ *
+ * Реплики офлайн-Мии писались для одного человека и полны «Эмиля»; теперь сайтом пользуются
+ * разные люди. Перевод делается ПЕРЕД подстановкой намеренно: русский текст этих реплик — это
+ * ключи азербайджанского словаря, и если подставить имя раньше, ключ не найдётся и Мия
+ * заговорит по-русски посреди азербайджанского экрана.
+ *
+ * Повторный перевод в el() безвреден: переведённая строка ключом словаря не является и проходит
+ * насквозь.
+ */
+const mine = (s) => personalise(tr(String(s || "")), store.state.name);
+
 function normalizeReply(r) {
-  const base = { translation: "", explain: "", correction: r.correction || null, tip: r.tip || "", done: Boolean(r.done) };
+  const base = {
+    translation: "", explain: "",
+    correction: r.correction ? { ...r.correction, explanationRu: mine(r.correction.explanationRu) } : null,
+    tip: mine(r.tip), done: Boolean(r.done),
+  };
   if (typeof r.say === "string") {
-    return { ...base, say: r.say, lang: r.lang === "de" ? "de" : "ru", translation: r.translation || "" };
+    return { ...base, say: mine(r.say), lang: r.lang === "de" ? "de" : "ru", translation: mine(r.translation) };
   }
-  return { ...base, say: r.de || "", lang: "de", translation: r.ru || "", explain: r.explainRu || "" };
+  return { ...base, say: mine(r.de), lang: "de", translation: mine(r.ru), explain: mine(r.explainRu) };
 }
 
 export class Tutor {
@@ -323,7 +353,7 @@ export class Tutor {
   async callAi(userText) {
     if (userText !== null) this.history.push({ role: "user", content: userText });
     const body = {
-      messages: this.history.length ? this.history : [{ role: "user", content: "(Эмиль зашёл. Поздоровайся и начни разговор.)" }],
+      messages: this.history.length ? this.history : [{ role: "user", content: "(Ученик зашёл. Поздоровайся и начни разговор.)" }],
       scenario: this.level ? {
         mode: this.talkMode === "exam" ? "oral-exam" : this.talkMode === "topic" ? "topic-chat" : "scenario",
         title: this.level.speaking.title,
@@ -344,9 +374,12 @@ export class Tutor {
     if (!this.history.length) this.history.push(body.messages[0]);
     this.setState("thinking", "Мия думает…");
     try {
-      // never leave him staring at "Мия думает…" — the server gives up at 30 s, this a little after
+      // never leave him staring at "Мия думает…"
       const ctrl = new AbortController();
-      const timer = setTimeout(() => ctrl.abort("timeout"), 35000);
+      // Сервер сдаётся на девятой секунде (см. lib/tutor.js), Netlify убивает функцию на
+      // десятой. Ждать тридцать пять — это двадцать пять секунд «Мия думает…» после того, как
+      // отвечать уже некому.
+      const timer = setTimeout(() => ctrl.abort("timeout"), 14000);
       let r, data;
       try {
         // Живая Мия стоит денег за каждую реплику, поэтому функция спрашивает, кто пришёл.
@@ -359,7 +392,7 @@ export class Tutor {
         });
         data = await r.json();
       } finally { clearTimeout(timer); }
-      if (!r.ok) { const err = new Error(data.error || "API error"); err.status = r.status; throw err; }
+      if (!r.ok) { const err = new Error(data.error || "API error"); err.status = r.status; err.needsAuth = Boolean(data.needsAuth); throw err; }
       // keep what she actually said, in the language she said it, so she stays consistent
       this.history.push({ role: "assistant", content: data.say || data.de || "" });
       // she may have asked to switch into (or out of) German — remember it for the next turn
@@ -377,13 +410,28 @@ export class Tutor {
       // A slow turn is not a broken key. Switching smart Mia off permanently costs Emil the rest of
       // the conversation, and useAi is only re-armed when the page is re-mounted — so a timeout
       // falls back for THIS turn only and the next one tries her again.
-      const transient = e?.name === "AbortError" || e?.status === 504 || e?.status === 429 || e?.status === 502;
+      // Всё, что может пройти само, считается временным. Список был короче, и мимо него проходили
+      // ровно те случаи, которые встречаются чаще всего: оборванная связь приходит как TypeError
+      // из fetch (`status` у неё нет вообще), а 500 и 503 — это «сервис сейчас занят», а не
+      // «ключ не годится». Каждый такой случай навсегда выключал умный режим до перезагрузки
+      // страницы. Насовсем выключаем только то, что само не пройдёт: 401 (нет доступа) и
+      // 403 (заблокирован).
+      // …кроме «умного режима на этом сайте просто нет»: пробовать каждую реплику бессмысленно,
+      // ответ не изменится. Сервер сообщает это через needsAuth при 503.
+      const notConfigured = e?.status === 503 && e?.needsAuth;
+      const permanent = e?.status === 401 || e?.status === 403 || notConfigured;
+      const transient = !permanent;
+      // 429 — это не «сломалось», это «на сегодня хватит». Отдельными словами, иначе человек
+      // будет ждать, что вот-вот заработает.
+      const outOfTurns = e?.status === 429;
       if (!this.stopped) {
-        toast(transient
-          ? "Мия задумалась дольше обычного — отвечу сама, а на следующей реплике попробую снова."
-          : e?.status === 401
-            ? "Живая Мия отвечает тем, кто вошёл в аккаунт. Пока поговорим в обычном режиме."
-            : "Умный режим сейчас недоступен — Мия продолжит сама, без него.",
+        toast(outOfTurns
+          ? (e.message || "На сегодня лимит живой Мии исчерпан — она продолжит в обычном режиме.")
+          : transient
+            ? "Мия задумалась дольше обычного — отвечу сама, а на следующей реплике попробую снова."
+            : e?.status === 401
+              ? "Живая Мия отвечает тем, кто вошёл в аккаунт. Пока поговорим в обычном режиме."
+              : "Умный режим сейчас недоступен — Мия продолжит сама, без него.",
         { icon: "⚠️", kind: "warn", ms: 6000, title: !transient && e.message && /[а-я]/i.test(e.message) ? e.message : null });
       }
       if (!transient) {
@@ -406,16 +454,23 @@ export class Tutor {
     if (this.stopped || gen !== this.gen || seq !== this.seq) return;
     const reply = normalizeReply(raw);
     this.lastReply = reply;
-    const voice = reply.lang === "de" ? {} : { lang: NATIVE_LOCALE };
+    // Голос по языку САМОЙ реплики, а не по языку сайта.
+    //
+    // Мия отвечает на том языке, на котором к ней обратились, — это и есть смысл свободного
+    // разговора, — так что на русском сайте она вполне может ответить по-азербайджански. Раньше
+    // всё, что не немецкое, отправлялось «родным» голосом, то есть азербайджанскую фразу читал
+    // русский голос по русским правилам чтения. Разобрать это невозможно.
+    const voice = LOCALE_OF[reply.lang] ? { lang: LOCALE_OF[reply.lang] } : {};
+    // Подстрочник под репликой всегда на другом языке: к немецкой фразе — родной, к родной — немецкий.
     const other = reply.lang === "de" ? { lang: NATIVE_LOCALE } : {};
     const bubble = el("div", { class: `bubble mia ${reply.lang === "ru" ? "mia-ru" : ""}` },
       el("div", { class: "bubble-name" }, "Мия"),
       el("div", { class: "bubble-de", lang: reply.lang }, reply.say,
-        el("button", { class: "icon-btn tiny", type: "button", title: "Прослушать", onClick: () => speech.speak(reply.say, { ...voice, force: true }) }, "🔊")),
+        el("button", { class: "icon-btn tiny", type: "button", title: "Прослушать", onClick: () => speech.speak(reply.say, { ...voice, force: true, secret: true }) }, "🔊")),
       // the other language, small and quiet — there to be read, not recited at him
       reply.translation ? el("div", { class: "bubble-ru", lang: reply.lang === "de" ? "ru" : "de" }, reply.translation,
-        el("button", { class: "icon-btn tiny", type: "button", title: "Прослушать", onClick: () => speech.speak(reply.translation, { ...other, force: true }) }, "🔊")) : null,
-      reply.explain ? el("div", { class: "explain-ru" }, el("span", { class: "explain-icon" }, langInfo().flag), el("span", {}, reply.explain), el("button", { class: "icon-btn tiny", type: "button", title: "Прослушать перевод", onClick: () => speech.speak(reply.explain, { lang: NATIVE_LOCALE, force: true }) }, "🔊")) : null,
+        el("button", { class: "icon-btn tiny", type: "button", title: "Прослушать", onClick: () => speech.speak(reply.translation, { ...other, force: true, secret: true }) }, "🔊")) : null,
+      reply.explain ? el("div", { class: "explain-ru" }, el("span", { class: "explain-icon" }, langInfo().flag), el("span", {}, reply.explain), el("button", { class: "icon-btn tiny", type: "button", title: "Прослушать перевод", onClick: () => speech.speak(reply.explain, { lang: NATIVE_LOCALE, force: true, secret: true }) }, "🔊")) : null,
       reply.correction && reply.correction.corrected ? el("div", { class: "correction" },
         el("div", { class: "corr-row" }, el("span", { class: "corr-bad" }, reply.correction.original), el("span", {}, " → "), el("span", { class: "corr-good", lang: "de" }, reply.correction.corrected)),
         reply.correction.explanationRu ? el("div", { class: "corr-why" }, reply.correction.explanationRu) : null) : null,
@@ -428,8 +483,9 @@ export class Tutor {
     if (store.state.settings.tts) {
       // Her own line goes out FIRST so nothing queues ahead of it; a Russian follow-up explanation
       // is synthesised while it plays, so the two run together without a silent gap.
-      const main = speech.speak(reply.say, { ...voice, gender: "f", rate: store.state.settings.rate });
-      if (reply.explain) speech.prefetch(reply.explain, { lang: NATIVE_LOCALE });
+      // secret: это разговор, а не курс. Сказанное одному человеку не ложится в общее хранилище.
+      const main = speech.speak(reply.say, { ...voice, gender: "f", rate: store.state.settings.rate, secret: true });
+      if (reply.explain) speech.prefetch(reply.explain, { lang: NATIVE_LOCALE, secret: true });
       await main;
       // If Emil reached for the microphone while she was still talking, the turn is his. Speaking
       // the explanation now would abort the recogniser he just started (speak() always stops
@@ -437,7 +493,7 @@ export class Tutor {
       if (seq !== this.seq) return; // he took the turn while she was speaking
       if (!this.listening && !this.stopped && gen === this.gen && reply.explain) {
         this.setState("speaking", "Мия объясняет по-русски…");
-        await speech.speak(reply.explain, { lang: NATIVE_LOCALE });
+        await speech.speak(reply.explain, { lang: NATIVE_LOCALE, secret: true });
         if (seq !== this.seq) return;
       }
     }
@@ -513,7 +569,7 @@ export class Tutor {
     this.listening = true;
     sfx.mic();
     this.setState("listening", this.micLang().startsWith("ru") ? "Слушаю… говори по-русски" : "Слушаю… говори по-немецки");
-    const live = el("div", { class: "bubble ali live" }, el("div", { class: "bubble-name" }, "Эмиль"), el("div", { class: "bubble-de" }, "…"));
+    const live = el("div", { class: "bubble ali live" }, el("div", { class: "bubble-name" }, meLabel()), el("div", { class: "bubble-de" }, "…"));
     this.chat.append(live);
     this.scrollChat();
     let text = "";
@@ -584,11 +640,11 @@ export class Tutor {
     // he may well have said this in Russian — marking it lang="de" would have the browser and the
     // replay button pronounce Russian words with a German mouth
     const said = /[а-яё]/i.test(text) ? "ru" : "de";
-    const bubble = el("div", { class: "bubble ali" }, el("div", { class: "bubble-name" }, "Эмиль"), el("div", { class: "bubble-de", lang: said }, text));
+    const bubble = el("div", { class: "bubble ali" }, el("div", { class: "bubble-name" }, meLabel()), el("div", { class: "bubble-de", lang: said }, text));
     this.chat.append(bubble);
     nextTick(() => bubble.classList.add("show"));
     this.scrollChat();
-    const verdict = moderate(text);
+    const verdict = moderate(text, uiLang());
     if (verdict.blocked) {
       this.turns++;
       store.update((s) => { s.stats.tutorTurns += 1; });
@@ -753,9 +809,9 @@ export class Tutor {
     }
     if (this.input) {
       this.input.lang = next === "german" ? "de" : "ru";
-      this.input.placeholder = tr(next === "german")
+      this.input.placeholder = tr(next === "german"
         ? "Пиши по-немецки — Мия поправит…"
-        : "Говори или пиши на любом языке…";
+        : "Говори или пиши на любом языке…");
     }
     // German practice listens for German; a normal conversation listens for his own language
     if (this.talkMode === "free") {
@@ -770,7 +826,7 @@ export class Tutor {
     // narration the "звук выключен" switch turns off. Same rate as she used, so it comes straight
     // out of the cache instead of being synthesised a second time.
     const r = this.lastReply;
-    if (r) speech.speak(r.say, { ...(r.lang === "de" ? {} : { lang: NATIVE_LOCALE }), rate: store.state.settings.rate, force: true });
+    if (r) speech.speak(r.say, { ...(r.lang === "de" ? {} : { lang: NATIVE_LOCALE }), rate: store.state.settings.rate, force: true, secret: true });
   }
 
   showHint() {

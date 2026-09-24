@@ -18,6 +18,11 @@ import { cacheKey, synthesise, putClip, hasClip } from "../lib/tts.mjs";
 
 const MIA_VOICE = "de-DE-SeraphinaMultilingualNeural";
 const RU_VOICE = "de-DE-SeraphinaMultilingualNeural"; // multilingual: the same person reads Russian
+// Azerbaijani is a second explanation language, and Seraphina does not speak it — see speech.js,
+// which picks the same voice for the same reason. Without these clips every Azerbaijani word
+// would go through the function on its first play, which is exactly what this script exists to
+// prevent.
+const AZ_VOICE = "az-AZ-BanuNeural";
 
 // These must match RATES and the "sanft" preset in public/js/speech.js exactly. The speed is part
 // of the cache key, so a clip made at the wrong speed is a clip the browser will never ask for.
@@ -36,16 +41,30 @@ if (!dry && (!url || !serviceKey)) {
   process.exit(2);
 }
 
-/** Every line of the course that is ever spoken aloud, with the speed the app will use. */
-function linesOf(level) {
+/**
+ * Every line of the course that is ever spoken aloud, with the speed the app will use.
+ *
+ * `az` is the same line in the second explanation language. The dictionary maps the Russian
+ * string to the Azerbaijani one, which is exactly what the browser will be holding after
+ * translateLevels() — so the cache key computed here is the key it will ask for.
+ */
+function linesOf(level, azOf) {
   const out = [];
   const de = (text, rate) => text && out.push({ text: String(text).trim(), rate, locale: "" });
   const ru = (text, rate) => text && out.push({ text: String(text).trim(), rate, locale: "ru-RU" });
+  const az = (russian, rate) => {
+    const text = russian && azOf(String(russian));
+    if (text) out.push({ text: String(text).trim(), rate, locale: "az-AZ" });
+  };
 
   for (const v of level.vocab || []) {
     de(v.de, RATES.word);
     de(v.example, RATES.example);
     ru(v.ru, RATES.translation);
+    az(v.ru, RATES.translation);
+    // пример на родном языке читается вслед за немецким — см. public/js/vocab.js
+    ru(v.exampleRu, RATES.translation);
+    az(v.exampleRu, RATES.translation);
   }
   for (const g of level.grammar || []) for (const e of g.examples || []) de(e.de, RATES.example);
   for (const l of level.dialogue?.lines || []) de(l.de, l.speaker === "Emil" ? RATES.dialogueAli : RATES.dialogueOther);
@@ -54,7 +73,11 @@ function linesOf(level) {
   // exercises: whatever a 🔊 or a ▶ can play
   for (const ex of [...(level.exercises || []), ...(level.exam || [])]) {
     if (ex.type === "listen") de(ex.text, Math.min(0.92, RATES.listen));
-    de(ex.text, RATES.example);
+    // In a translation exercise `text` is German only when translating FROM German — that is
+    // the one direction with a 🔊 (see translateRenderer in public/js/exercises.js). The other
+    // way round it is the prompt in the learner's own language, and handing that to the German
+    // voice produced a clip nobody will ever ask for.
+    if (ex.type !== "translate" || ex.dir === "de-ru") de(ex.text, RATES.example);
     de(ex.answer, RATES.example);
     de(ex.answers?.[0], RATES.example);
     if (ex.sentence && ex.answers?.[0]) de(ex.sentence.replace("___", ex.answers[0]), RATES.example);
@@ -67,12 +90,18 @@ function linesOf(level) {
 const CONTENT = path.join(process.cwd(), "public", "js", "content");
 const files = fs.readdirSync(CONTENT).filter((f) => /^level[0-9][0-9][.]js$/.test(f)).sort();
 
+// Тот же словарь, которым живёт сайт: ключ кэша считается от того текста, который человек
+// реально увидит на карточке, иначе клип ляжет под ключом, которого браузер не спросит.
+const { azOf } = await import(pathToFileURL(path.join(process.cwd(), "public", "js", "i18n.js")).href);
+const { loadAz } = await import(pathToFileURL(path.join(process.cwd(), "public", "js", "i18n.js")).href);
+await loadAz();
+
 const jobs = new Map(); // key -> {text, voice, locale, rate}
 for (const file of files) {
   const level = (await import(pathToFileURL(path.join(CONTENT, file)).href)).default;
   if (only && level.id !== only) continue;
-  for (const line of linesOf(level)) {
-    const voice = line.locale ? RU_VOICE : MIA_VOICE;
+  for (const line of linesOf(level, azOf)) {
+    const voice = line.locale === "az-AZ" ? AZ_VOICE : line.locale ? RU_VOICE : MIA_VOICE;
     const rate = pct(line.rate);
     const key = cacheKey(voice, rate, line.text, PRESET.pitch, PRESET.volume, line.locale);
     if (!jobs.has(key)) jobs.set(key, { text: line.text, voice, locale: line.locale, rate });

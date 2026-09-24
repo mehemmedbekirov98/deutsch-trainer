@@ -8,6 +8,23 @@
 // либо использовать явную нумерацию {0}, {1}.
 
 export default {
+  "Без имени": "Adsız",
+  "Ты": "Sən",
+  "Минимум 8 символов.": "Ən azı 8 simvol.",
+  "Сменить пароль": "Şifrəni dəyiş",
+  "Отмена": "Ləğv et",
+  "Пароли не совпали — проверь второе поле.": "Şifrələr üst-üstə düşmədi — ikinci xananı yoxla.",
+  "Меняю…": "Dəyişirəm…",
+  "Имя длинновато — до 40 символов.": "Ad bir az uzundur — 40 simvola qədər.",
+  "Азербайджанский голос сейчас недоступен: нет связи с сервисом озвучки, а в системе азербайджанского голоса нет. Текст весь на экране.": "Azərbaycan səsi hazırda əlçatan deyil: səsləndirmə xidməti ilə əlaqə yoxdur, sistemdə isə azərbaycan səsi yoxdur. Mətn tam ekrandadır.",
+  "На сегодня лимит живой Мии исчерпан — она продолжит в обычном режиме.": "Canlı Mianın bu günlük həddi bitdi — o, adi rejimdə davam edəcək.",
+  "Не получается проверить аккаунт. Попробуй чуть позже.": "Hesabı yoxlamaq alınmır. Bir azdan yenə cəhd et.",
+  "Живая Мия сейчас не настроена — поговорим в обычном режиме.": "Canlı Mia hazırda qurulmayıb — adi rejimdə danışaq.",
+  "Голос Мии — для тех, кто вошёл.": "Mianın səsi hesabına daxil olanlar üçündür.",
+  "Озвучка сейчас не настроена.": "Səsləndirmə hazırda qurulmayıb.",
+  "Слишком много новых реплик за сегодня. Голос вернётся завтра.": "Bu gün üçün çox yeni cümlə oldu. Səs sabah qayıdacaq.",
+  "Имя": "Ad",
+  "На сегодня хватит — живая Мия вернётся завтра. Офлайн-режим работает без ограничений.": "Bu günlük bu qudər — canlı Mia sabah qayıdacaq. Oflayn rejim məhdudiyyətsiz işləyir.",
   "Прогресс сейчас сохраняется только в этом браузере — нет связи с сервером. Как появится интернет, он догонит сам.": "Hazırda irəliləyiş yalnız bu brauzerdə saxlanılır — serverlə əlaqə yoxdur. İnternet qayıdan kimi özü sinxronlaşacaq.",
   "Сохранение": "Yaddaş",
   "+\u0001 монет за \u0001-й день подряд": "+\u0001 sikkə — ardıcıl \u0001-ci gün",

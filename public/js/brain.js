@@ -711,7 +711,7 @@ const SELF_PATTERNS = [
  * vocabulary Emil has already met, and only falls through unchanged when nothing is known.
  */
 const RU_NAMES = {
-  ali: "Эмиль", baku: "Баку", govsan: "Баку", berlin: "Берлин", leipzig: "Лейпциг", hamburg: "Гамбург",
+  baku: "Баку", berlin: "Берлин", leipzig: "Лейпциг", hamburg: "Гамбург",
   muenchen: "Мюнхен", wien: "Вена", moskau: "Москва", potsdam: "Потсдам",
   // the cities he is most likely to name once he is there, plus the ones near home
   koeln: "Кёльн", frankfurt: "Франкфурт", stuttgart: "Штутгарт", duesseldorf: "Дюссельдорф",
@@ -877,7 +877,7 @@ function dropGreeting(line) {
 }
 
 /** Mia's opening line for a fresh offline conversation. */
-export function opening(name = "Emil") {
+export function opening() {
   const o = pick(SMALLTALK.openers);
   return { de: o.de, ru: o.ru, topic: o.topic, tip: o.hint || "" };
 }

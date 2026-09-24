@@ -93,7 +93,7 @@ export function renderAuth(container, { onDone, localXp = 0, adoptLocal = null }
     formHost.innerHTML = "";
 
     const msg = el("div", { class: "auth-msg" });
-    const name = field({ label: "Как тебя зовут", icon: "🙂", placeholder: "Эмиль", autocomplete: "name" });
+    const name = field({ label: "Как тебя зовут", icon: "🙂", placeholder: "Имя", autocomplete: "name" });
     const email = field({ label: "Почта", icon: "📧", type: "email", placeholder: "ali@example.com", autocomplete: "username" });
     const pass = field({
       label: isForgot ? "" : "Пароль", icon: "🔒", type: "password",
@@ -135,6 +135,9 @@ export function renderAuth(container, { onDone, localXp = 0, adoptLocal = null }
         }
         if (isReg) {
           if (name.input.value.trim().length < 2) throw new Error("Напиши, как тебя зовут — хотя бы две буквы.");
+          // Верхняя граница есть в базе (колонка на 40 символов), и без этой проверки она
+          // возвращалась английским текстом ошибки Postgres прямо на экран регистрации.
+          if (name.input.value.trim().length > 40) throw new Error("Имя длинновато — до 40 символов.");
           if (String(pass.input.value).length < 8) throw new Error("Пароль — минимум 8 символов.");
           busy(true, "Создаю аккаунт…");
           // Remember the tick BEFORE the account exists: with email confirmation on, sign-up ends
