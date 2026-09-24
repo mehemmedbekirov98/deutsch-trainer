@@ -260,7 +260,6 @@ export class Tutor {
           el("div", { class: "tutor-controls" },
             el("div", { class: "mic-col" },
               (this.mic = el("button", { class: "mic-btn large", type: "button", title: "Говорить", onClick: () => this.toggleListen() }, el("span", { class: "mic-icon" }, "🎤"))),
-              this.micLangSwitch(),
             ),
             el("form", { class: "tutor-form", onSubmit: (e) => { e.preventDefault(); const v = this.input.value.trim(); if (v && this.handleUser(v)) this.input.value = ""; } },
               (this.input = el("input", {
@@ -545,41 +544,21 @@ export class Tutor {
    * and cannot detect the language itself, so this is Emil's explicit choice, remembered between
    * sessions. Pronunciation drills elsewhere always listen in German; here he decides.
    */
+  /**
+   * На каком языке слушать — решается само, по языку последнего вопроса Мии.
+   *
+   * Здесь была кнопка DE/RU и настройка micLang в сейве: человек должен был сам вспомнить,
+   * переключить и не забыть переключить обратно. Спросила по-немецки — слушаем немецкий,
+   * спросила на его языке — слушаем его язык.
+   *
+   * Брать язык из speech.lastLang нельзя: там лежит то, что микрофон слушал в прошлый раз,
+   * и он замкнётся сам на себя навсегда.
+   */
   micLang() {
-    // Настройка хранит саму локаль, и старые сейвы помнят «ru-RU». Считаем родным всё, что
-    // не немецкое: тогда человек, переключивший сайт на азербайджанский, получает азербайджанский
-    // микрофон, а его прежний выбор «слушать родной» не теряется.
-    return store.state.settings.micLang === "de-DE" ? "de-DE" : NATIVE_LOCALE;
+    if (this.chatMode === "german") return "de-DE";
+    return this.lastReply?.lang === "de" ? "de-DE" : NATIVE_LOCALE;
   }
 
-  /** The DE/RU switch under the microphone. */
-  micLangSwitch() {
-    const btn = el("button", { class: "mic-lang", type: "button" });
-    const paint = () => {
-      const ru = this.micLang() !== "de-DE";
-      btn.textContent = ru ? langInfo().short : "DE";
-      btn.classList.toggle("ru", ru);
-      btn.title = tr(ru ? "Микрофон слушает русский. Нажми, чтобы говорить по-немецки." : "Микрофон слушает немецкий. Нажми, чтобы говорить по-русски.");
-      btn.setAttribute("aria-label", btn.title);
-    };
-    btn.addEventListener("click", () => {
-      const next = this.micLang() === "de-DE" ? NATIVE_LOCALE : "de-DE";
-      store.update((st) => { st.settings.micLang = next; });
-      paint();
-      if (this.listening) {
-        // Abort, never stop: stop() hands back whatever was captured so far, so the half-said
-        // German sentence would be submitted to Mia as a finished turn instead of being dropped.
-        this.relisten = true;
-        speech.abortListening();
-        this.setState("listening", next === "de-DE" ? "Слушаю… говори по-немецки" : "Слушаю… говори по-русски");
-      } else {
-        this.setState("idle", next === "de-DE" ? "Микрофон слушает по-немецки" : "Микрофон слушает по-русски");
-      }
-    });
-    paint();
-    this.micLangPaint = paint; // so switching the whole conversation to German repaints it too
-    return btn;
-  }
 
   scrollChat() {
     this.chat.scrollTo({ top: this.chat.scrollHeight, behavior: "smooth" });
@@ -869,11 +848,8 @@ export class Tutor {
         ? "Пиши по-немецки — Мия поправит…"
         : "Говори или пиши на любом языке…");
     }
-    // German practice listens for German; a normal conversation listens for his own language
-    if (this.talkMode === "free") {
-      store.update((s) => { s.settings.micLang = next === "german" ? "de-DE" : NATIVE_LOCALE; });
-      this.micLangPaint?.();
-    }
+    // Микрофон теперь ничего не запоминает: micLang() сам смотрит на режим и на язык
+    // последнего вопроса Мии.
     if (!fromMia) toast(next === "german" ? "Хорошо, дальше по-немецки." : "Хорошо, говорим как обычно.", { icon: next === "german" ? "🇩🇪" : "💬" });
   }
 

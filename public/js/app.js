@@ -77,6 +77,9 @@ async function boot() {
     }
   });
   renderSidebarStats();
+  // Переключатель языка живёт в боковом меню, а не в кабинете: менять язык
+  // хочется там, где стоишь. Рисуем один раз: setLang перезагружает страницу.
+  $("#sidebar-lang")?.append(langSwitch({ compact: true }));
   window.addEventListener("hashchange", route);
   document.addEventListener("click", () => { try { speech.germanVoices(); } catch {} }, { once: true });
   route();
@@ -472,6 +475,30 @@ function viewPlacement(v) {
  */
 let routeSeq = 0;
 
+/**
+ * Что открыто без аккаунта.
+ *
+ * Гость проходит первый урок целиком — этого хватает, чтобы понять, что за курс.
+ * Всё остальное — Мия, тренировка, игры, рейтинг, кабинет — после регистрации.
+ *
+ * Проверка именно такая, а не просто `session.guest`. Без `session.available` сайт,
+ * развёрнутый без Supabase, закрылся бы целиком и навсегда: войти там некуда,
+ * зарегистрироваться тоже нельзя. Тот же приём уже есть выше для AI и озвучки.
+ */
+const DEMO_LEVEL = 1;
+const GUEST_ROUTES = new Set(["home", "levels", "level", "login", "password", "reset"]);
+const membersOnly = () => session.available && session.guest;
+
+/** Экран «это для своих» — не тупик, а приглашение. */
+function renderMembersOnly(v, what) {
+  append(v, el("div", { class: "empty-state" },
+    el("div", { class: "empty-icon" }, "🔒"),
+    el("h2", {}, what),
+    el("p", { class: "muted" }, "Заведи аккаунт — это бесплатно и занимает минуту. Прогресс будет с тобой на любом устройстве."),
+    el("div", { class: "actions-row" },
+      el("a", { class: "btn primary", href: "#/login" }, "Завести аккаунт"),
+      el("a", { class: "btn ghost", href: "#/level/1" }, "Открыть первый урок"))));
+}
 async function route() {
   const seq = ++routeSeq;
   cleanup?.();
@@ -488,6 +515,11 @@ async function route() {
   let routeName = a || "home";
   if (["games", "words", "review", "shop"].includes(routeName)) routeName = routeName === "shop" ? "profile" : "practice";
   let focus = false;
+  // Запрет стоит здесь, а не в меню: адрес можно набрать руками или прийти по закладке.
+  if (membersOnly() && (!GUEST_ROUTES.has(a || "home") || (a === "level" && Number(b) !== DEMO_LEVEL))) {
+    setActiveNav(routeName);
+    return renderMembersOnly(v, a === "level" ? "Дальше первого урока — с аккаунтом" : "Это откроется с аккаунтом");
+  }
   try {
     if (!a) renderHome(v);
     else if (a === "levels") renderLevels(v);
@@ -547,10 +579,31 @@ async function route() {
   // jumps somewhere unrelated. tabindex -1 keeps it out of the normal tab order.
   if (v.getAttribute("tabindex") === null) v.setAttribute("tabindex", "-1");
   nextTick(() => { try { v.focus({ preventScroll: true }); } catch {} });
-  $$("#nav a").forEach((x) => x.classList.toggle("active", x.dataset.route === routeName));
+  setActiveNav(routeName);
   nextTick(() => v.classList.add("enter"));
 }
 
+/**
+ * Подсветить текущий пункт меню — и повесить замок на те, что гостю закрыты.
+ *
+ * Замок — подмена эмодзи внутри .nav-icon и класс на самой ссылке. Ни третьего span,
+ * ни дописки к подписи: первое отняло бы у подписи правила :last-child (на телефоне они
+ * её прячут), второе сломало бы перевод — он ищет текстовый узел целиком.
+ *
+ * Сама защита не здесь, а в route(): меню — это подсказка, а не замок.
+ */
+function setActiveNav(routeName) {
+  const shut = membersOnly();
+  $$("#nav a").forEach((x) => {
+    x.classList.toggle("active", x.dataset.route === routeName);
+    const closed = shut && !GUEST_ROUTES.has(x.dataset.route);
+    x.classList.toggle("nav-locked", closed);
+    const icon = x.querySelector(".nav-icon");
+    if (!icon) return;
+    if (icon.dataset.icon === undefined) icon.dataset.icon = icon.textContent;
+    icon.textContent = closed ? "🔒" : icon.dataset.icon;
+  });
+}
 /* --------------------------------------------------------------- sidebar */
 function renderSidebarStats() {
   const host = $("#sidebar-stats");

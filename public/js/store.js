@@ -184,7 +184,10 @@ function freshState() {
     levels: {},
     achievements: [],
     stats: { answered: 0, correct: 0, tutorTurns: 0, speakCorrect: 0, wordsLearned: 0, bestCombo: 0, days: [], minutes: 0, hintsUsed: 0 },
-    settings: { sound: true, tts: true, autoListen: true, showRu: true, voice: null, rate: 0.92, neural: true, tone: "sanft", micLang: "de-DE" },
+    // Голоса, скорости, тембра и языка микрофона здесь больше нет: Мия звучит одинаково у всех,
+    // а микрофон выбирает язык сам. Старые сейвы с этими полями ничего не ломают —
+    // adopt() просто пронесёт их мимо, их больше никто не читает.
+    settings: { sound: true, tts: true, autoListen: true, showRu: true },
     // What he told us about himself on the very first screen. Someone who already has school
     // German should not have to grind through "Hallo, ich heiße Emil" to reach the level he is at.
     cefrClaim: "A1",

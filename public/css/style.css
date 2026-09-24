@@ -1159,6 +1159,13 @@ a.strip-item:hover { background: var(--card-hover); }
 .lang-btn.on:hover { background: var(--accent); }
 .lang-flag { font-size: 16px; line-height: 1; }
 .lang-switch.compact { margin: 0 auto 18px; }
+/* Переключатель языка в боковом меню: виден на любом экране, а не только в кабинете. */
+.sidebar-lang { margin-top: auto; display: flex; justify-content: center; }
+/* Пункт меню, закрытый до регистрации: тусклее, но кликабелен —
+   по нём человек попадает на приглашение завести аккаунт, а не в пустоту. */
+.nav a.nav-locked { opacity: .5; }
+.nav a.nav-locked:hover { opacity: .75; }
+.sidebar-lang .lang-switch.compact { margin: 0; width: 100%; justify-content: center; }
 .lang-short { display: none; }
 .lang-switch.compact .lang-name { display: none; }
 .lang-switch.compact .lang-short { display: inline; }
