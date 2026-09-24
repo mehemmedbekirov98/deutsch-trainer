@@ -111,6 +111,18 @@ const unesc = (s) => s
   .replace(/\\`/g, BT).replace(/\\"/g, '"').replace(/\\'/g, "'")
   .replace(/\\\\/g, "\\");
 
+/**
+ * Шаблон с подстановкой, но без тега `tr` — русский текст, который не переведётся никогда.
+ *
+ * Перевод ищется по ЦЕЛОЙ строке. Склейка `\` · ${subtitle}\`` даёт на выходе « · найди пары»,
+ * и в словаре такого ключа нет, хотя «найди пары» там лежит. На экране остаётся русский, а
+ * отчёт о полноте перевода показывает 100%: он видит литерал «найди пары» отдельно и считает
+ * его переведённым. Ровно так подзаголовки всех пяти игр остались русскими.
+ *
+ * Лечится либо тегом (tr`Урок ${id}`), либо передачей кусков отдельными детьми el().
+ */
+const untagged = [];
+
 /** Ключи словаря, которые нужны этому файлу. Тегированный шаблон даёт ключ с метками вместо значений. */
 function keysOf(file) {
   const src = fs.readFileSync(file, "utf8").replace(/\r\n/g, "\n");
@@ -118,8 +130,12 @@ function keysOf(file) {
   for (const tk of literals(src)) {
     let key = null;
     if (tk.kind === "str") { if (CYR.test(tk.raw)) key = unesc(tk.raw); }
-    else if (tk.parts.length > 1) { if (tk.tag === "tr") key = tk.parts.map(unesc).join(SLOT); }
-    else if (CYR.test(tk.parts[0])) key = unesc(tk.parts[0]);
+    else if (tk.parts.length > 1) {
+      if (tk.tag === "tr") key = tk.parts.map(unesc).join(SLOT);
+      else if (tk.parts.some((p) => CYR.test(p))) {
+        untagged.push({ file: path.basename(file), text: tk.parts.map(unesc).join("…").trim().slice(0, 70) });
+      }
+    } else if (CYR.test(tk.parts[0])) key = unesc(tk.parts[0]);
     if (key && CYR.test(key) && !SKIP_EXACT.has(key) && !isLogLine(key)) keys.push(key);
   }
   return keys;
@@ -284,5 +300,14 @@ if (complaints.length) {
   }
 }
 
+if (untagged.length) {
+  console.log(`\nШаблонов без тега tr: ${untagged.length} — этот текст не переведётся НИКОГДА:`);
+  for (const u of untagged.slice(0, 12)) console.log(`    · ${u.file}: «${u.text}»`);
+  if (untagged.length > 12) console.log(`    … и ещё ${untagged.length - 12}`);
+  console.log("  Лечится тегом — tr`Урок ${id}` — или передачей кусков отдельными детьми el().");
+}
+
 console.log(`\nВсего без перевода: ${totalMissing}`);
-if (strict && (totalMissing || complaints.length)) process.exit(1);
+// Шаблон без тега роняет отчёт всегда, а не только в строгом режиме: это не «ещё не перевели»,
+// а текст, который перевести нечем, — и при этом он показывает 100% готовности.
+if (untagged.length || (strict && (totalMissing || complaints.length))) process.exit(1);

@@ -90,7 +90,10 @@ function shell({ container, title, subtitle, onExit }) {
   const root = el("div", { class: "session game" },
     el("header", { class: "session-head" },
       el("button", { class: "icon-btn", type: "button", title: "Выйти", onClick: () => onExit?.() }, "✕"),
-      el("div", { class: "session-title" }, title, subtitle ? el("span", { class: "muted" }, ` · ${subtitle}`) : null),
+      el("div", { class: "session-title" }, title,
+        // Отдельными кусками, а не шаблоном: перевод ищется по ЦЕЛОЙ строке, и « · найди пары» в словаре
+        // не находилось, хотя «найди пары» там есть. Подзаголовки игр оставались русскими.
+        subtitle ? el("span", { class: "muted" }, " · ", subtitle) : null),
       el("div", { class: "game-score" }, ""),
     ),
     body, foot,
