@@ -57,19 +57,67 @@ function field({ label, type = "text", placeholder = "", autocomplete, icon, hin
   return { wrap, input };
 }
 
-/** How strong the password looks, said plainly rather than as a score out of four. */
+/**
+ * Чего не хватает паролю. null — всё в порядке.
+ *
+ * Раньше требовалась только длина в восемь символов, а полоска силы была советом,
+ * который ничего не решал: «password» проходил.
+ *
+ * \p{Ll} и \p{Lu} с флагом u, а не [a-z]/[A-Z]: пароль вполне может быть русским или
+ * азербайджанским, и требовать именно латинскую заглавную было бы странно.
+ */
+export function passwordProblem(value) {
+  const v = String(value ?? "");
+  if (v.length < 8) return "Пароль — минимум 8 символов.";
+  if (!/\p{Ll}/u.test(v)) return "В пароле нужна строчная буква.";
+  if (!/\p{Lu}/u.test(v)) return "В пароле нужна заглавная буква.";
+  if (!/\d/.test(v)) return "В пароле нужна цифра.";
+  return null;
+}
+
+/**
+ * Похож ли адрес на настоящий. null — похож.
+ *
+ * Это проверка формы, а не существования: существование проверяет письмо с подтверждением —
+ * без перехода по ссылке аккаунта не будет. Здесь отсеивается мусор и опечатки вроде
+ * «sam@gmail» или «sam@@gmail.com», чтобы человек узнал об этом сразу, а не ждал письма,
+ * которое никуда не ушло.
+ */
+// Разбором по частям, а не одним большим регексом: так видно, что именно не так,
+// и одна потерянная обратная косая не превращает проверку в «отклонять всё».
+const LABEL = /^[\p{L}\d]([\p{L}\d-]*[\p{L}\d])?$/u;
+const USER  = /^[\p{L}\d._+-]+$/u;
+const TLD   = /^[\p{L}]{2,}$/u;
+export function emailProblem(value) {
+  const v = String(value ?? "").trim();
+  if (!v) return "Впиши почту.";
+  const parts = v.split("@");
+  if (parts.length !== 2) return "Это не похоже на адрес почты — проверь ещё раз.";
+  const [user, domain] = parts;
+  if (!USER.test(user) || user.startsWith(".") || user.endsWith(".") || user.includes("..")) return "Это не похоже на адрес почты — проверь ещё раз.";
+  const labels = domain.split(".");
+  if (labels.length < 2 || !labels.every((l) => LABEL.test(l))) return "Это не похоже на адрес почты — проверь ещё раз.";
+  if (!TLD.test(labels[labels.length - 1])) return "Это не похоже на адрес почты — проверь ещё раз.";
+  return null;
+}
+
+/**
+ * Что показывать под полем пароля.
+ *
+ * Говорит ровно то же, что потом проверит форма. Раньше полоска хвалила пароль
+ * словом «Сойдёт», а проверка была только на длину — два разных мнения об одном пароле.
+ */
 function strengthOf(value) {
   const v = String(value);
   if (!v) return null;
   if (v.length < 8) return { level: "weak", text: tr`Ещё ${8 - v.length} ${plural(8 - v.length)}` };
-  let score = 0;
-  if (v.length >= 12) score++;
-  if (/[a-zа-я]/.test(v) && /[A-ZА-Я]/.test(v)) score++;
-  if (/\d/.test(v)) score++;
-  if (/[^\w\s]/.test(v)) score++;
-  if (score >= 3) return { level: "strong", text: "Хороший пароль" };
-  if (score >= 1) return { level: "ok", text: "Сойдёт" };
-  return { level: "weak", text: "Слабоват — добавь цифру или заглавную" };
+  const problem = passwordProblem(v);
+  if (problem) return { level: "weak", text: problem };
+  // Требования выполнены — дальше просто похвала за запас прочности.
+  const strong = v.length >= 12 || /[^\p{L}\d]/u.test(v);
+  return strong
+    ? { level: "strong", text: "Хороший пароль" }
+    : { level: "ok", text: "Подходит. Длиннее или со знаком — будет крепче" };
 }
 const plural = (n) => (n === 1 ? "символ" : n < 5 ? "символа" : "символов");
 
@@ -97,7 +145,7 @@ export function renderAuth(container, { onDone, localXp = 0, adoptLocal = null }
     const email = field({ label: "Почта", icon: "📧", type: "email", placeholder: "ali@example.com", autocomplete: "username" });
     const pass = field({
       label: isForgot ? "" : "Пароль", icon: "🔒", type: "password",
-      placeholder: isReg ? "Минимум 8 символов" : "Твой пароль",
+      placeholder: isReg ? "От 8 символов, с заглавной и цифрой" : "Твой пароль",
       autocomplete: isReg ? "new-password" : "current-password",
     });
     const strength = el("div", { class: "auth-strength" });
@@ -126,6 +174,8 @@ export function renderAuth(container, { onDone, localXp = 0, adoptLocal = null }
       msg.textContent = "";
       try {
         if (isForgot) {
+          const badMail = emailProblem(email.input.value);
+          if (badMail) throw new Error(badMail);
           busy(true, "Отправляю…");
           await requestReset(email.input.value.trim());
           msg.className = "auth-msg ok";
@@ -138,7 +188,10 @@ export function renderAuth(container, { onDone, localXp = 0, adoptLocal = null }
           // Верхняя граница есть в базе (колонка на 40 символов), и без этой проверки она
           // возвращалась английским текстом ошибки Postgres прямо на экран регистрации.
           if (name.input.value.trim().length > 40) throw new Error("Имя длинновато — до 40 символов.");
-          if (String(pass.input.value).length < 8) throw new Error("Пароль — минимум 8 символов.");
+          const badMail = emailProblem(email.input.value);
+          if (badMail) throw new Error(badMail);
+          const badPass = passwordProblem(pass.input.value);
+          if (badPass) throw new Error(badPass);
           busy(true, "Создаю аккаунт…");
           // Remember the tick BEFORE the account exists: with email confirmation on, sign-up ends
           // here and the person comes back in a separate visit, by which time this screen — and
@@ -246,7 +299,7 @@ export function renderAuth(container, { onDone, localXp = 0, adoptLocal = null }
 
 /** The screen Supabase's password-reset link lands on. */
 export function renderNewPassword(container, { onDone } = {}) {
-  const pass = field({ label: "Новый пароль", icon: "🔒", type: "password", placeholder: "Минимум 8 символов", autocomplete: "new-password" });
+  const pass = field({ label: "Новый пароль", icon: "🔒", type: "password", placeholder: "От 8 символов, с заглавной и цифрой", autocomplete: "new-password" });
   const strength = el("div", { class: "auth-strength" });
   pass.input.addEventListener("input", () => {
     const s = strengthOf(pass.input.value);
@@ -268,7 +321,8 @@ export function renderNewPassword(container, { onDone } = {}) {
         submit.classList.add("loading");
         submit.textContent = tr("Сохраняю…");
         try {
-          if (String(pass.input.value).length < 8) throw new Error("Пароль — минимум 8 символов.");
+          const badPass = passwordProblem(pass.input.value);
+          if (badPass) throw new Error(badPass);
           await changePassword(pass.input.value);
           toast("Пароль изменён.", { icon: "🔒" });
           onDone?.();
