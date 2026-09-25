@@ -12,7 +12,7 @@ import { LEVELS, LEVEL_BY_ID, missionsOf } from "./levels.js";
 import { SHOP, TITLE_NAMES, COINS, priceOf, applyTheme } from "./game.js";
 import { RATES } from "./speech.js";
 import { logoSvg } from "./logo.js";
-import { session, renderAuth, renderNewPassword, patchMe, changePassword } from "./auth.js";
+import { session, renderAuth, renderNewPassword, changePassword } from "./auth.js";
 import { renderPlacement } from "./placement.js";
 import { backend } from "./backend.js";
 import { CEFR, CEFR_TITLE, CEFR_FIRST, CEFR_LAST } from "./store.js";
@@ -79,7 +79,7 @@ async function boot() {
   renderSidebarStats();
   // Переключатель языка живёт в боковом меню, а не в кабинете: менять язык
   // хочется там, где стоишь. Рисуем один раз: setLang перезагружает страницу.
-  $("#sidebar-lang")?.append(langSwitch({ compact: true }));
+  $("#topbar-lang")?.append(langSwitch({ compact: true }));
   window.addEventListener("hashchange", route);
   document.addEventListener("click", () => { try { speech.germanVoices(); } catch {} }, { once: true });
   route();
@@ -1413,22 +1413,6 @@ function accountActions() {
   ].filter(Boolean);
 }
 
-/** Whether this person appears in the shared table. Their own decision, so it lives in settings. */
-function boardSetting() {
-  if (session.guest) return null;
-  const toggle = el("input", { type: "checkbox" });
-  toggle.checked = session.user.publicBoard !== false;
-  toggle.addEventListener("change", () => {
-    patchMe({ publicBoard: toggle.checked })
-      .then(() => toast(toggle.checked ? "Ты снова в общем рейтинге." : "Скрыл тебя из общего рейтинга.", { icon: "🏆" }))
-      .catch((e) => { toggle.checked = !toggle.checked; toast(e.message, { icon: "⚠️", kind: "warn" }); });
-  });
-  return el("label", { class: "setting" },
-    el("div", {},
-      el("div", { class: "setting-label" }, "Показывать меня в рейтинге"),
-      el("div", { class: "muted small" }, "Другие увидят имя, опыт и уровень — больше ничего")),
-    el("span", { class: "toggle" }, toggle, el("span", { class: "toggle-track" }, el("span", { class: "toggle-thumb" }))));
-}
 
 /**
  * Новый пароль — в настоящем поле, а не в prompt() браузера.
@@ -1541,16 +1525,6 @@ function renderProfile(v) {
   const settings = s.settings;
   const title = s.title ? TITLE_NAMES[s.title] : null;
 
-  const setting = (label, key, sub = null) => {
-    const input = el("input", { type: "checkbox" });
-    input.checked = Boolean(settings[key]);
-    input.addEventListener("change", () => { store.update((st) => (st.settings[key] = input.checked)); if (key === "sound") setSoundEnabled(input.checked); });
-    return el("label", { class: "setting" }, el("div", {}, el("div", { class: "setting-label" }, label), sub ? el("div", { class: "muted small" }, sub) : null), el("span", { class: "toggle" }, input, el("span", { class: "toggle-track" }, el("span", { class: "toggle-thumb" }))));
-  };
-  const goal = el("input", { type: "range", min: "20", max: "200", step: "10", value: String(s.dailyGoal) });
-  const goalVal = el("span", { class: "muted" }, `${s.dailyGoal} XP`);
-  goal.addEventListener("input", () => (goalVal.textContent = tr(`${goal.value} XP`)));
-  goal.addEventListener("change", () => store.update((st) => (st.dailyGoal = Number(goal.value))));
 
   const band = store.cefrProgress();
   const who = session.user?.name || s.name || "";
@@ -1597,29 +1571,6 @@ function renderProfile(v) {
     el("section", { class: "card" },
       el("div", { class: "card-head" }, el("h2", {}, "Достижения"), el("span", { class: "muted" }, `${s.achievements.length} / ${ACHIEVEMENTS.length}`)),
       el("div", { class: "ach-grid" }, ACHIEVEMENTS.map((a, i) => { const got = s.achievements.includes(a.id); return el("div", { class: `ach ${got ? "got" : ""}`, title: a.ru, style: { "--i": i } }, el("div", { class: "ach-icon" }, got ? a.icon : "🔒"), el("div", { class: "ach-title" }, a.title), el("div", { class: "ach-ru muted" }, a.ru)); })),
-    ),
-    el("section", { class: "card" },
-      el("div", { class: "card-head" }, el("h2", {}, "Настройки")),
-      el("div", { class: "settings" },
-        el("div", { class: "setting" },
-          el("div", {},
-            el("div", { class: "setting-label" }, "Язык сайта"),
-            el("div", { class: "muted small" }, "Интерфейс, все уроки, игры и Мия. Немецкий остаётся немецким.")),
-          langSwitch()),
-        boardSetting(),
-        setting("Звуковые эффекты", "sound"),
-        setting("Озвучка немецкого (TTS)", "tts"),
-        setting("Авто-микрофон в разговоре", "autoListen", "После реплики Мии микрофон включается сам"),
-        setting("Показывать перевод", "showRu", "Русский перевод под репликами Мии и в диалогах"),
-        el("div", { class: "setting" }, el("div", {}, el("div", { class: "setting-label" }, "Цель на день"), goalVal), goal),
-        el("div", { class: "setting" },
-          el("div", {},
-            el("div", { class: "setting-label" }, "Свободный разговор"),
-            el("div", { class: "muted small" }, AI
-              ? "Включён: Мия отвечает на любые темы и помнит ваши разговоры"
-              : "Выключен: Мия отвечает из офлайн-словаря — слова, грамматика, Германия, сам сайт")),
-          el("span", { class: AI ? "badge ai" : "badge offline" }, AI ? "включён" : "офлайн")),
-      ),
     ),
     AI ? null : aiKeyCard(),
     el("section", { class: "card danger" },

@@ -656,6 +656,16 @@ export class Tutor {
     // he may well have said this in Russian — marking it lang="de" would have the browser and the
     // replay button pronounce Russian words with a German mouth
     const said = langOf(text);
+    // Написал на своём — разговор возвращается к своему. Решает это браузер, а не модель.
+    //
+    // Раньше выход из немецкого режима зависел только от того, пришлёт ли Мия mode = "chat".
+    // Это мягкая просьба в промпте, и она спорит со стоящим рядом «сейчас говорим по-немецки», так
+    // что модель часто оставалась в немецком. Человек писал по-русски и получал немецкий в ответ,
+    // а вместе с режимом застревали и микрофон, и подсказка в поле ввода.
+    //
+    // Только в свободном разговоре: сценарий и экзамен — сами по себе немецкие, выходить оттуда
+    // некуда, и вопрос на родном языке там — это один шаг в сторону, а не смена языка разговора.
+    if (this.talkMode === "free" && this.chatMode === "german" && said !== "de") this.setChatMode("chat", true);
     const bubble = el("div", { class: "bubble ali" }, el("div", { class: "bubble-name" }, meLabel()), el("div", { class: "bubble-de", lang: said }, text));
     this.chat.append(bubble);
     nextTick(() => bubble.classList.add("show"));

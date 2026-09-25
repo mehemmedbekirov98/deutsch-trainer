@@ -898,7 +898,12 @@ input[type="range"] { accent-color: var(--accent); width: 200px; }
 .shop-item.theme-nacht { background: linear-gradient(135deg, var(--acc-18), var(--card)); }
 /* the view takes focus after a route change; it must not draw an outline for a mouse click */
 .view:focus { outline: none; }
-.view:focus-visible { outline: 2px solid var(--accent2); outline-offset: 4px; }
+/* Рамки вокруг всего экрана быть не должно. Контейнер вида получает фокус программно
+   после каждой перерисовки — чтобы Tab и экранный диктор продолжали с нового экрана, а не с
+   того, на что только что нажали. Браузер иногда считает такой фокус «клавиатурным» и рисует
+   обводку — само заметно было при смене языка, которая перезагружает страницу.
+   Клавишей сюда не попасть (tabindex -1), так что обводка никому не нужна. */
+.view:focus-visible { outline: none; }
 
 /* =========================================================
    Home, practice, leaderboard, accounts
@@ -1159,13 +1164,11 @@ a.strip-item:hover { background: var(--card-hover); }
 .lang-btn.on:hover { background: var(--accent); }
 .lang-flag { font-size: 16px; line-height: 1; }
 .lang-switch.compact { margin: 0 auto 18px; }
-/* Переключатель языка в боковом меню: виден на любом экране, а не только в кабинете. */
-.sidebar-lang { margin-top: auto; display: flex; justify-content: center; }
-/* Пункт меню, закрытый до регистрации: тусклее, но кликабелен —
-   по нём человек попадает на приглашение завести аккаунт, а не в пустоту. */
-.nav a.nav-locked { opacity: .5; }
-.nav a.nav-locked:hover { opacity: .75; }
-.sidebar-lang .lang-switch.compact { margin: 0; width: 100%; justify-content: center; }
+/* Шапка сайта. Здесь живёт выбор языка — там же, где его ищут на любом сайте. */
+.topbar { display: flex; justify-content: flex-end; align-items: center; gap: 12px; margin: 0 auto 18px; max-width: 1080px; }
+.topbar .lang-switch.compact { margin: 0; }
+/* В полноэкранном режиме (игра, разговор) шапка уходит вместе с меню. */
+body.focus .topbar { display: none; }
 .lang-short { display: none; }
 .lang-switch.compact .lang-name { display: none; }
 .lang-switch.compact .lang-short { display: inline; }
