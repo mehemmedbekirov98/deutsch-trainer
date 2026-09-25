@@ -79,7 +79,10 @@ export const presetById = (id) => VOICE_PRESETS.find((p) => p.id === id) || VOIC
  * всех четырёх тембрах — 37 тысяч клипов. Возьмёшь значения вне этого списка — кеш
  * обнулится целиком и каждое слово пойдёт через синтез с ожиданием.
  */
-export const TONE = presetById("klar");
+// «normal», а не «sanft» и не «klar». Самый мягкий тембр слишком медленный (−12 %) и тихий,
+// самый бодрый — громкий и с задранным тоном. Нужна живая речь: скорость почти ровная,
+// тон и громкость не тронуты — голос звучит так, как его записали, а не растянуто.
+export const TONE = presetById("normal");
 export const BASE_RATE = 0.92;
 const isNeural = (id) => typeof id === "string" && id.includes("Neural");
 
@@ -148,6 +151,19 @@ class Speech {
     if (this.synth) this.synth.addEventListener?.("voiceschanged", () => this._loadVoices());
   }
 
+  /**
+   * Можно ли подменить Мию голосом браузера.
+   *
+   * Нет, пока на сайте есть настоящий голос. Голос браузера — это робот, и подставлять
+   * его вместо Мии при первой же сетевой икоте — хуже, чем честно сказать, что голос
+   * сейчас недоступен. У Мии один голос, и он либо звучит, либо молчит.
+   *
+   * Исключение одно: развёртывание, где серверной озвучки нет совсем (в /api/status tts: false).
+   * Там выбор не между голосами, а между роботом и полной тишиной.
+   */
+  get canUseBrowserVoice() {
+    return this.serverTts === false;
+  }
   get settings() {
     try { return store.state.settings || {}; } catch { return {}; }
   }
@@ -237,7 +253,10 @@ class Speech {
           if (plans[n + 1] && !this.cache.has(plans[n + 1].key)) this.fetchAudio(plans[n + 1], { cancellable: false }).catch(() => {});
           const ok = await this.speakServer(plans[n]);
           if (ok === "stopped" || run !== this.speakRun) return true;
-          if (ok === false) return this.speakBrowser(parts.slice(n).join(" "), { rate: plans[n].rate, pitch, gender, voiceName: plans[n].browserVoice, lang });
+          if (ok === false) {
+            if (!this.canUseBrowserVoice) { this.warnNoVoice(lang); return false; }
+            return this.speakBrowser(parts.slice(n).join(" "), { rate: plans[n].rate, pitch, gender, voiceName: plans[n].browserVoice, lang });
+          }
         }
         return true;
       }
@@ -248,9 +267,10 @@ class Speech {
       const ok = await this.speakServer(plan);
       if (ok !== false) return true;
     }
+    if (!this.canUseBrowserVoice) { this.warnNoVoice(lang); return false; }
     const spoke = await this.speakBrowser(text, { rate: plan.rate, pitch, gender, voiceName: plan.browserVoice, lang });
-    // Neither the neural voice nor a female system voice could speak this. Silence with no
-    // explanation looks like the app is broken, so say so once — not on every line.
+    // Ни настоящий голос, ни женский голос системы. Молчание без объяснения выглядит
+    // как поломка — говорим один раз, а не на каждой реплике.
     if (!spoke) this.warnNoVoice(lang);
     return spoke;
   }
