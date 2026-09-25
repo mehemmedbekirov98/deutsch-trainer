@@ -206,10 +206,41 @@ const isRussian = (s) => RU_LETTERS.test(s);
  * Граница слова здесь задана через просмотр вокруг: штатная проверка границы в JS
  * знает только латинские буквы и после «ə» не срабатывает.
  */
+/**
+ * Различить три языка по самому тексту.
+ *
+ * Русский виден сразу — кириллица. А вот азербайджанский и немецкий оба латинские,
+ * и разделить их труднее, чем кажется.
+ *
+ * Сначала я искал буквы ə, ğ, ı, ş, ç — и этого оказалось мало: люди сплошь и рядом
+ * пишут с обычной раскладки — «Men bilmirem», «Cox sag ol», «Sabah gorusuruk». Да и в самом
+ * «Salam» ни одной такой буквы нет. Список азербайджанских слов тут не спасает: его пришлось бы
+ * дописывать бесконечно.
+ *
+ * Поэтому ищем признаки НЕМЕЦКОГО — их мало и они плотные: äöüß и служебные
+ * слова, без которых немецкой фразы почти не бывает. А если признаков нет никаких —
+ * человек, скорее всего, пишет на том языке, на котором читает сайт.
+ *
+ * На русском сайте это по-прежнему немецкий: свой язык там пишут кириллицей, так
+ * что латиница без признаков — это попытка сказать по-немецки.
+ *
+ * Граница слова задана просмотром вокруг: штатная в JS знает только латинские
+ * буквы и после «ə» не срабатывает.
+ */
 const AZ_LETTERS = /[əğışçƏĞİŞÇ]/;
-const AZ_WORDS = /(?<![\p{L}\p{N}])(mən|sən|bu|nə|var|yox|yaxşı|necə|salam|bəli|deyil|istəyirəm|bilmirəm)(?![\p{L}\p{N}])/iu;
-export const langOf = (s) => (isRussian(s) ? "ru" : AZ_LETTERS.test(s) || AZ_WORDS.test(s) ? "az" : "de");
+const DE_LETTERS = /[äöüßÄÖÜ]/;
+// Литералом, а не new RegExp("…"): в строке JS съедает обратную косую, и \p{L} превращается
+// в класс из букв p, {, L, }. Граница слова перестаёт работать, и немецкое «dem» находится
+// внутри азербайджанского «demekdir».
+const DE_WORDS = /(?<![\p{L}\p{N}])(ich|du|er|sie|es|wir|ihr|mir|mich|dir|dich|ist|bin|bist|sind|war|habe|hast|hat|haben|nicht|kein|keine|und|oder|aber|weil|dass|wenn|das|der|die|den|dem|ein|eine|einen|einem|mit|für|auf|aus|bei|nach|von|zu|im|am|wie|was|wo|wann|warum|wer|welche|gut|sehr|auch|noch|schon|mehr|viel|hier|dort|jetzt|heute|gestern|morgen|immer|nie|danke|bitte|hallo|tschüss|ja|nein|guten|abend|nacht|entschuldigung|kann|muss|will|möchte|werde|soll|darf|mein|dein|sein|unser|deutsch|sprechen|heiße)(?![\p{L}\p{N}])/iu;
 
+export const langOf = (s) => {
+  const t = String(s || "");
+  if (isRussian(t)) return "ru";
+  if (AZ_LETTERS.test(t)) return "az";
+  if (DE_LETTERS.test(t) || DE_WORDS.test(t)) return "de";
+  return uiLang() === "az" ? "az" : "de";
+};
 /** Whole-word test, so "hi" never matches inside "hier" and "да" never inside "даже". */
 const hasWord = (text, words) => {
   const tokens = new Set(text.split(" "));
