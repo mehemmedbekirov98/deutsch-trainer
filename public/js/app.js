@@ -518,10 +518,11 @@ async function route() {
   // Запрет стоит здесь, а не в меню: адрес можно набрать руками или прийти по закладке.
   if (membersOnly() && (!GUEST_ROUTES.has(a || "home") || (a === "level" && Number(b) !== DEMO_LEVEL))) {
     setActiveNav(routeName);
+    renderSidebarStats();
     return renderMembersOnly(v, a === "level" ? "Дальше первого урока — с аккаунтом" : "Это откроется с аккаунтом");
   }
   try {
-    if (!a) renderHome(v);
+    if (!a) (membersOnly() ? renderLanding : renderHome)(v);
     else if (a === "levels") renderLevels(v);
     else if (a === "level") {
       routeName = "levels";
@@ -580,6 +581,10 @@ async function route() {
   if (v.getAttribute("tabindex") === null) v.setAttribute("tabindex", "-1");
   nextTick(() => { try { v.focus({ preventScroll: true }); } catch {} });
   setActiveNav(routeName);
+  // Боковая панель зависит от того, вошёл ли человек: у гостя там вход, у своего —
+  // опыт и серия. Обычно её обновляет подписка на хранилище, но полагаться только на неё
+  // значит надеяться, что вход обязательно что-то в нём поменяет.
+  renderSidebarStats();
   nextTick(() => v.classList.add("enter"));
 }
 
@@ -608,9 +613,21 @@ function setActiveNav(routeName) {
 function renderSidebarStats() {
   const host = $("#sidebar-stats");
   if (!host) return;
+  host.innerHTML = "";
+  // Гостю личная статистика ничего не значит: «1 день подряд» и «0 XP» у человека, который
+  // только зашёл, — это шум. Вместо них то, чего здесь не хватало больше всего, — вход.
+  if (membersOnly()) {
+    host.append(
+      el("div", { class: "ss-join" },
+        el("div", { class: "muted small" }, "Занимаешься без аккаунта"),
+        el("a", { class: "btn primary small", href: "#/login" }, "Войти"),
+        el("a", { class: "link-btn", href: "#/login" }, "Создать аккаунт"),
+      ),
+    );
+    return;
+  }
   const s = store.state;
   const { cur, next, pct } = store.rank();
-  host.innerHTML = "";
   host.append(...[
     el("div", { class: "ss-row" }, el("span", { class: "ss-icon" }, "🔥"), el("span", {}, `${s.streak.count} ${plural(s.streak.count, "день", "дня", "дней")}`)),
     el("div", { class: "ss-row" }, el("span", { class: "ss-icon" }, "⚡"), el("span", {}, `${s.xp} XP`)),
@@ -884,6 +901,39 @@ async function typewriter(node, text, ms, isSkipped = () => false) {
  * to show nine competing cards; Emil said his eyes scattered and he could not tell what mattered,
  * and he was right. The rule here is: one big thing, three small ones, a thin line of numbers.
  */
+/**
+ * Главная для того, кто ещё не завёл аккаунт.
+ *
+ * Раньше гость попадал на ту же личную главную, что и свои: «1 день подряд», «0 XP»,
+ * «цель дня 0/60», ранг и серия. Человек, который видит сайт впервые, видел чужой
+ * кабинет с нулями вместо рассказа о том, куда он попал — и ни одной кнопки «войти».
+ */
+function renderLanding(v) {
+  append(v,
+    el("section", { class: "home-hero" },
+      el("div", {},
+        el("div", { class: "prologue-kicker" }, "Lingua Mia"),
+        el("h1", {}, "Немецкий от A1 до B1 — и Мия, с которой можно поговорить"),
+        el("p", { class: "hero-sub" }, "Тридцать шесть уроков по порядку: слова, грамматика, три миссии, диалог, разговор и экзамен. Всё озвучено живым голосом, всё объясняется по-русски или по-азербайджански."),
+      ),
+    ),
+    el("div", { class: "actions-row start" },
+      el("a", { class: "btn primary big", href: `#/level/${DEMO_LEVEL}` }, "Начать с первого урока"),
+      el("a", { class: "btn", href: "#/login" }, "Войти или создать аккаунт"),
+    ),
+    el("div", { class: "home-tiles" },
+      tile("🗺️", "36 уроков", "От «Hallo» до уверенного B1", "#/levels", "levels"),
+      tile("🎙️", "Живой разговор", "Мия говорит голосом и отвечает на твоём языке", "#/login", "tutor"),
+      tile("🎯", "Игры и повторение", "Слова возвращаются, пока не запомнятся", "#/login", "practice"),
+    ),
+    el("section", { class: "card cta-join" },
+      el("div", {},
+        el("strong", {}, "Первый урок открыт без аккаунта."),
+        el("div", { class: "muted small" }, "Дальше нужен аккаунт — он бесплатный и нужен ради одного: чтобы прогресс не потерялся и был с тобой на любом устройстве.")),
+      el("a", { class: "btn primary", href: "#/login" }, "Создать аккаунт"),
+    ),
+  );
+}
 function renderHome(v) {
   const s = store.state;
   const next = nextAction();
