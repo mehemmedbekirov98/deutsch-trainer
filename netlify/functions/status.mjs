@@ -29,7 +29,9 @@ export default async () => {
     // The owner can paste a key in the admin panel when there is a database to keep it in. The
     // environment variable still wins, so a deployment set up by hand is never overridden.
     canSetKey: configured() && !process.env.ANTHROPIC_API_KEY,
+    // Два тира: быстрая модель для разговора, умная для уроков, разбора ошибок и картинок.
     model: process.env.CLAUDE_MODEL || "claude-opus-5",
+    modelFast: process.env.CLAUDE_MODEL_FAST || "claude-sonnet-5",
   });
 };
 

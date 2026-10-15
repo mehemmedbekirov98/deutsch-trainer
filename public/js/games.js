@@ -12,8 +12,15 @@ import { speech, RATES } from "./speech.js";
 /* ------------------------------------------------------------------ helpers */
 
 /** Every word from the levels Emil has opened — games never teach ahead of where he is. */
-function wordPool() {
-  const unlocked = LEVELS.filter((l) => store.isUnlocked(l.id));
+/**
+ * Слова для игры.
+ *
+ * Без аргумента — всё, что человек открыл, как и раньше. С полосой (A1/A2/B1) —
+ * только её слова. Это нужно, чтобы «игры A1» вообще что-то значили: до этого игры
+ * брали слова всех открытых уроков вперемешку и к уровням не относились никак.
+ */
+function wordPool(band = null) {
+  const unlocked = LEVELS.filter((l) => (band ? l.cefr === band : store.isUnlocked(l.id)));
   const seen = new Set();
   const out = [];
   for (const l of unlocked) {
@@ -29,8 +36,8 @@ function wordPool() {
 
 const ARTICLES = ["der", "die", "das"];
 /** Nouns only, with the article split off — for the der/die/das game. */
-function nounPool() {
-  return wordPool()
+function nounPool(band = null) {
+  return wordPool(band)
     .map((v) => {
       const m = String(v.de).match(/^(der|die|das)\s+(.+)$/i);
       return m ? { ...v, article: m[1].toLowerCase(), noun: m[2] } : null;
@@ -39,8 +46,8 @@ function nounPool() {
 }
 
 /** Single words, no spaces — for scrambling and for hangman. */
-function singleWordPool(min = 3, max = 12) {
-  return wordPool()
+function singleWordPool(min = 3, max = 12, band = null) {
+  return wordPool(band)
     .map((v) => ({ ...v, word: stripArticle(v.de) }))
     .filter((v) => /^[a-zäöüßA-ZÄÖÜ]+$/.test(v.word) && v.word.length >= min && v.word.length <= max);
 }
@@ -64,17 +71,29 @@ function payout({ xp, coins, anchor, label }) {
   if (parts.length) toast(`${tr(label)}: ${parts.join(" · ")}`, { icon: "🎮" });
 }
 
-/** Remember the best result of a game so there is something to beat. */
-function saveBest(id, score) {
-  const prev = store.state.games?.[id]?.best ?? 0;
-  if (score <= prev) return false;
+/**
+ * Лучший результат — общий и отдельно по полосам.
+ *
+ * Общий best остаётся: на нём держится рейтинг и старые сейвы. Рядом появился
+ * bands — результат на словах конкретной полосы. Без него нельзя сказать, что игры A1
+ * пройдены: рекорд, поставленный на смеси из тридцати уроков, ничего не говорит о первой дюжине.
+ */
+function saveBest(id, score, band = null) {
+  const cur = store.state.games?.[id] || {};
+  const prevAll = cur.best ?? 0;
+  const prevBand = band ? (cur.bands?.[band] ?? 0) : 0;
+  if (score <= prevAll && score <= prevBand) return false;
   store.update((s) => {
     if (!s.games) s.games = {};
-    s.games[id] = { ...(s.games[id] || {}), best: score };
+    const was = s.games[id] || {};
+    const bands = { ...(was.bands || {}) };
+    if (band) bands[band] = Math.max(bands[band] ?? 0, score);
+    s.games[id] = { ...was, best: Math.max(prevAll, score), bands };
   });
-  return true;
+  return score > prevAll;
 }
-const bestOf = (id) => store.state.games?.[id]?.best ?? 0;
+const bestOf = (id, band = null) =>
+  (band ? store.state.games?.[id]?.bands?.[band] : store.state.games?.[id]?.best) ?? 0;
 
 /**
  * Say a German word out loud — hearing it is half the point of a vocabulary game.
@@ -138,9 +157,9 @@ function shell({ container, title, subtitle, onExit }) {
  * Memory: twelve cards, six German/Russian pairs. Turning a pair over reads the German word aloud,
  * so the word gets tied to its sound and not just to its spelling.
  */
-function playMemory({ container, onExit, onAgain }) {
+function playMemory({ container, onExit, onAgain, band = null }) {
   const PAIRS = 6;
-  const pool = wordPool();
+  const pool = wordPool(band);
   // Переводы должны быть разными, иначе игра становится нечестной: в словаре есть пары вроде
   // «der Ort» и «der Platz» с одним переводом, и когда обе попадают на поле, две карточки
   // выглядят одинаково. Человек кладёт немецкое слово к «правильной» надписи, а она от другой
@@ -225,7 +244,7 @@ function playMemory({ container, onExit, onAgain }) {
     const seconds = Math.round((performance.now() - startedAt) / 1000);
     // a perfect game is 6 moves; score rewards remembering, not luck
     const score = Math.max(10, Math.round((PAIRS / moves) * 100));
-    const record = saveBest("memory", score);
+    const record = saveBest("memory", score, band);
     confetti();
     sfx.levelUp();
     payout({ xp: 12, coins: score >= 60 ? 8 : 4, anchor: ui.root, label: "Память" });
@@ -233,7 +252,7 @@ function playMemory({ container, onExit, onAgain }) {
       icon: "🧩",
       headline: tr`Все пары найдены за ${moves} ${plural(moves, "ход", "хода", "ходов")}`,
       isRecord: record,
-      lines: [tr`Точность: ${score}%`, tr`Время: ${seconds} сек.`, tr`Лучший результат: ${bestOf("memory")}%`],
+      lines: [tr`Точность: ${score}%`, tr`Время: ${seconds} сек.`, tr`Лучший результат: ${bestOf("memory", band)}%`],
       onAgain,
     });
   }
@@ -245,9 +264,9 @@ function playMemory({ container, onExit, onAgain }) {
  * Article sorter. Gender is the thing Russian speakers get wrong most often and the only cure is
  * volume, so this is a fast streak game: twenty nouns, one tap each, instant feedback.
  */
-function playArticles({ container, onExit, onAgain }) {
+function playArticles({ container, onExit, onAgain, band = null }) {
   const ROUNDS = 20;
-  const pool = nounPool();
+  const pool = nounPool(band);
   if (pool.length < 5) return notEnough(container, onExit, "существительных");
   const items = shuffle(pool).slice(0, Math.min(ROUNDS, pool.length));
   const ui = shell({ container, title: "🎯 der · die · das", subtitle: "выбери артикль", onExit });
@@ -304,14 +323,14 @@ function playArticles({ container, onExit, onAgain }) {
   function done() {
     if (!ui.alive) return;
     const pct = Math.round((correct / items.length) * 100);
-    const record = saveBest("articles", pct);
+    const record = saveBest("articles", pct, band);
     if (pct >= 80) { confetti(); sfx.levelUp(); }
     payout({ xp: Math.round(correct * 1.5), coins: Math.max(2, Math.round(correct / 2)), anchor: ui.root, label: "Артикли" });
     ui.finish({
       icon: pct >= 80 ? "🏆" : "🎯",
       headline: tr`${correct} из ${items.length} — ${pct}%`,
       isRecord: record,
-      lines: [tr`Лучшая серия: ${bestStreak}`, tr`Рекорд: ${bestOf("articles")}%`,
+      lines: [tr`Лучшая серия: ${bestStreak}`, tr`Рекорд: ${bestOf("articles", band)}%`,
         pct >= 80 ? "Артикли ты чувствуешь уже хорошо." : "Артикли просто нужно встретить много раз — это нормально."],
       onAgain,
     });
@@ -326,9 +345,9 @@ function playArticles({ container, onExit, onAgain }) {
  * Scramble: the letters of a German word, shuffled. The Russian translation is the clue, so this
  * drills spelling — the umlauts and the double consonants that are easy to read past.
  */
-function playScramble({ container, onExit, onAgain }) {
+function playScramble({ container, onExit, onAgain, band = null }) {
   const ROUNDS = 8;
-  const pool = singleWordPool(4, 11);
+  const pool = singleWordPool(4, 11, band);
   if (pool.length < 4) return notEnough(container, onExit, "подходящих слов");
   const items = shuffle(pool).slice(0, Math.min(ROUNDS, pool.length));
   const ui = shell({ container, title: "🔤 Анаграмма", subtitle: "собери слово", onExit });
@@ -432,7 +451,7 @@ function playScramble({ container, onExit, onAgain }) {
   function done() {
     if (!ui.alive) return;
     const pct = Math.round((solved / items.length) * 100);
-    const record = saveBest("scramble", pct);
+    const record = saveBest("scramble", pct, band);
     if (pct >= 75) { confetti(); sfx.levelUp(); }
     payout({ xp: solved * 3, coins: Math.max(2, solved), anchor: ui.root, label: "Анаграмма" });
     ui.finish({
@@ -443,7 +462,7 @@ function playScramble({ container, onExit, onAgain }) {
         usedHint ? tr`Подсказок использовано: ${usedHint}`
           : solved ? "Без подсказок — отлично!"
             : "Эти слова пока новые — вернись к ним позже, это нормально.",
-        tr`Рекорд: ${bestOf("scramble")}%`,
+        tr`Рекорд: ${bestOf("scramble", band)}%`,
       ],
       onAgain,
     });
@@ -458,9 +477,9 @@ function playScramble({ container, onExit, onAgain }) {
  * Blitz: sixty seconds, German word, four Russian options. Speed is the point — it pushes
  * recognition from "I can work it out" towards "I just know it".
  */
-function playBlitz({ container, onExit, onAgain }) {
+function playBlitz({ container, onExit, onAgain, band = null }) {
   const SECONDS = 60;
-  const pool = wordPool();
+  const pool = wordPool(band);
   if (pool.length < 6) return notEnough(container, onExit, "слов");
   const ui = shell({ container, title: "⚡ Блиц", subtitle: "60 секунд", onExit });
 
@@ -529,14 +548,14 @@ function playBlitz({ container, onExit, onAgain }) {
     over = true;
     clearInterval(tick);
     if (!ui.alive) return;
-    const record = saveBest("blitz", score);
+    const record = saveBest("blitz", score, band);
     if (score >= 25) { confetti(); sfx.levelUp(); }
     payout({ xp: Math.min(30, score), coins: Math.max(2, Math.round(score / 3)), anchor: ui.root, label: "Блиц" });
     ui.finish({
       icon: "⚡",
       headline: `${score} ${plural(score, "очко", "очка", "очков")}`,
       isRecord: record,
-      lines: [tr`Ответов: ${answered}`, tr`Лучшая серия: ${bestStreak}`, tr`Рекорд: ${bestOf("blitz")}`],
+      lines: [tr`Ответов: ${answered}`, tr`Лучшая серия: ${bestStreak}`, tr`Рекорд: ${bestOf("blitz", band)}`],
       onAgain,
     });
   }
@@ -555,10 +574,10 @@ function playBlitz({ container, onExit, onAgain }) {
 /** Upper case, except ß — it has no capital here, so it stays a letter of its own on the board. */
 const upperDe = (s) => String(s).split("").map((c) => (c === "ß" ? c : c.toUpperCase())).join("");
 
-function playHangman({ container, onExit, onAgain }) {
+function playHangman({ container, onExit, onAgain, band = null }) {
   const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÜß".split("");
   const LIVES = 6;
-  const pool = singleWordPool(4, 12);
+  const pool = singleWordPool(4, 12, band);
   if (!pool.length) return notEnough(container, onExit, "подходящих слов");
   const item = pick(pool);
   const target = upperDe(item.word); // "heißen" -> "HEIßEN", not "HEISSEN"
@@ -626,7 +645,7 @@ function playHangman({ container, onExit, onAgain }) {
     if (won) {
       confetti();
       sfx.levelUp();
-      saveBest("hangman", (store.state.games?.hangman?.best ?? 0) + 1); // best = words guessed in total
+      saveBest("hangman", bestOf("hangman", band) + 1, band); // счётчик угаданных — свой у каждой полосы
       payout({ xp: 10, coins: 5, anchor: ui.root, label: "Виселица" });
     }
     ui.finish({
@@ -634,7 +653,7 @@ function playHangman({ container, onExit, onAgain }) {
       headline: won ? tr`Угадал: ${item.de}` : tr`Это было: ${item.de}`,
       isRecord: false,
       lines: [item.ru, item.example ? `${item.example} — ${item.exampleRu}` : null,
-        tr`Угадано всего: ${bestOf("hangman")} ${plural(bestOf("hangman"), "слово", "слова", "слов")}`].filter(Boolean),
+        tr`Угадано всего: ${bestOf("hangman", band)} ${plural(bestOf("hangman", band), "слово", "слова", "слов")}`].filter(Boolean),
       onAgain,
     });
   }
@@ -658,28 +677,62 @@ function notEnough(container, onExit, what) {
  * words Emil has unlocked, and the early levels simply do not have enough of some kinds yet — the
  * catalogue says so on the card instead of letting him open a dead end.
  */
+/**
+ * Чему игра учит. Пять карточек одним рядом — это список, три группы по две — это выбор.
+ * Живёт здесь, а не в app.js: по этим же группам строятся и экран игр, и экран тренировки.
+ */
+export const GAME_GROUPS = [
+  { id: "words", title: "Слова", sub: "Узнавать и вспоминать", games: ["memory", "blitz"] },
+  { id: "writing", title: "Правописание", sub: "Как слово пишется", games: ["scramble", "hangman"] },
+  { id: "grammar", title: "Грамматика", sub: "Артикли и формы", games: ["articles"] },
+];
 export const GAMES = [
   { id: "memory", icon: "🧩", name: "Память", desc: "Найди пары: немецкое слово и перевод. Тренирует узнавание.", unit: "%", play: playMemory,
-    ready: () => (wordPool().length >= 6 ? null : "нужно 6 слов") },
+    ready: (band = null) => (wordPool(band).length >= 6 ? null : "нужно 6 слов") },
   { id: "blitz", icon: "⚡", name: "Блиц", desc: "60 секунд на скорость. Серия подряд приносит больше очков.", unit: "", play: playBlitz,
-    ready: () => (wordPool().length >= 6 ? null : "нужно 6 слов") },
+    ready: (band = null) => (wordPool(band).length >= 6 ? null : "нужно 6 слов") },
   { id: "articles", icon: "🎯", name: "der · die · das", desc: "20 существительных, один тап. Самое слабое место — артикли.", unit: "%", play: playArticles,
-    ready: () => (nounPool().length >= 8 ? null : "откроется со 2-го уровня — нужно 8 существительных") },
+    ready: (band = null) => (nounPool(band).length >= 8 ? null : "откроется со 2-го уровня — нужно 8 существительных") },
   { id: "scramble", icon: "🔤", name: "Анаграмма", desc: "Собери слово из перемешанных букв. Тренирует написание.", unit: "%", play: playScramble,
-    ready: () => (singleWordPool(4, 11).length >= 4 ? null : "нужно 4 слова подлиннее") },
+    ready: (band = null) => (singleWordPool(4, 11, band).length >= 4 ? null : "нужно 4 слова подлиннее") },
   // hangman counts words guessed in total, so its label is not a record and needs a real plural
   { id: "hangman", icon: "🎪", name: "Виселица", desc: "Угадай слово по буквам. Шесть жизней, подсказка — перевод.", unit: (n) => ` ${plural(n, "слово", "слова", "слов")}`, label: "Угадано", play: playHangman,
-    ready: () => (singleWordPool(4, 12).length >= 1 ? null : "нужно слово подлиннее") },
+    ready: (band = null) => (singleWordPool(4, 12, band).length >= 1 ? null : "нужно слово подлиннее") },
 ];
 
 /**
  * Render the games page. Returns a destroy() the router calls on navigation, so a running timer
  * never outlives the view.
  */
+/**
+ * Сколько надо набрать в игре, чтобы считать её пройденной на этой полосе.
+ *
+ * Планка нарочно невысокая: это пропуск к тесту, а не сам тест. Смысл в том, чтобы
+ * человек потрогал каждую игру на своих словах, а не в том, чтобы выбить в них сотню.
+ */
+const GAME_GOAL = { memory: 60, blitz: 8, articles: 60, scramble: 50, hangman: 3 };
+
+/**
+ * Что уже сделано на полосе и чего не хватает до теста у Мии.
+ *
+ * Два условия: выучены слова всех уроков полосы и пройдены все пять игр на её словах.
+ */
+export function bandProgress(band) {
+  const levels = LEVELS.filter((l) => l.cefr === band);
+  const wordsDone = levels.filter((l) => store.level(l.id).vocabDone).length;
+  const games = GAMES.map((g) => {
+    const need = GAME_GOAL[g.id] ?? 1;
+    const have = bestOf(g.id, band);
+    return { id: g.id, name: g.name, icon: g.icon, need, have, done: have >= need, unit: g.unit };
+  });
+  const words = { done: wordsDone, total: levels.length };
+  return { band, words, games, ready: wordsDone >= levels.length && games.every((g) => g.done) };
+}
+
 /** The catalogue, so the practice page can lay the games out by what they train. */
 export const gameCatalogue = () => GAMES;
 
-export function renderGames({ container, onExit, startId = null }) {
+export function renderGames({ container, onExit, startId = null, band = null }) {
   let current = null;
 
   const destroyCurrent = () => {
@@ -691,43 +744,54 @@ export function renderGames({ container, onExit, startId = null }) {
 
   function menu() {
     destroyCurrent();
-    // the catalogue is a normal page with the sidebar; a game running takes the whole screen
+    // каталог — обычная страница с меню; идущая игра занимает весь экран
     document.body.classList.remove("focus");
     container.innerHTML = "";
-    const words = wordPool().length;
+    const words = wordPool(band).length;
+    const card = (g) => {
+      const blocked = g.ready ? g.ready(band) : null;
+      const best = bestOf(g.id, band);
+      return el("button", { class: `game-card${blocked ? " locked" : ""}`, type: "button", disabled: Boolean(blocked),
+          title: blocked || "", onClick: () => (blocked ? null : start(g)) },
+        el("div", { class: "game-card-icon" }, blocked ? "🔒" : g.icon),
+        el("div", { class: "game-card-body" },
+          el("div", { class: "game-card-name" }, g.name),
+          el("div", { class: "game-card-desc" }, g.desc),
+          el("div", { class: "game-card-best" }, blocked ? tr`🔒 ${blocked}`
+            : best ? tr`${g.label || "Рекорд"} ${best}${typeof g.unit === "function" ? g.unit(best) : g.unit}`
+              : "Ещё не играл"),
+        ),
+      );
+    };
     container.append(
       el("div", { class: "page-head" },
         el("h1", {}, "🎮 Игры"),
-        el("p", { class: "muted" }, tr`Короткие тренировки на словах, которые ты уже открыл — сейчас их ${words}. Пара минут, немного XP и монет.`),
+        el("p", { class: "muted" }, band
+          ? tr`Слова уровня ${band} — сейчас их ${words}.`
+          : tr`Слова, которые ты уже открыл — сейчас их ${words}.`),
       ),
-      el("div", { class: "game-grid" }, GAMES.map((g) => {
-        const best = bestOf(g.id);
-        const blocked = g.ready ? g.ready() : null;
-        return el("button", { class: `game-card${blocked ? " locked" : ""}`, type: "button", disabled: Boolean(blocked),
-            title: blocked || "", onClick: () => (blocked ? null : start(g)) },
-          el("div", { class: "game-card-icon" }, blocked ? "🔒" : g.icon),
-          el("div", { class: "game-card-body" },
-            el("div", { class: "game-card-name" }, g.name),
-            el("div", { class: "game-card-desc" }, g.desc),
-            el("div", { class: "game-card-best" }, blocked ? tr`🔒 ${blocked}`
-              : best ? tr`${g.label || "Рекорд"} ${best}${typeof g.unit === "function" ? g.unit(best) : g.unit}`
-                : "Ещё не играл"),
-          ),
+      ...GAME_GROUPS.map((group) => {
+        const items = group.games.map((id) => GAMES.find((g) => g.id === id)).filter(Boolean);
+        if (!items.length) return null;
+        return el("section", { class: "game-group" },
+          el("div", { class: "game-group-head" },
+            el("h2", {}, group.title),
+            el("span", { class: "muted small" }, group.sub)),
+          el("div", { class: "game-grid" }, items.map(card)),
         );
-      })),
+      }).filter(Boolean),
     );
   }
-
   function start(g) {
     destroyCurrent();
     document.body.classList.add("focus");
     current = g;
-    g.play({ container, onExit: menu, onAgain: () => start(g) });
+    g.play({ container, onExit: menu, onAgain: () => start(g), band });
   }
 
   // "#/games/blitz" opens that game straight away; the catalogue lives on the practice page now,
   // so landing on a second list of the same cards would just be a step in the way.
   const wanted = startId && GAMES.find((g) => g.id === startId);
-  if (wanted && !(wanted.ready && wanted.ready())) start(wanted); else menu();
+  if (wanted && !(wanted.ready && wanted.ready(band))) start(wanted); else menu();
   return { destroy: () => { destroyCurrent(); document.body.classList.remove("focus"); speech.stop(); } };
 }

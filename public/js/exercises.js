@@ -331,6 +331,10 @@ export class ExerciseSession {
         headers: { "Content-Type": "application/json", ...(token ? { authorization: `Bearer ${token}` } : {}) },
         body: JSON.stringify({
           messages: [{ role: "user", content: question }],
+          // Явное «это разбор». По форме запроса это неотличимо от болтовни — сценария нет,
+          // истории нет, одна реплика. А по сути это самое умное, что Мия делает, и отдавать
+          // его быстрой модели ради скорости было бы ровно наоборот.
+          task: "explain",
           scenario: null,
           notes: [],
           profile: { name: store.state.name || "", cefr: store.cefr(), mode: "chat", uiLang: uiLang() },

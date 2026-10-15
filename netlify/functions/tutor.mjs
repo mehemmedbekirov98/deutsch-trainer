@@ -11,6 +11,8 @@ const json = (body, status = 200) =>
 // дойдёт, и одновременно предел, за который не уедет счёт, если аккаунт заведут ради скрипта в
 // цикле. Окно скользящее, считает база — см. take_quota в 0004_limits.sql.
 const DAILY_TURNS = 250;
+// Файлов в сутки — сильно меньше, чем реплик: один скан стоит как десяток фраз.
+const DAILY_FILES = Number(process.env.TUTOR_DAILY_FILES) || 20;
 
 export default async (req) => {
   if (req.method !== "POST") return json({ error: "POST only" }, 405);
@@ -39,6 +41,21 @@ export default async (req) => {
   if (learner.blocked) return json({ error: "Аккаунт заблокирован." }, 403);
   if (!(await takeQuota(learner.id, "tutor", DAILY_TURNS))) {
     return json({ error: "На сегодня хватит — живая Мия вернётся завтра. Офлайн-режим работает без ограничений." }, 429);
+  }
+
+  // Взгляд на файл — отдельное ведро и отдельный счёт.
+  //
+  // Обычная квота считает ходы, и это было честно, пока все ходы стоили примерно одинаково.
+  // Страница рукописного текста дороже реплики в десятки раз, и без своего ведра двадцать сканов
+  // вынесут больше денег, чем двести пятьдесят реплик.
+  if (body?.attachment) {
+    const data = String(body.attachment.data || "");
+    if (data.length > 4_500_000) {
+      return json({ error: "Файл слишком большой — пришли фото поменьше." }, 413);
+    }
+    if (!(await takeQuota(learner.id, "tutor-vision", DAILY_FILES))) {
+      return json({ error: "Сегодня Мия уже посмотрела достаточно файлов — продолжим текстом, а фото завтра." }, 429);
+    }
   }
 
   try {

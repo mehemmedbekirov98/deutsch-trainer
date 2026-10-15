@@ -7,7 +7,7 @@ import { ExerciseSession, ringSvg } from "./exercises.js";
 import { Tutor } from "./tutor.js";
 import { renderFlashcards, buildVocabQuiz, buildReviewQuiz } from "./vocab.js";
 import { renderDialogue } from "./dialogue.js";
-import { renderGames, gameCatalogue } from "./games.js";
+import { renderGames, gameCatalogue, GAME_GROUPS, bandProgress } from "./games.js";
 import { LEVELS, LEVEL_BY_ID, missionsOf } from "./levels.js";
 import { SHOP, TITLE_NAMES, COINS, priceOf, applyTheme } from "./game.js";
 import { RATES } from "./speech.js";
@@ -165,11 +165,8 @@ function go(hash, { replace = false } = {}) {
  * Everything that is practice rather than a lesson, in one place and sorted by what it trains.
  * The games used to sit in a flat grid of five where nothing told Emil what any of them was for.
  */
-const GAME_GROUPS = [
-  { id: "words", title: "Слова", sub: "Узнавать и вспоминать", games: ["memory", "blitz"] },
-  { id: "writing", title: "Правописание", sub: "Как слово пишется", games: ["scramble", "hangman"] },
-  { id: "grammar", title: "Грамматика", sub: "Артикли и формы", games: ["articles"] },
-];
+// Категории игр теперь живут в games.js — их надо два экрана, и две копии
+// разошлись бы при первой же правке.
 
 function viewPractice(v) {
   const unlocked = LEVELS.filter((l) => store.isUnlocked(l.id));
@@ -182,6 +179,7 @@ function viewPractice(v) {
       el("h1", {}, "🎯 Тренировка"),
       el("p", { class: "muted" }, "Короткие упражнения на словах, которые ты уже открыл. Пара минут — и слова держатся крепче."),
     ),
+    levelUpNudge(),
     el("section", { class: "practice-top" },
       el("a", { class: "card practice-hero", href: "#/review" },
         el("div", { class: "practice-hero-icon" }, "🔁"),
@@ -558,6 +556,7 @@ async function route() {
       if (seq !== routeSeq) return;
       viewTutor(v);
     }
+    else if (a === "levelup") { routeName = "practice"; await loadLevelDicts(LEVELS.filter((l) => store.isUnlocked(l.id))); if (seq !== routeSeq) return; viewLevelUp(v); }
     else if (a === "practice") { await loadLevelDicts(LEVELS.filter((l) => store.isUnlocked(l.id))); if (seq !== routeSeq) return; viewPractice(v); }
     else if (a === "board") viewBoard(v);
     else if (a === "login") { focus = true; viewLogin(v); }
@@ -984,6 +983,7 @@ function renderHome(v) {
       el("div", { class: "cta-arrow" }, "→"),
     ),
 
+    levelUpNudge(),
     el("section", { class: "home-tiles" },
       tile("🎙️", "Поговорить с Мией", AI ? "Обо всём, на любом языке" : "Разговор и подсказки", "#/tutor", "mia"),
       tile("🔁", "Повторить слова", due ? `${due} ${plural(due, "слово ждёт", "слова ждут", "слов ждут")}` : "Держать в памяти", "#/review", "review"),
@@ -1023,6 +1023,72 @@ const tile = (icon, title, sub, href, kind) =>
 
 const stripItem = (icon, val, label) =>
   el("div", { class: "strip-item" }, el("span", { class: "strip-icon" }, icon), el("span", { class: "strip-val" }, String(val)), el("span", { class: "strip-label" }, label));
+
+/**
+ * Полоска «можно сдавать». Показывается только когда всё закрыто — и нигде больше.
+ * В разговоре с Мией про тест не должно быть ни слова.
+ */
+function levelUpNudge() {
+  const band = currentBand();
+  if (!CEFR[CEFR.indexOf(band) + 1]) return null;
+  if (!bandProgress(band).ready) return null;
+  return el("a", { class: "card levelup-nudge", href: "#/levelup" },
+    el("div", { class: "levelup-mia" }, "🎓"),
+    el("div", {},
+      el("div", { class: "cta-kicker" }, tr`Уровень ${band} закрыт`),
+      el("div", { class: "big-cta-title" }, "Можно сдавать тест у Мии"),
+      el("div", { class: "cta-sub" }, "Слова выучены, игры пройдены.")),
+    el("div", { class: "cta-arrow" }, "→"));
+}
+
+/* ------------------------------------------------------------ сертификация */
+/**
+ * Отдельная комната, где ждёт Мия с тестом на следующий уровень.
+ *
+ * Отдельная нарочно: в обычном разговоре про тест не должно быть ни слова — разговор
+ * остаётся разговором. Пока не готов — Мия заперта, и рядом честный список, чего
+ * не хватает, а не глухое «недоступно».
+ */
+function viewLevelUp(v) {
+  const band = currentBand();
+  const next = CEFR[CEFR.indexOf(band) + 1] || null;
+  const p = bandProgress(band);
+  const item = (done, text, hint) => el("div", { class: `lvl-item ${done ? "done" : ""}` },
+    el("span", { class: "lvl-mark" }, done ? "✓" : "🔒"),
+    el("div", {}, el("div", {}, text), hint ? el("div", { class: "muted small" }, hint) : null));
+
+  append(v,
+    el("div", { class: "page-head" },
+      el("h1", {}, "🎓 Переход на следующий уровень"),
+      el("p", { class: "muted" }, next
+        ? tr`Когда уровень ${band} пройден до конца, Мия примет тест и откроет ${next}.`
+        : "Это последний уровень курса — дальше только практика."),
+    ),
+    el("section", { class: `card levelup-card ${p.ready ? "ready" : "locked"}` },
+      el("div", { class: "levelup-mia" }, p.ready ? "🎙️" : "🔒"),
+      el("div", {},
+        el("h2", {}, p.ready ? "Мия ждёт тебя" : "Мия пока закрыта"),
+        el("p", { class: "muted" }, p.ready
+          ? "Разговор на несколько минут. Она спросит по темам уровня и скажет, готов ли ты идти дальше."
+          : "Сначала закрой всё ниже. Это не придирка — без этого тест нечего сдавать."),
+        p.ready && next
+          ? el("a", { class: "btn primary", href: "#/tutor" }, tr`Сдать тест на ${next} →`)
+          : null),
+    ),
+    el("section", { class: "card" },
+      el("div", { class: "card-head" }, el("h2", {}, "Что нужно")),
+      el("div", { class: "lvl-list" },
+        item(p.words.done >= p.words.total,
+          tr`Слова уровня ${band}: ${p.words.done} из ${p.words.total} уроков`,
+          p.words.done >= p.words.total ? null : "Открой слова в каждом уроке этого уровня"),
+        ...p.games.map((g) => item(g.done,
+          `${g.icon} ${g.name}`,
+          g.done ? null : tr`Нужно ${g.need}, сейчас ${g.have}`)),
+      ),
+      el("a", { class: "btn ghost", href: "#/games" }, "К играм"),
+    ),
+  );
+}
 
 /* ---------------------------------------------------------------- levels */
 function renderLevels(v) {
@@ -1436,7 +1502,7 @@ function renderWords(v) {
 }
 
 function viewGames(v, id) {
-  const g = renderGames({ container: v, startId: id || null, onExit: () => go("#/practice") });
+  const g = renderGames({ container: v, startId: id || null, band: currentBand(), onExit: () => go("#/practice") });
   cleanup = () => g.destroy();
 }
 

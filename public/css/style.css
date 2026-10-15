@@ -1183,6 +1183,38 @@ body.focus .topbar { display: none; }
 .ss-join { display: flex; flex-direction: column; gap: 8px; text-align: center; }
 .ss-join .btn { width: 100%; justify-content: center; }
 .ss-join .link-btn { font-size: .86rem; }
+
+/* Игры группами: пять карточек одним рядом — список, три группы — выбор. */
+.game-group { display: flex; flex-direction: column; gap: 12px; }
+.game-group-head { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.game-group-head h2 { font-size: 1.05rem; }
+
+/* Вложения у Мии: скрепка, плашка с выбранным файлом и картинка в пузыре.
+   PDF встроенным просмотрщиком не показываем нарочно: object-src у сайта закрыт,
+   и ослаблять его ради превью рядом с полем пароля — плохой размен. */
+.clip-btn { padding: 0 12px; font-size: 1.05rem; line-height: 1; }
+.tutor-file { display: flex; margin-bottom: 8px; }
+.file-chip { display: inline-flex; align-items: center; gap: 10px; padding: 6px 10px; border-radius: 12px;
+  background: var(--card-2, rgba(255,255,255,.05)); border: 1px solid var(--border); max-width: 100%; }
+.file-chip-thumb { width: 36px; height: 36px; object-fit: cover; border-radius: 8px; display: block; }
+.file-chip-icon { font-size: 1.2rem; }
+.file-chip-name { font-size: .85rem; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 220px; }
+.bubble-img { display: block; max-width: 260px; max-height: 260px; width: auto; border-radius: 12px; margin-bottom: 6px; }
+.bubble-file { font-size: .9rem; opacity: .9; margin-bottom: 6px; }
+
+/* Экран перехода на следующий уровень. */
+.levelup-card { display: flex; gap: 18px; align-items: flex-start; }
+.levelup-card.locked { opacity: .9; }
+.levelup-card.ready { border-color: var(--accent); box-shadow: 0 0 0 1px var(--acc-20) inset; }
+.levelup-mia { font-size: 2.2rem; line-height: 1; }
+.levelup-card h2 { margin-bottom: 4px; }
+.levelup-card .btn { margin-top: 12px; }
+.lvl-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 14px; }
+.lvl-item { display: flex; gap: 10px; align-items: flex-start; }
+.lvl-item.done { opacity: .6; }
+.lvl-mark { width: 1.3em; flex: none; }
+.levelup-nudge { display: flex; gap: 16px; align-items: center; border-color: var(--accent); }
+.levelup-nudge .cta-arrow { margin-left: auto; }
 .lang-short { display: none; }
 .lang-switch.compact .lang-name { display: none; }
 .lang-switch.compact .lang-short { display: inline; }

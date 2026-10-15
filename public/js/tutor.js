@@ -99,6 +99,39 @@ function buildLevelScript(level, talkMode) {
   return turns.slice(0, 8);
 }
 
+/** Файл в base64 без префикса data: — именно так его ждёт API. */
+function readAsBase64(file) {
+  return new Promise((resolve, reject) => {
+    const r = new FileReader();
+    r.onerror = () => reject(new Error("read"));
+    r.onload = () => resolve({ data: String(r.result).split(",")[1] || "", mediaType: file.type });
+    r.readAsDataURL(file);
+  });
+}
+
+/**
+ * Уменьшить фото перед отправкой. Длинная сторона — 1600 точек, JPEG качество 0.82.
+ * Рукописный текст на таком размере читается, а вес падает с мегабайтов до сотен килобайт.
+ */
+function shrinkImage(file, maxSide = 1600) {
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error("decode")); };
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      const k = Math.min(1, maxSide / Math.max(img.width, img.height));
+      const c = document.createElement("canvas");
+      c.width = Math.round(img.width * k);
+      c.height = Math.round(img.height * k);
+      c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+      const url2 = c.toDataURL("image/jpeg", 0.82);
+      resolve({ data: url2.split(",")[1] || "", mediaType: "image/jpeg" });
+    };
+    img.src = url;
+  });
+}
+
 const stripArticleLower = (de) => String(de).replace(/^(der|die|das)\s+/i, "").toLowerCase();
 
 // Язык реплики → локаль для голоса. Немецкий — пустая строка: это родной язык голоса Мии, ему пометка
@@ -257,11 +290,18 @@ export class Tutor {
       el("div", { class: "tutor-body" },
         el("div", { class: "tutor-main" },
           (this.chat = el("div", { class: "tutor-chat" })),
+          (this.fileRow = el("div", { class: "tutor-file", hidden: true })),
           el("div", { class: "tutor-controls" },
             el("div", { class: "mic-col" },
               (this.mic = el("button", { class: "mic-btn large", type: "button", title: "Говорить", onClick: () => this.toggleListen() }, el("span", { class: "mic-icon" }, "🎤"))),
             ),
-            el("form", { class: "tutor-form", onSubmit: (e) => { e.preventDefault(); const v = this.input.value.trim(); if (v && this.handleUser(v)) this.input.value = ""; } },
+            el("form", { class: "tutor-form", onSubmit: (e) => { e.preventDefault(); const v = this.input.value.trim(); if (v || this.pendingFile) { if (this.handleUser(v)) this.input.value = ""; } } },
+              // type: "button" обязателен. Кнопка внутри формы без него — submit, и скрепка бы отправляла
+              // реплику при каждом нажатии вместо того, чтобы открыть выбор файла.
+              (this.clipBtn = el("button", { class: "btn ghost clip-btn", type: "button", title: "Прикрепить фото или PDF",
+                onClick: () => this.fileInput?.click() }, "📎")),
+              (this.fileInput = el("input", { type: "file", accept: "image/*,application/pdf", hidden: true,
+                onChange: (e) => this.pickFile(e.currentTarget.files?.[0] || null) })),
               (this.input = el("input", {
                 class: "text-input", type: "text", autocomplete: "off",
                 lang: this.chatMode === "german" ? "de" : uiLang(),
@@ -367,6 +407,9 @@ export class Tutor {
   }
 
   restart() {
+    this.clearFile();
+    this.paintFileRow();
+    if (this.fileInput) this.fileInput.value = "";
     speech.stop();
     speech.abortListening();
     this.listening = false;
@@ -377,6 +420,9 @@ export class Tutor {
     if (userText !== null) this.history.push({ role: "user", content: userText });
     const body = {
       messages: this.history.length ? this.history : [{ role: "user", content: "(Ученик зашёл. Поздоровайся и начни разговор.)" }],
+      // Только на этом ходу. Если оставить вложение в поле, оно будет уезжать каждую реплику:
+      // мегабайты на каждый ход и деньги на ветер.
+      attachment: this.sendingFile || null,
       scenario: this.level ? {
         mode: this.talkMode === "exam" ? "oral-exam" : this.talkMode === "topic" ? "topic-chat" : "scenario",
         title: this.level.speaking.title,
@@ -560,6 +606,53 @@ export class Tutor {
   }
 
 
+  /**
+   * Человек выбрал файл.
+   *
+   * Картинки жмём до отправки: фото с телефона — это 3-5 МБ, base64 раздувает ещё на треть,
+   * а тело запроса у Netlify — 6 МБ, и ожидание ответа всего 35 секунд. Длинная сторона 1600 точек —
+   * рукописный текст на ней читается, а вес падает в разы. PDF шлём как есть — сжать его браузером нечем.
+   */
+  async pickFile(file) {
+    if (!file) return;
+    const isPdf = file.type === "application/pdf";
+    const isImage = file.type.startsWith("image/");
+    if (!isPdf && !isImage) return toast("Я умею смотреть фото и PDF — другие файлы пока нет.", { icon: "⚠️", kind: "warn" });
+    if (isPdf && file.size > 4_000_000) return toast("PDF слишком большой — пришли файл поменьше.", { icon: "⚠️", kind: "warn" });
+    try {
+      const { data, mediaType } = isPdf ? await readAsBase64(file) : await shrinkImage(file);
+      this.clearFile();
+      this.pendingFile = { data, mediaType, name: file.name, isPdf };
+      this.paintFileRow();
+    } catch {
+      toast("Не получилось прочитать файл.", { icon: "⚠️", kind: "warn" });
+    } finally {
+      // Без этого повторный выбор ТОГО ЖЕ файла не вызовет события: браузер считает, что ничего не менялось.
+      if (this.fileInput) this.fileInput.value = "";
+    }
+  }
+
+  /** Плашка с прикреплённым. PDF не показываем встроенным просмотрщиком: object-src у нас закрыт. */
+  paintFileRow() {
+    if (!this.fileRow) return;
+    this.fileRow.innerHTML = "";
+    const f = this.pendingFile;
+    this.fileRow.hidden = !f;
+    if (!f) return;
+    this.fileRow.append(el("div", { class: "file-chip" },
+      f.isPdf
+        ? el("span", { class: "file-chip-icon" }, "📄")
+        : el("img", { class: "file-chip-thumb", src: `data:${f.mediaType};base64,${f.data}`, alt: "Прикреплённое фото" }),
+      el("span", { class: "file-chip-name" }, f.name),
+      el("button", { class: "icon-btn tiny", type: "button", title: "Убрать",
+        onClick: () => { this.clearFile(); this.paintFileRow(); } }, "✕"),
+    ));
+  }
+
+  clearFile() {
+    this.pendingFile = null;
+  }
+
   scrollChat() {
     this.chat.scrollTo({ top: this.chat.scrollHeight, behavior: "smooth" });
   }
@@ -648,6 +741,9 @@ export class Tutor {
   /** returns true if the message was accepted */
   handleUser(text) {
     if (this.stopped) return false;
+    // Пустой текст допустим, если приложен файл: «вот, посмотри» — вполне себе реплика.
+    text = String(text ?? "").trim();
+    if (!text && !this.pendingFile) return false;
     if (this.done) { this.setState("idle", "Разговор завершён — нажми «Заново», чтобы поговорить ещё раз."); return false; }
     if (this.busy) { this.setState(this.orb.className.includes("thinking") ? "thinking" : "speaking", "Подожди, Мия ещё говорит…"); return false; }
     this.busy = true;
@@ -666,7 +762,16 @@ export class Tutor {
     // Только в свободном разговоре: сценарий и экзамен — сами по себе немецкие, выходить оттуда
     // некуда, и вопрос на родном языке там — это один шаг в сторону, а не смена языка разговора.
     if (this.talkMode === "free" && this.chatMode === "german" && said !== "de") this.setChatMode("chat", true);
-    const bubble = el("div", { class: "bubble ali" }, el("div", { class: "bubble-name" }, meLabel()), el("div", { class: "bubble-de", lang: said }, text));
+    const file = this.pendingFile;
+    const bubble = el("div", { class: "bubble ali" }, el("div", { class: "bubble-name" }, meLabel()),
+      file ? (file.isPdf
+        ? el("div", { class: "bubble-file" }, "📄 ", file.name)
+        : el("img", { class: "bubble-img", src: `data:${file.mediaType};base64,${file.data}`, alt: "Прикреплённое фото" })) : null,
+      text ? el("div", { class: "bubble-de", lang: said }, text) : null);
+    // Уезжает ровно один раз, с этим ходом.
+    this.sendingFile = file ? { data: file.data, mediaType: file.mediaType, name: file.name } : null;
+    this.clearFile();
+    this.paintFileRow();
     this.chat.append(bubble);
     nextTick(() => bubble.classList.add("show"));
     this.scrollChat();
@@ -705,6 +810,7 @@ export class Tutor {
         if (reply) await this.miaSays(reply, gen, seq);
         else await this.offlineTurn(text, gen, seq);
       } finally {
+        this.sendingFile = null;
         if (gen === this.gen) this.busy = false;
       }
     })();
