@@ -672,6 +672,15 @@ function activeLevels() {
   return behind ? [behind, ...own] : own;
 }
 
+/**
+ * Полоса урока, на котором человек сейчас, а не та, которую он заявил на входе.
+ *
+ * Бейдж показывал заявленный уровень, и это сбивало с толку: человек видит «B1» и рядом
+ * первый урок. Теперь бейдж идёт за уроком: вернулся к раннему — бейдж вернулся с ним.
+ * Заявленный уровень никуда не делся — он виден в кабинете подсвеченной фишкой.
+ */
+const currentBand = () => currentLevel().cefr;
+
 function currentLevel() {
   return activeLevels().find((l) => store.isUnlocked(l.id) && !store.isCompleted(l.id)) || LEVELS[LEVELS.length - 1];
 }
@@ -940,7 +949,7 @@ function renderHome(v) {
   const { cur, next: nextRank, pct } = store.rank();
   const today = s.daily.day === todayKey() ? s.daily.xp : 0;
   const goalPct = Math.min(100, Math.round((today / s.dailyGoal) * 100));
-  const band = store.cefrProgress();
+  const band = store.cefrProgress(currentBand());
   const due = store.dueCount(LEVELS.filter((l) => store.isUnlocked(l.id)).flatMap((l) => l.vocab));
   const title = s.title ? TITLE_NAMES[s.title] : null;
   const name = session.user?.name || s.name || "";
@@ -1518,7 +1527,7 @@ function askNewPassword() {
  * it — say that you already know more. Mia reads this number to decide how hard her German may be.
  */
 function cefrCard() {
-  const band = store.cefrProgress();
+  const band = store.cefrProgress(currentBand());
   const claim = store.state.cefrClaim || "A1";
   return el("section", { class: "card" },
     el("div", { class: "card-head" }, el("h2", {}, "Твой уровень немецкого"), el("span", { class: "muted small" }, tr`${band.done} / ${band.total} уроков уровня ${band.band}`)),
@@ -1576,7 +1585,7 @@ function renderProfile(v) {
   const title = s.title ? TITLE_NAMES[s.title] : null;
 
 
-  const band = store.cefrProgress();
+  const band = store.cefrProgress(currentBand());
   const who = session.user?.name || s.name || "";
   append(v,
     el("section", { class: "cabinet-hero" },

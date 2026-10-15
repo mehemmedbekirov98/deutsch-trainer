@@ -586,8 +586,10 @@ class Store {
   }
 
   /** How far through the current band he is, 0..1 — for the ring on his profile. */
-  cefrProgress() {
-    const band = this.cefr();
+  // Полоса может прийти снаружи: экраны показывают ту, на которой человек сейчас работает,
+  // а не ту, которую он когда-то заявил. Без аргумента поведение прежнее.
+  cefrProgress(only = null) {
+    const band = CEFR.includes(only) ? only : this.cefr();
     const from = CEFR_FIRST[band], to = CEFR_LAST[band];
     let done = 0;
     for (let id = from; id <= to; id++) if (this.isCompleted(id)) done++;
