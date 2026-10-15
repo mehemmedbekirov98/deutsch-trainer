@@ -229,8 +229,15 @@ const BOARD_TABS = [
   { id: "words", title: "Слова", icon: "📚", value: (r) => r.words, fmt: (n) => `${n} ${plural(n, "слово", "слова", "слов")}` },
 ];
 
-function viewBoard(v) {
-  let tab = "xp";
+/**
+ * Рейтинг. Два экрана, а не один ряд из девяти вкладок.
+ *
+ * Было так: «Опыт · Серия · Уроки · Слова · Память · Блиц · der·die·das · Анаграмма · Виселица» —
+ * девять кнопок в ряд, и глаза разбегаются. Теперь общий рейтинг сам по себе, а игры —
+ * в соседнем окне по ссылке.
+ */
+function viewBoard(v, { onlyGames = false } = {}) {
+  let tab = onlyGames ? null : "xp";
   const host = el("div", { class: "board-host" }, el("div", { class: "muted" }, "Загружаю таблицу…"));
   const tabsRow = el("div", { class: "board-tabs" });
 
@@ -245,7 +252,8 @@ function viewBoard(v) {
       value: (r) => Number(r.games?.[g.id]?.best) || 0,
       fmt: (n) => `${n}${typeof g.unit === "function" ? g.unit(n) : g.unit}`,
     }));
-    const all = [...BOARD_TABS, ...games];
+    const all = onlyGames ? games : BOARD_TABS;
+    if (!tab) tab = all[0]?.id;
     for (const t of all) {
       tabsRow.append(el("button", { class: `board-tab ${t.id === tab ? "on" : ""}`, type: "button",
         onClick: () => { tab = t.id; paint(data); } }, tr`${t.icon} ${t.title}`));
@@ -278,7 +286,7 @@ function viewBoard(v) {
 
   append(v,
     el("div", { class: "page-head" },
-      el("h1", {}, "🏆 Рейтинг"),
+      el("h1", {}, onlyGames ? "🎮 Рейтинги по играм" : "🏆 Рейтинг"),
       el("p", { class: "muted" }, "Все, кто занимается на этом сайте. Попасть сюда можно только с аккаунтом — и только если ты сам этого захотел."),
     ),
     session.guest ? el("div", { class: "card cta-join" },
@@ -287,6 +295,9 @@ function viewBoard(v) {
     ) : null,
     tabsRow,
     host,
+    // Дверь в соседнее окно — вместо пяти лишних вкладок в одном ряду.
+    el("a", { class: "btn ghost", href: onlyGames ? "#/board" : "#/board/games" },
+      onlyGames ? "← Общий рейтинг" : "🎮 Рейтинги по играм →"),
   );
 
   backend.leaderboard()
@@ -558,7 +569,7 @@ async function route() {
     }
     else if (a === "levelup") { routeName = "practice"; await loadLevelDicts(LEVELS.filter((l) => store.isUnlocked(l.id))); if (seq !== routeSeq) return; viewLevelUp(v); }
     else if (a === "practice") { await loadLevelDicts(LEVELS.filter((l) => store.isUnlocked(l.id))); if (seq !== routeSeq) return; viewPractice(v); }
-    else if (a === "board") viewBoard(v);
+    else if (a === "board") viewBoard(v, { onlyGames: b === "games" });
     else if (a === "login") { focus = true; viewLogin(v); }
     else if (a === "password") { focus = true; renderNewPassword(v, { onDone: () => go("#/profile") }); }
     else if (a === "admin") { routeName = "profile"; viewAdmin(v); }
@@ -1396,25 +1407,26 @@ function viewTutor(v) {
 function renderShop(v) {
   const s = store.state;
   v.innerHTML = "";
+  // Без подзаголовков: «Расходники» и «Темы» и так понятны, а пояснение под каждым
+  // заголовком — четыре лишние строки мелким шрифтом на одном экране.
   const groups = [
-    { kind: "consumable", title: "Расходники", sub: "Помогают в заданиях. Тратятся." },
-    { kind: "perk", title: "Улучшения", sub: "Покупаются один раз, действуют всегда." },
-    { kind: "title", title: "Титулы", sub: "Показываются в профиле и на главной." },
-    { kind: "theme", title: "Темы оформления", sub: "Меняют цвета всего сайта." },
+    { kind: "consumable", title: "Расходники" },
+    { kind: "perk", title: "Улучшения" },
+    { kind: "title", title: "Титулы" },
+    { kind: "theme", title: "Темы" },
   ];
   const balance = el("div", { class: "shop-balance" }, el("span", { class: "sb-icon" }, "🪙"), el("span", { class: "sb-val" }, `${s.coins}`), el("span", { class: "muted" }, plural(s.coins, "монета", "монеты", "монет")));
   const inv = el("div", { class: "inventory" },
-    el("div", { class: "inv-title" }, "Инвентарь"),
     el("div", { class: "inv-items" },
       invItem("💡", "Подсказки", s.inventory.hint), invItem("🛡️", "Щиты", s.inventory.shield), invItem("🔁", "Попытки", s.inventory.retry),
       store.boostActive() ? invItem("⚡", "XP ×2", tr`${Math.ceil((s.boostUntil - Date.now()) / 60000)} мин`) : null,
     ),
   );
   append(v,
-    el("div", { class: "page-head shop-head" }, el("div", {}, el("h1", {}, "🛍️ Laden · Магазин"), el("p", { class: "muted" }, "Монеты даются за правильные ответы, миссии, диалоги, экзамены и ежедневные заходы.")), balance),
+    el("div", { class: "page-head shop-head" }, el("div", {}, el("h1", {}, "🛍️ Магазин")), balance),
     inv,
     ...groups.map((g) => el("section", { class: "shop-group" },
-      el("div", { class: "shop-group-head" }, el("h2", {}, g.title), el("span", { class: "muted small" }, g.sub)),
+      el("div", { class: "shop-group-head" }, el("h2", {}, g.title)),
       el("div", { class: "shop-grid" }, SHOP.filter((it) => it.kind === g.kind).map((it, i) => shopCard(it, i))),
     )),
   );
