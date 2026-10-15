@@ -161,8 +161,19 @@ class Speech {
    * Исключение одно: развёртывание, где серверной озвучки нет совсем (в /api/status tts: false).
    * Там выбор не между голосами, а между роботом и полной тишиной.
    */
+  /**
+   * Голос браузера — крайняя мера, но мера.
+   *
+   * Сначала я запретил подмену совсем: у Мии один голос, или он звучит, или честное молчание.
+   * Это оказалось хуже. Жалоба «говорит как робот» значила, что серверный синтез падал и до этого,
+   * просто падение было замазано роботом. Убрав робота, я превратил плохой голос в отсутствие голоса.
+   *
+   * Для того, кто учит язык, услышать слово хоть как-то важнее, чем не услышать красиво.
+   * Поэтому подмена вернулась — но теперь она громкая: один раз за сеанс человек видит, что
+   * настоящий голос не доехал, а в консоли видна причина. Молчание не оставляло ни того, ни другого.
+   */
   get canUseBrowserVoice() {
-    return this.serverTts === false;
+    return true;
   }
   get settings() {
     try { return store.state.settings || {}; } catch { return {}; }
@@ -254,7 +265,7 @@ class Speech {
           const ok = await this.speakServer(plans[n]);
           if (ok === "stopped" || run !== this.speakRun) return true;
           if (ok === false) {
-            if (!this.canUseBrowserVoice) { this.warnNoVoice(lang); return false; }
+            this.noteRealVoiceFailed(lang);
             return this.speakBrowser(parts.slice(n).join(" "), { rate: plans[n].rate, pitch, gender, voiceName: plans[n].browserVoice, lang });
           }
         }
@@ -267,7 +278,7 @@ class Speech {
       const ok = await this.speakServer(plan);
       if (ok !== false) return true;
     }
-    if (!this.canUseBrowserVoice) { this.warnNoVoice(lang); return false; }
+    if (plan.server) this.noteRealVoiceFailed(lang);
     const spoke = await this.speakBrowser(text, { rate: plan.rate, pitch, gender, voiceName: plan.browserVoice, lang });
     // Ни настоящий голос, ни женский голос системы. Молчание без объяснения выглядит
     // как поломка — говорим один раз, а не на каждой реплике.
@@ -466,6 +477,14 @@ class Speech {
       a.onerror = () => finish(false);
       a.play().catch((e) => { console.warn("[tts] play blocked:", e?.message); finish(false); });
     });
+  }
+
+  /** Настоящий голос не доехал — сказать об этом один раз за сеанс, а не на каждой реплике. */
+  noteRealVoiceFailed(lang) {
+    if (this._realVoiceWarned) return;
+    this._realVoiceWarned = true;
+    console.warn("[tts] real voice unavailable — reading with the browser voice");
+    this.warnNoVoice(lang);
   }
 
   speakBrowser(text, { rate = 0.92, pitch = 1, gender = "f", voiceName = null, lang = "de-DE" } = {}) {
