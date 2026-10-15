@@ -855,6 +855,8 @@ export default {
   "Как по-немецки «\u0001»?": "«\u0001» almanca necədir?",
   "Прослушать перевод": "Tərcüməni dinlə",
   "Так услышал микрофон": "Mikrofon belə eşitdi",
+  "Это голос браузера, а не Мии. Настоящий голос — для тех, кто вошёл: войди, и она заговорит по-человечески.": "Bu, Mianın yox, brauzerin səsidir. Əsl səs daxil olanlar üçündür: daxil ol, o, insan kimi danışacaq.",
+  "На сегодня новых реплик вслух больше нет — Мия дочитает их голосом браузера. Завтра вернётся её собственный.": "Bu gün üçün yeni səsləndirmə qalmadı — Mia onları brauzerin səsi ilə oxuyacaq. Sabah öz səsi qayıdacaq.",
   "Этот браузер не распознаёт речь на твоём языке. Пиши текстом — так тоже всё работает.": "Bu brauzer sənin dilində nitqi tanımır. Mətnlə yaz — belə də hər şey işləyir.",
   "слово ждёт": "söz gözləyir",
   "слова ждут": "söz gözləyir",

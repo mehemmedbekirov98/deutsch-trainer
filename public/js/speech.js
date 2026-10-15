@@ -156,6 +156,10 @@ function splitForSpeech(text, max = 130, min = 45) {
 }
 
 
+/** Сказать это человеку на экране. fx.js грузится по требованию — звук не должен ждать тостов. */
+const toastLater = (text, icon) =>
+  import("./fx.js").then(({ toast }) => toast(text, { icon, kind: "warn", ms: 8000 })).catch(() => {});
+
 class Speech {
   constructor() {
     this.voices = [];
@@ -173,6 +177,9 @@ class Speech {
     // никому, и просить его было бы странно.
     this.needsAuth = false;
     this.serverFailUntil = 0;
+    // Почему настоящий голос не доехал в последний раз: "auth" | "quota" | "down".
+    // Нужно, чтобы объяснить это человеку словами, а не подменить его роботом молча.
+    this.failReason = null;
     this.micGranted = false;
     this.micError = null;
     this.speakRun = 0;
@@ -329,6 +336,20 @@ class Speech {
     if (this._warnedNoVoice) return;
     this._warnedNoVoice = true;
     const l = String(lang || "");
+    /*
+     * Сначала — причина, если она известна.
+     *
+     * Эти два случая не поломка, а правило, и человек обязан узнать о нём словами. Гость слышит
+     * голос браузера не потому, что что-то сломалось: синтез стоит денег владельцу и пишет в его
+     * хранилище, поэтому он только для вошедших. Молчаливая подмена на робота выглядит как брак
+     * сайта — и ровно так она и выглядела.
+     */
+    if (this.failReason === "auth") {
+      return toastLater("Это голос браузера, а не Мии. Настоящий голос — для тех, кто вошёл: войди, и она заговорит по-человечески.", "🔑");
+    }
+    if (this.failReason === "quota") {
+      return toastLater("На сегодня новых реплик вслух больше нет — Мия дочитает их голосом браузера. Завтра вернётся её собственный.", "⏳");
+    }
     const text = l.startsWith("az")
       ? "Азербайджанский голос сейчас недоступен: нет связи с сервисом озвучки, а в системе азербайджанского голоса нет. Текст весь на экране."
       : l.startsWith("ru")
@@ -446,7 +467,12 @@ class Speech {
         body: JSON.stringify({ text: plan.text, voice: plan.voice, rate: plan.ratePct, pitch: plan.pitch, volume: plan.volume, locale: plan.locale, store: !plan.secret }),
         signal: ctrl.signal,
       });
-      if (!r.ok) throw new Error("tts " + r.status);
+      if (!r.ok) {
+        // Код нужен не для лога: по нему человеку объясняется, ПОЧЕМУ голос не настоящий.
+        const e = new Error("tts " + r.status);
+        e.status = r.status;
+        throw e;
+      }
       const blob = await r.blob();
       if (!blob.size) throw new Error("empty");
       const url = URL.createObjectURL(blob);
@@ -485,8 +511,9 @@ class Speech {
           if (aborted && e?.cancelReason !== "timeout") return "stopped";
           // Гость на строке, которой нет в хранилище. Сервер тут ни при чём и штрафовать его не
           // за что: просто читаем голосом браузера, сразу и без повтора.
-          if (e?.noAuth) return false;
+          if (e?.noAuth) { this.failReason = "auth"; return false; }
           if (attempt === 0) continue; // one quiet retry
+          this.failReason = e?.status === 401 ? "auth" : e?.status === 429 ? "quota" : "down";
           console.warn("[tts] neural voice unreachable, falling back:", e?.message || e);
           this.serverFailUntil = Date.now() + 15_000; // short penalty, then try the good voice again
           return false;
