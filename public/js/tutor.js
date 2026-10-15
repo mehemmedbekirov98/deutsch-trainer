@@ -2,7 +2,7 @@
 import { t as tr, lang as uiLang, langInfo } from "./i18n.js";
 import { el, normalize, sleep, nextTick, todayKey, personalise } from "./utils.js";
 import { speech, STT_ERRORS, NATIVE_LOCALE, NATIVE_RATE, RATES } from "./speech.js";
-import { repairGerman } from "./phonetic.js";
+import { repairGerman, foreignToGerman } from "./phonetic.js";
 import { sfx, confetti, toast } from "./fx.js";
 import { store } from "./store.js";
 import { backend } from "./backend.js";
@@ -295,6 +295,7 @@ export class Tutor {
           el("div", { class: "tutor-controls" },
             el("div", { class: "mic-col" },
               (this.mic = el("button", { class: "mic-btn large", type: "button", title: "Говорить", onClick: () => this.toggleListen() }, el("span", { class: "mic-icon" }, "🎤"))),
+              this.micLangSwitch(),
             ),
             el("form", { class: "tutor-form", onSubmit: (e) => { e.preventDefault(); const v = this.input.value.trim(); if (v || this.pendingFile) { if (this.handleUser(v)) this.input.value = ""; } } },
               // type: "button" обязателен. Кнопка внутри формы без него — submit, и скрепка бы отправляла
@@ -383,6 +384,15 @@ export class Tutor {
     // A new Set rather than .clear(), because respond() holds the old one by reference.
     this.brain = { topic: null, used: new Set(), lastDe: "", lastRu: "", lastHint: "", lastAnswer: "", sinceQuestion: 0 };
     this.lastReply = null;
+    /*
+     * Язык микрофона на ОДИН ход, выбранный человеком.
+     *
+     * В сейв не пишется нарочно. Прежняя кнопка DE/RU именно этим и путала: она запоминала
+     * выбор навсегда, человек забывал, что переключил, и микрофон месяцами слушал не тот язык.
+     * Здесь перебив живёт до конца реплики и сбрасывается — а подпись под микрофоном всегда
+     * показывает правду о том, что будет услышано.
+     */
+    this.micOverride = null;
     this.aiDropped = false;
     // …and forget that the hand-over was already announced, or a second conversation that loses
     // the AI would silently restart the script from the greeting instead of picking it up
@@ -531,6 +541,8 @@ export class Tutor {
     if (this.stopped || gen !== this.gen || seq !== this.seq) return;
     const reply = normalizeReply(raw);
     this.lastReply = reply;
+    // Ответила на другом языке — микрофон теперь слушает другой язык. Подпись обязана сказать это.
+    this.micLangPaint?.();
     // Голос по языку САМОЙ реплики, а не по языку сайта.
     //
     // Мия отвечает на том языке, на котором к ней обратились, — это и есть смысл свободного
@@ -566,6 +578,9 @@ export class Tutor {
       const main = speech.speak(reply.say, { ...voice, gender: "f", secret: true });
       if (reply.explain) speech.prefetch(reply.explain, { lang: NATIVE_LOCALE, rate: NATIVE_RATE, secret: true });
       await main;
+      // Чей это был голос — видно только после того, как он отзвучал. Помечаем лишь чужой:
+      // значок на каждой реплике Мии стал бы шумом, а вот подмена обязана быть заметной.
+      this.markVoice(bubble);
       // If Emil reached for the microphone while she was still talking, the turn is his. Speaking
       // the explanation now would abort the recogniser he just started (speak() always stops
       // listening first) and she would be talking over his answer.
@@ -573,6 +588,7 @@ export class Tutor {
       if (!this.listening && !this.stopped && gen === this.gen && reply.explain) {
         this.setState("speaking", "Мия объясняет по-русски…");
         await speech.speak(reply.explain, { lang: NATIVE_LOCALE, rate: NATIVE_RATE, secret: true });
+        this.markVoice(bubble);
         if (seq !== this.seq) return;
       }
     }
@@ -602,8 +618,68 @@ export class Tutor {
    * и он замкнётся сам на себя навсегда.
    */
   micLang() {
+    if (this.micOverride) return this.micOverride;
     if (this.chatMode === "german") return "de-DE";
     return this.lastReply?.lang === "de" ? "de-DE" : NATIVE_LOCALE;
+  }
+
+  /**
+   * Подпись под микрофоном: на каком языке он СЕЙЧАС слушает, и как это поменять.
+   *
+   * Браузер слушает один язык за сеанс и сам не переключается. Пока язык выбирался только
+   * автоматически — по режиму разговора и языку прошлой реплики Мии, — человек не видел
+   * выбора и не мог его исправить: сказал по-русски в немецком режиме и получил немецкими
+   * буквами бессмыслицу, без единой подсказки почему.
+   *
+   * Отличие от прежней кнопки (коммит b0fd3a9, убрана как путающая) ровно одно и оно всё
+   * меняет: выбор действует на один ход и никуда не записывается. Застрять в нём нельзя.
+   */
+  micLangSwitch() {
+    const btn = el("button", { class: "mic-lang", type: "button" });
+    const paint = () => {
+      const native = this.micLang() !== "de-DE";
+      btn.textContent = native ? langInfo().short : "DE";
+      btn.classList.toggle("ru", native);
+      btn.title = tr(native
+        ? "Микрофон слушает русский. Нажми, чтобы говорить по-немецки."
+        : "Микрофон слушает немецкий. Нажми, чтобы говорить по-русски.");
+      btn.setAttribute("aria-label", btn.title);
+    };
+    btn.addEventListener("click", () => {
+      this.micOverride = this.micLang() === "de-DE" ? NATIVE_LOCALE : "de-DE";
+      const de = this.micOverride === "de-DE";
+      paint();
+      if (this.listening) {
+        // Именно abort, а не stop: stop() отдаёт захваченное до сих пор, и недоговорённая
+        // фраза ушла бы Мие как законченный ход. relisten говорит ветке «aborted» переоткрыть
+        // распознаватель, не потратив попытку.
+        this.relisten = true;
+        speech.abortListening();
+        this.setState("listening", de ? "Слушаю… говори по-немецки" : "Слушаю… говори по-русски");
+      } else {
+        this.setState("idle", de ? "Микрофон слушает по-немецки" : "Микрофон слушает по-русски");
+      }
+    });
+    paint();
+    this.micLangPaint = paint;
+    return btn;
+  }
+
+  /**
+   * Пометить реплику, если её прочитал не голос Мии.
+   *
+   * Раньше про подмену сообщалось один раз за сеанс всплывающей плашкой — и дальше человек
+   * слышал робота, не понимая, её это голос или нет. Проверить он не мог никак.
+   *
+   * Ставим значок только когда голос ЧУЖОЙ: у Мии он звучит почти всегда, и метка на каждой
+   * реплике превратилась бы в шум. Молчание и отменённая речь тоже не метятся — там и голоса
+   * не было, помечать нечего.
+   */
+  markVoice(bubble) {
+    if (speech.lastVoice !== "browser" || !bubble || bubble.querySelector(".voice-tag")) return;
+    bubble.querySelector(".bubble-name")?.append(
+      el("span", { class: "voice-tag", title: "Это читает голос браузера, а не Мия" }, "🤖"),
+    );
   }
 
   /**
@@ -761,7 +837,27 @@ export class Tutor {
      * Чинится только то, что уверенно опознано по словарю курса; всё остальное уходит как есть.
      * Сырую расшифровку показываем под репликой: подменять человеку его слова молча нельзя.
      */
-    const heard = repairGerman(text, { alphabet: this.micAlphabet(), names: ["Mia", store.state.name] });
+    // Чем слушали НА САМОМ ДЕЛЕ — запоминаем до сброса: перебив мог смениться прямо посреди
+    // слушания, и расшифровывать надо по тому языку, который был в конце.
+    const alphabet = this.micAlphabet();
+    this.micOverride = null; // перебив жил ровно один ход, и он только что использован
+    this.micLangPaint?.();
+    const heard = repairGerman(text, { alphabet, names: ["Mia", store.state.name] });
+    /*
+     * Обратный случай: микрофон слушал немецкий, а сказано было на своём.
+     *
+     * Вернуть слова нельзя — звук потерян, а немецкая модель записала бессмыслицу немецкими
+     * буквами. Но можно не делать вид, что всё в порядке: подсказать и заранее переключить
+     * микрофон на следующий ход, чтобы человеку осталось только повторить.
+     *
+     * Текст при этом НЕ переписывается: детектор ошибается примерно на одной фразе из
+     * девятисот, и цена ошибки должна быть одной лишней подсказкой, а не подменой слов.
+     */
+    if (alphabet === "de" && foreignToGerman(heard.text).foreign) {
+      this.micOverride = NATIVE_LOCALE;
+      this.micLangPaint?.();
+      toast("Похоже, это сказано не по-немецки — а микрофон слушал немецкий. Переключила его: повтори, пожалуйста.", { icon: "🎤", kind: "warn", ms: 7000 });
+    }
     this.handleUser(heard.text, heard.changed ? heard.raw : null);
   }
 
@@ -982,6 +1078,9 @@ export class Tutor {
     if (next === this.chatMode) return;
     this.chatMode = next;
     if (this.talkMode === "free") store.update((s) => { s.settings.chatMode = next; });
+    // Смена режима меняет язык микрофона, а разовый перебив на этом теряет смысл.
+    this.micOverride = null;
+    this.micLangPaint?.();
     if (this.modeBtn) {
       this.modeBtn.textContent = tr(next === "german" ? "🇩🇪 Немецкий" : "💬 Разговор");
       this.modeBtn.classList.toggle("de", next === "german");

@@ -21,7 +21,7 @@ globalThis.document = { addEventListener() {}, createElement: () => ({ style: {}
 Object.defineProperty(globalThis, "navigator", { value: { language: "ru-RU", userAgent: "node" }, configurable: true });
 globalThis.localStorage = { getItem: () => null, setItem() {}, removeItem() {} };
 
-const { repairGerman, skeleton, NATIVE_COMMON } = await import("../public/js/phonetic.js");
+const { repairGerman, skeleton, NATIVE_COMMON, foreignToGerman } = await import("../public/js/phonetic.js");
 
 let failed = 0;
 const fail = (msg) => { failed++; console.log("ПРОВАЛ " + msg); };
@@ -113,6 +113,46 @@ for (const [heard, want] of [["guten tak", "Guten Tag"], ["şön", "schön"]]) {
 // Микрофон слушал немецкий — чинить нечего и нельзя: строка уже немецкая.
 if (say("Guten Tag", "de").changed) fail("при alphabet=de починка обязана молчать");
 
+/* ------------------------------------------- обратный случай: родное в немецкий микрофон */
+
+// В немецком режиме микрофон слушает немецкий ВСЕГДА. Скажешь в него на своём — немецкая
+// модель запишет бессмыслицу немецкими буквами, и выглядеть она будет как немецкий. Вернуть
+// слова нельзя, звук потерян; детектор только замечает подмену и предлагает переключиться.
+//
+// Порог выбран замером: индекс строился БЕЗ того уровня, фразы которого проверялись (1789 фраз).
+// У настоящего немецкого медиана 0.944, у подмены — 0.000. 0.35 даёт 0.11 % ложных тревог.
+const MUST_FLAG = [
+  "opasni jescho ras",              // объясни ещё раз
+  "tschto eto snatschit",           // что это значит
+  "a kak putet po nemezki stol",    // а как будет по-немецки стол
+  "powtori poschalujsta jescho ras", // повтори пожалуйста ещё раз
+  "ja ne ponal",                    // я не понял
+  "ne ponimaju eto slowo",          // не понимаю это слово
+];
+for (const heard of MUST_FLAG) {
+  const r = foreignToGerman(heard);
+  if (!r.foreign) fail(`«${heard}» — это родная речь в немецком микрофоне, а детектор смолчал (доля ${r.coverage.toFixed(2)})`);
+}
+
+// Настоящий немецкий трогать нельзя: ложная тревога здесь дороже пропуска.
+const MUST_PASS = [
+  "Ich heiße Emil",
+  "Wie geht es dir",
+  "Ich wohne in Berlin",
+  "Guten Tag wie geht es Ihnen",
+  "Ich möchte einen Kaffee bitte",
+  "Mein Name ist Emil und ich lerne Deutsch",
+];
+for (const heard of MUST_PASS) {
+  const r = foreignToGerman(heard);
+  if (r.foreign) fail(`«${heard}» — настоящий немецкий, а детектор поднял тревогу (доля ${r.coverage.toFixed(2)})`);
+}
+
+// Короткие реплики судить нельзя: «Okay», «Quatsch», «Echt» в курсе отсутствуют и дали бы 0.00.
+for (const heard of ["Okay", "Danke", "Ja", "Quatsch", "Echt", "Na klar"]) {
+  if (foreignToGerman(heard).foreign) fail(`короткое «${heard}» судить нельзя — нужны ворота по числу слов`);
+}
+
 /* ------------------------------------------------------------------ мелочи */
 
 if (!NATIVE_COMMON.has("так")) fail("«так» обязано быть в списке частых родных слов");
@@ -122,6 +162,6 @@ if (say("").changed) fail("пустая строка не должна меня�
 console.log(
   failed
     ? `\n${failed} FAILURES`
-    : `Починка распознанного: ${MUST_FIX.length} чинится, ${MUST_KEEP.length} не трогается, скелеты сходятся`,
+    : `Починка распознанного: ${MUST_FIX.length} чинится, ${MUST_KEEP.length} не трогается, скелеты сходятся; детектор чужой речи ${MUST_FLAG.length} ловит, ${MUST_PASS.length} пропускает`,
 );
 process.exit(failed ? 1 : 0);

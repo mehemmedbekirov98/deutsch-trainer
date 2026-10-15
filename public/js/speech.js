@@ -180,6 +180,19 @@ class Speech {
     // Почему настоящий голос не доехал в последний раз: "auth" | "quota" | "down".
     // Нужно, чтобы объяснить это человеку словами, а не подменить его роботом молча.
     this.failReason = null;
+    /*
+     * Кто прочитал ПОСЛЕДНЮЮ реплику: "mia" | "browser" | "none" | "stopped".
+     *
+     * Одного флага «сервер ответил» мало, и вот почему. speakServer возвращает false не только
+     * когда настоящий голос не доехал, но и когда файл доехал, а проигрывание сорвалось
+     * (браузер заблокировал автозапуск, битый mp3 — см. playUrl). Длинную строку режет на куски,
+     * и часть может прозвучать Мией, а остаток браузером. А ещё speak() возвращает true, когда
+     * речь ОТМЕНИЛИ: в репетиторе это норма — микрофон всегда глушит Мию.
+     *
+     * Поэтому значение выставляется там, где факт действительно известен, и «смешанное»
+     * честно считается браузерным: человеку важно, что голос был не её.
+     */
+    this.lastVoice = "none";
     this.micGranted = false;
     this.micError = null;
     this.speakRun = 0;
@@ -287,6 +300,7 @@ class Speech {
     this.stop();
     this.abortListening(); // never transcribe our own voice
     const run = ++this.speakRun;
+    this.lastVoice = "none";
 
     // A long explanation is synthesised sentence by sentence: the first one starts playing after a
     // second instead of after ten, and the rest are ready by the time it ends. Without this the
@@ -300,11 +314,15 @@ class Speech {
           // warm the next sentence while this one plays
           if (plans[n + 1] && !this.cache.has(plans[n + 1].key)) this.fetchAudio(plans[n + 1], { cancellable: false }).catch(() => {});
           const ok = await this.speakServer(plans[n]);
-          if (ok === "stopped" || run !== this.speakRun) return true;
+          if (ok === "stopped" || run !== this.speakRun) { this.lastVoice = "stopped"; return true; }
           if (ok === false) {
             this.noteRealVoiceFailed(lang);
-            return this.speakBrowser(parts.slice(n).join(" "), { rate: plans[n].rate, pitch, gender, voiceName: plans[n].browserVoice, lang });
+            const rest = await this.speakBrowser(parts.slice(n).join(" "), { rate: plans[n].rate, pitch, gender, voiceName: plans[n].browserVoice, lang });
+            // Начало могло прозвучать голосом Мии, но хвост — браузером. Это «не её голос».
+            this.lastVoice = rest ? "browser" : "none";
+            return rest;
           }
+          this.lastVoice = "mia";
         }
         return true;
       }
@@ -313,10 +331,12 @@ class Speech {
     const plan = this.plan(text, { rate, voiceName, lang, secret });
     if (plan.server) {
       const ok = await this.speakServer(plan);
-      if (ok !== false) return true;
+      // "stopped" — речь отменили, и НИЧЕГО не прозвучало: помечать это голосом Мии было бы ложью.
+      if (ok !== false) { this.lastVoice = ok === "stopped" ? "stopped" : "mia"; return true; }
     }
     if (plan.server) this.noteRealVoiceFailed(lang);
     const spoke = await this.speakBrowser(text, { rate: plan.rate, pitch, gender, voiceName: plan.browserVoice, lang });
+    this.lastVoice = spoke ? "browser" : "none";
     // Ни настоящий голос, ни женский голос системы. Молчание без объяснения выглядит
     // как поломка — говорим один раз, а не на каждой реплике.
     if (!spoke) this.warnNoVoice(lang);
