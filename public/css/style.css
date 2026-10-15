@@ -532,6 +532,8 @@ input[type="range"] { accent-color: var(--accent); width: 200px; }
 .bubble-name { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 4px; }
 .bubble-de { font-size: 1.15rem; }
 .bubble-ru { color: var(--muted); margin-top: 4px; font-size: 0.95rem; }
+/* Сырая расшифровка под починенной репликой: видно, что именно переписал разбор речи. */
+.heard-raw { color: var(--muted); margin-top: 4px; font-size: 0.85rem; opacity: 0.75; font-style: italic; }
 .explain-ru { display: flex; gap: 8px; align-items: flex-start; margin-top: 10px; padding: 10px 12px; border-radius: 12px; background: var(--acc2-10); border-left: 3px solid var(--accent2); font-size: 0.98rem; line-height: 1.55; color: #e2e8f0; animation: rise 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
 .explain-ru .explain-icon { flex-shrink: 0; }
 .explain-ru .icon-btn { flex-shrink: 0; margin-left: auto; }

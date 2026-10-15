@@ -1,7 +1,8 @@
 // Mia — the voice tutor. AI mode talks to /api/tutor (Claude); offline mode runs the level's script.
 import { t as tr, lang as uiLang, langInfo } from "./i18n.js";
 import { el, normalize, sleep, nextTick, todayKey, personalise } from "./utils.js";
-import { speech, STT_ERRORS, NATIVE_LOCALE, RATES } from "./speech.js";
+import { speech, STT_ERRORS, NATIVE_LOCALE, NATIVE_RATE, RATES } from "./speech.js";
+import { repairGerman } from "./phonetic.js";
 import { sfx, confetti, toast } from "./fx.js";
 import { store } from "./store.js";
 import { backend } from "./backend.js";
@@ -548,7 +549,7 @@ export class Tutor {
       // the other language, small and quiet — there to be read, not recited at him
       reply.translation ? el("div", { class: "bubble-ru", lang: reply.lang === "de" ? uiLang() : "de" }, reply.translation,
         el("button", { class: "icon-btn tiny", type: "button", title: "Прослушать", onClick: () => speech.speak(reply.translation, { ...other, force: true, secret: true }) }, "🔊")) : null,
-      reply.explain ? el("div", { class: "explain-ru" }, el("span", { class: "explain-icon" }, langInfo().flag), el("span", {}, reply.explain), el("button", { class: "icon-btn tiny", type: "button", title: "Прослушать перевод", onClick: () => speech.speak(reply.explain, { lang: NATIVE_LOCALE, force: true, secret: true }) }, "🔊")) : null,
+      reply.explain ? el("div", { class: "explain-ru" }, el("span", { class: "explain-icon" }, langInfo().flag), el("span", {}, reply.explain), el("button", { class: "icon-btn tiny", type: "button", title: "Прослушать перевод", onClick: () => speech.speak(reply.explain, { lang: NATIVE_LOCALE, rate: NATIVE_RATE, force: true, secret: true }) }, "🔊")) : null,
       reply.correction && reply.correction.corrected ? el("div", { class: "correction" },
         el("div", { class: "corr-row" }, el("span", { class: "corr-bad" }, reply.correction.original), el("span", {}, " → "), el("span", { class: "corr-good", lang: "de" }, reply.correction.corrected)),
         reply.correction.explanationRu ? el("div", { class: "corr-why" }, reply.correction.explanationRu) : null) : null,
@@ -563,7 +564,7 @@ export class Tutor {
       // is synthesised while it plays, so the two run together without a silent gap.
       // secret: это разговор, а не курс. Сказанное одному человеку не ложится в общее хранилище.
       const main = speech.speak(reply.say, { ...voice, gender: "f", secret: true });
-      if (reply.explain) speech.prefetch(reply.explain, { lang: NATIVE_LOCALE, secret: true });
+      if (reply.explain) speech.prefetch(reply.explain, { lang: NATIVE_LOCALE, rate: NATIVE_RATE, secret: true });
       await main;
       // If Emil reached for the microphone while she was still talking, the turn is his. Speaking
       // the explanation now would abort the recogniser he just started (speak() always stops
@@ -571,7 +572,7 @@ export class Tutor {
       if (seq !== this.seq) return; // he took the turn while she was speaking
       if (!this.listening && !this.stopped && gen === this.gen && reply.explain) {
         this.setState("speaking", "Мия объясняет по-русски…");
-        await speech.speak(reply.explain, { lang: NATIVE_LOCALE, secret: true });
+        await speech.speak(reply.explain, { lang: NATIVE_LOCALE, rate: NATIVE_RATE, secret: true });
         if (seq !== this.seq) return;
       }
     }
@@ -603,6 +604,20 @@ export class Tutor {
   micLang() {
     if (this.chatMode === "german") return "de-DE";
     return this.lastReply?.lang === "de" ? "de-DE" : NATIVE_LOCALE;
+  }
+
+  /**
+   * Чем расшифровывать услышанное — решает ЛОКАЛЬ МИКРОФОНА, а не буквы в ответе.
+   *
+   * Микрофон слушает один язык за раз, и какой именно — известно только здесь. Если он слушал
+   * русский, любая немецкая фраза придёт кириллицей; если азербайджанский (а сервис его не
+   * знает и подменяет турецким) — турецкой латиницей. Слушал немецкий — чинить нечего.
+   */
+  micAlphabet() {
+    const l = this.micLang();
+    if (l.startsWith("de")) return "de";
+    if (l.startsWith("az") || l.startsWith("tr")) return "tr";
+    return "cyr";
   }
 
 
@@ -735,11 +750,23 @@ export class Tutor {
       this.setState("idle", "Я ничего не услышала. Нажми 🎤 ещё раз или напиши — как тебе удобнее.");
       return;
     }
-    this.handleUser(text);
+    /*
+     * Разворачиваем немецкое, записанное чужой моделью.
+     *
+     * «гутен так мир» — это «Guten Tag, Mia», сказанное в микрофон, который в тот момент слушал
+     * русский. Без этого шага ошибка ещё и закрепляется: langOf() ниже относит кириллицу к
+     * русскому, свободный разговор выходит из немецкого режима, микрофон снова слушает русский —
+     * и выбраться из петли человек не может.
+     *
+     * Чинится только то, что уверенно опознано по словарю курса; всё остальное уходит как есть.
+     * Сырую расшифровку показываем под репликой: подменять человеку его слова молча нельзя.
+     */
+    const heard = repairGerman(text, { alphabet: this.micAlphabet(), names: ["Mia", store.state.name] });
+    this.handleUser(heard.text, heard.changed ? heard.raw : null);
   }
 
   /** returns true if the message was accepted */
-  handleUser(text) {
+  handleUser(text, heardRaw = null) {
     if (this.stopped) return false;
     // Пустой текст допустим, если приложен файл: «вот, посмотри» — вполне себе реплика.
     text = String(text ?? "").trim();
@@ -767,7 +794,10 @@ export class Tutor {
       file ? (file.isPdf
         ? el("div", { class: "bubble-file" }, "📄 ", file.name)
         : el("img", { class: "bubble-img", src: `data:${file.mediaType};base64,${file.data}`, alt: "Прикреплённое фото" })) : null,
-      text ? el("div", { class: "bubble-de", lang: said }, text) : null);
+      text ? el("div", { class: "bubble-de", lang: said }, text) : null,
+      // Что услышал микрофон до починки. Человек должен видеть, что именно ему переписали, —
+      // иначе ошибочная догадка становится невидимой, а Мия отвечает на несказанное.
+      heardRaw ? el("div", { class: "heard-raw", title: "Так услышал микрофон" }, "🎤 ", heardRaw) : null);
     // Уезжает ровно один раз, с этим ходом.
     this.sendingFile = file ? { data: file.data, mediaType: file.mediaType, name: file.name } : null;
     this.clearFile();

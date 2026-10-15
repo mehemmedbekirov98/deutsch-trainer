@@ -19,7 +19,10 @@ const BT = String.fromCharCode(96);
 
 // Не текст для человека: правила фильтра — это регулярные выражения, служебные помощники
 // вообще не рисуют, а сообщения в консоль читает тот, кто чинит сайт.
-const SKIP_FILES = new Set(["i18n.js", "moderation.js", "utils.js", "logo.js", "levels.js"]);
+// phonetic.js в этом же ряду: он не рисует ничего. Его русские строки — это таблица звуков
+// и список частых родных слов, по которому решается, что НЕ трогать. Переводить их нельзя:
+// именно по ним узнаётся русская и азербайджанская речь, и азербайджанские слова там уже есть.
+const SKIP_FILES = new Set(["i18n.js", "moderation.js", "utils.js", "logo.js", "levels.js", "phonetic.js"]);
 const LOG_TAGS = ["backend", "store", "tutor", "i18n", "speech", "games"];
 const isLogLine = (s) => LOG_TAGS.some((t) => s.startsWith("[" + t + "]"));
 const SKIP_EXACT = new Set([

@@ -854,6 +854,7 @@ export default {
   "Что значит «\u0001»?": "«\u0001» nə deməkdir?",
   "Как по-немецки «\u0001»?": "«\u0001» almanca necədir?",
   "Прослушать перевод": "Tərcüməni dinlə",
+  "Так услышал микрофон": "Mikrofon belə eşitdi",
   "Этот браузер не распознаёт речь на твоём языке. Пиши текстом — так тоже всё работает.": "Bu brauzer sənin dilində nitqi tanımır. Mətnlə yaz — belə də hər şey işləyir.",
   "слово ждёт": "söz gözləyir",
   "слова ждут": "söz gözləyir",
